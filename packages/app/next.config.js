@@ -8,6 +8,9 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  experimental: {
+    styledComponents: true,
+  },
 };
 
 module.exports = withTM({ nextConfig });

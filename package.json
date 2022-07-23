@@ -2,7 +2,11 @@
   "name": "next-rolling-oaks-daylilies",
   "version": "0.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "dev": "npm run dev -w @packages/app",
+    "build": "npm run build -w @packages/app",
+    "start": "npm run start -w @packages/app"
+  },
   "workspaces": [
     "packages/*"
   ]

@@ -1,12 +1,28 @@
 import type { NextPage } from "next";
-import { Test } from "../components";
+import { PrismaClient } from "@prisma/client";
+import markdownToHtml from "../lib/markdownToHtml";
+import { Heading } from "@packages/design-system";
+import type { users } from "@prisma/client";
 
-const Home: NextPage = () => {
+const Home: NextPage<{ user: users; content: string | null }> = ({
+  user,
+  content,
+}) => {
   return (
-    <Test>
-      <p>hello next rolling oaks daylilies</p>
-    </Test>
+    <>
+      <Heading level={1}>Rolling Oaks Daylilies</Heading>
+      {content && <div dangerouslySetInnerHTML={{ __html: content }} />}
+    </>
   );
 };
 
 export default Home;
+
+export async function getStaticProps() {
+  const prisma = new PrismaClient();
+  const user = await prisma.users.findFirstOrThrow({ where: { id: 3 } });
+  const content = user.bio ? await markdownToHtml(user.bio) : null;
+  return {
+    props: { user: JSON.parse(JSON.stringify(user)), content },
+  };
+}
