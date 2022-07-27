@@ -1,16 +1,20 @@
 /** @type {import('next').NextConfig} */
-
-const withTM = require("next-transpile-modules")(["@packages/design-system"]);
-
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   compiler: {
     styledComponents: true,
   },
+  images: {
+    domains: [
+      "www.daylilies.org",
+      "daylily-catalog-images.s3.amazonaws.com",
+      "daylily-catalog-images-stage.s3.amazonaws.com",
+    ],
+  },
   experimental: {
-    styledComponents: true,
+    externalDir: true,
   },
 };
 
-module.exports = withTM({ nextConfig });
+module.exports = nextConfig;
