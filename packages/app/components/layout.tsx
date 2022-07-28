@@ -1,6 +1,6 @@
 import React from "react";
-import { createGlobalStyle, withTheme } from "styled-components";
-import Helmet from "react-helmet";
+import { createGlobalStyle } from "styled-components";
+import Head from "next/head";
 import Navigation from "./navigation";
 import { SnackBarProvider } from "./snackBarProvider";
 import { darkTheme } from "../styles/theme";
@@ -8,42 +8,40 @@ import { siteConfig } from "../siteConfig";
 import { useRouter } from "next/router";
 import { CartProvider } from "./cart";
 
-const Layout = withTheme(({ children, theme }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useRouter();
   const { title, description, baseUrl } = siteConfig;
   return (
-    <>
-      <CartProvider>
-        <SnackBarProvider>
-          <Helmet>
-            <title>{title}</title>
-            <meta property="og:title" content={title} />
-            <meta property="og:site_name" content={title} />
+    <CartProvider>
+      <SnackBarProvider>
+        <Head>
+          <title>{title}</title>
+          <meta property="og:title" content={title} />
+          <meta property="og:site_name" content={title} />
 
-            <meta name="description" content={description} />
-            <meta property="og:description" content={description} />
-            <meta property="og:type" content="website" />
-            <meta property="og:image" content={`/assets/logo.png`} />
-            <meta name="og:image:alt" content={`${title} logo`} />
-            <meta property="og:url" content={baseUrl + pathname} />
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:image:alt" content={`${title} logo`} />
-          </Helmet>
-          <GlobalStyle theme={theme} />
-          <Navigation />
-          {children}
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-        </SnackBarProvider>
-      </CartProvider>
-    </>
+          <meta name="description" content={description} />
+          <meta property="og:description" content={description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content={`/assets/logo.png`} />
+          <meta name="og:image:alt" content={`${title} logo`} />
+          <meta property="og:url" content={baseUrl + pathname} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image:alt" content={`${title} logo`} />
+        </Head>
+        <GlobalStyle />
+        <Navigation />
+        {children}
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+      </SnackBarProvider>
+    </CartProvider>
   );
-});
+};
 
 export default Layout;
 
@@ -60,7 +58,7 @@ interface ThemeProps {
   };
 }
 
-const GlobalStyle = createGlobalStyle<ThemeProps>`
+const GlobalStyle = createGlobalStyle`
 :root{
   font-size: 18px;
 }

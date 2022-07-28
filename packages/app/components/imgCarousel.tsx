@@ -1,14 +1,11 @@
-import React from 'react';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { Carousel } from 'react-responsive-carousel';
-import styled from 'styled-components';
-import Img from 'gatsby-image';
+import React from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import styled from "styled-components";
+import { Image } from "./Image";
+import { SquareImage } from "../../design-system/src";
 
-const ImgCarousel: React.FC<{ images: any[] }> = ({
-  images,
-}: {
-  images: any[];
-}) => {
+const ImgCarousel = ({ images }: { images: string[] }) => {
   return (
     <Style>
       <Carousel
@@ -31,29 +28,10 @@ const ImgCarousel: React.FC<{ images: any[] }> = ({
       >
         {images &&
           images.map((image, i) => {
-            if (typeof image === 'string') {
-              return (
-                <div key={`image-${i}`} className='placeholder'>
-                  <img
-                    src={image}
-                    alt={`image ${i}`}
-                    style={{
-                      position: 'unset',
-                      width: '100%',
-                      maxWidth: '100%',
-                    }}
-                  />
-                </div>
-              );
-            }
             return (
-              <div key={`image-${i}`} className='placeholder'>
-                <Img
-                  fixed={image}
-                  alt={`image ${i}`}
-                  style={{ position: 'unset', width: '100%', maxWidth: '100%' }}
-                />
-              </div>
+              <SquareImage key={i}>
+                <Image src={image} alt={`image ${i}`} />
+              </SquareImage>
             );
           })}
       </Carousel>

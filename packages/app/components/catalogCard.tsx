@@ -1,38 +1,33 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import Image from "next/image";
 import { Catalog } from "../pages/catalogs";
+import { Image } from "../components/Image";
+import { SquareImage, Thumbnail } from "@packages/design-system";
 
 type CatalogCardProps = {
   catalog: Catalog;
 };
 
 const CatalogCard: React.FC<CatalogCardProps> = ({ catalog }) => {
-  const { imgUrls, intro, name, slug, totalCount } = catalog;
-
-  const image = imgUrls && imgUrls[Math.floor(Math.random() * imgUrls.length)];
+  const { image, intro, name, slug, totalCount } = catalog;
   return (
     <Style image={image || null}>
       <div className="container">
         <div style={{ position: "relative", width: 250, height: 250 }}>
           {image ? (
-            <Image
-              src={image}
-              layout="fill"
-              alt={catalog.name + "image"}
-              className="image"
-              objectFit="cover"
-            />
+            <SquareImage>
+              <Image src={image} alt={name + "image"} />
+            </SquareImage>
           ) : (
             <div className="image" />
           )}
         </div>
         <div className="text">
-          <h2>{catalog.name}</h2>
-          {catalog.intro && <p>{catalog.intro}</p>}
+          <h2>{name}</h2>
+          {intro && <p>{intro}</p>}
           {totalCount && <p>{`${totalCount.toLocaleString()} listings`}</p>}
-          <Link href={`/${slug}`} id={`link-${slug}`}>
+          <Link href={`/catalog/${slug}`} id={`link-${slug}`}>
             View catalog
           </Link>
         </div>

@@ -47,7 +47,7 @@ export type Catalog = {
   name: string;
   intro: string | null;
   totalCount: number;
-  imgUrls: string[];
+  image: string | null;
 };
 
 export async function getStaticProps() {
@@ -78,11 +78,11 @@ export async function getStaticProps() {
     const listImages = listingImageQuery.flatMap((l) => l.img_url);
     listsImages[list.id] = listImages;
     catalogs.push({
-      slug: slugify(list.name),
+      slug: slugify(list.name, { lower: true }),
       name: list.name,
       intro: list.intro,
       totalCount: listCountQuery._count,
-      imgUrls: listImages,
+      image: randomImageUrl(listImages),
     });
   }
 
@@ -95,7 +95,7 @@ export async function getStaticProps() {
     name: "All Rolling Oaks Daylilies",
     intro: `View all of my daylilies in a single list. This is a great place to start if you're searching for something specific.`,
     totalCount: allListingCountQuery._count,
-    imgUrls: allListingImages,
+    image: randomImageUrl(allListingImages),
   };
 
   const forSaleListingCountQuery = await prisma.lilies.aggregate({
@@ -111,10 +111,13 @@ export async function getStaticProps() {
     name: "For Sale",
     intro: `Daylilies available for purchase. Send me a message to check availability`,
     totalCount: forSaleListingCountQuery._count,
-    imgUrls: forSalesListingImagesQuery.flatMap((l) => l.img_url),
+    image: randomImageUrl(forSalesListingImagesQuery.flatMap((l) => l.img_url)),
   };
 
   return {
     props: { catalogs: [allCatalog, ...catalogs, forSaleCatalog] },
   };
 }
+
+const randomImageUrl = (imageUrls: string[]) =>
+  imageUrls ? imageUrls[Math.floor(Math.random() * imageUrls.length)] : null;

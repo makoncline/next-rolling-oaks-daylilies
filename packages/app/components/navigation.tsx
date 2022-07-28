@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
@@ -6,7 +6,7 @@ import logoSquare from "../public/assets/logo-square.png";
 import { darkTheme } from "../styles/theme";
 import { useCart } from "./cart";
 
-const Navigation: React.FC = () => {
+const Navigation = () => {
   const { numItems } = useCart();
 
   return (
@@ -14,18 +14,20 @@ const Navigation: React.FC = () => {
       <div className="left">
         <div className="logo">
           <Link href="/" aria-label="return home">
-            <Image
-              src={logoSquare}
-              width={64}
-              height={64}
-              alt="Rolling Oaks Daylilies logo"
-            />
+            <a>
+              <Image
+                src={logoSquare}
+                width={64}
+                height={64}
+                alt="Rolling Oaks Daylilies logo"
+              />
+            </a>
           </Link>
         </div>
         <Link href="/catalogs" className="nav">
           Catalogs
         </Link>
-        <Link href="/search" className="nav">
+        <Link href="/catalog/search" className="nav">
           Search
         </Link>
         <Link href="/cart" className="nav">

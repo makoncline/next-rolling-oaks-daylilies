@@ -9,13 +9,11 @@ import logoSquare from "../public/assets/logo-square.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Heading } from "@packages/design-system";
 
 const Home: NextPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   return (
     <Layout>
-      <Heading level={1}>Test</Heading>
       <Style>
         <div className="hero">
           <div className="hero-buttons">

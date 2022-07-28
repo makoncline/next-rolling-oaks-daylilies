@@ -5,9 +5,10 @@ import { Icon } from "@iconify/react";
 import cart from "@iconify/icons-ic/round-shopping-cart";
 import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
-import { Listing } from "../pages/[slug]";
-import Image from "next/image";
+import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
+import { SquareImage } from "../../design-system/src";
+import { Image } from "../components/Image";
 
 const LilyCard = ({ lily }: { lily: Listing }) => {
   const { addOrUpdateProduct, addOne } = useCart();
@@ -22,7 +23,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
   const cartItem = lily.price && {
     id: lily.id,
     name: lily.name,
-    price: lily.price,
+    price: lily.price as unknown as number,
   };
 
   return (
@@ -30,13 +31,9 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
       <div className="container">
         <div style={{ position: "relative", width: 250, height: 250 }}>
           {image ? (
-            <Image
-              src={image}
-              layout="fill"
-              alt={lily.name + "image"}
-              className="image"
-              objectFit="cover"
-            />
+            <SquareImage>
+              <Image src={image} alt={lily.name + "image"} />
+            </SquareImage>
           ) : (
             <div className="image" />
           )}
@@ -47,7 +44,9 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
             {lily.price ? `$${lily.price}` : "display only"}
           </p>
           <div className="bot">
-            <Link href={`/${slugify(lily.name)}`}>View details</Link>
+            <Link href={`/${slugify(lily.name, { lower: true })}`}>
+              View details
+            </Link>
             {cartItem && (
               <button
                 className="iconbutton"

@@ -33,7 +33,16 @@ const Paginate: React.FC<{
           aria-label="page back"
           onClick={() => {
             const newPage = page > 0 ? page - 1 : 0;
-            router.push(`?page=${newPage + 1}`);
+            router.replace(
+              {
+                pathname: router.asPath.split("?")[0],
+                query: { page: newPage + 1 },
+              },
+              undefined,
+              {
+                shallow: true,
+              }
+            );
             setPaginate({
               ...paginate,
               page: newPage,
@@ -51,7 +60,16 @@ const Paginate: React.FC<{
               className="page-select"
               onChange={(e) => {
                 const newPage = parseInt(e.target.value);
-                router.push(`?page=${newPage + 1}`);
+                router.replace(
+                  {
+                    pathname: router.asPath.split("?")[0],
+                    query: { page: newPage + 1 },
+                  },
+                  undefined,
+                  {
+                    shallow: true,
+                  }
+                );
                 setPaginate({
                   ...paginate,
                   page: newPage,
@@ -75,7 +93,16 @@ const Paginate: React.FC<{
           aria-label="page forward"
           onClick={() => {
             const newPage = page + 1 <= pages ? page + 1 : pages;
-            router.push(`?page=${newPage + 1}`);
+            router.replace(
+              {
+                pathname: router.asPath.split("?")[0],
+                query: { page: newPage + 1 },
+              },
+              undefined,
+              {
+                shallow: true,
+              }
+            );
             setPaginate({
               ...paginate,
               page: newPage,
