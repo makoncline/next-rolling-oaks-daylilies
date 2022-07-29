@@ -27,6 +27,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <meta property="og:url" content={baseUrl + pathname} />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:image:alt" content={`${title} logo`} />
+          <link rel="shortcut icon" href="/favicon.ico" />
         </Head>
         <GlobalStyle />
         <Navigation />
