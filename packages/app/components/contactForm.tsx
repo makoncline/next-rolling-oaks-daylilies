@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import Button from './button';
+import React from "react";
+import styled from "styled-components";
+import Button from "./button";
 
 type ContactFormProps = {
   action: string;
@@ -16,49 +16,49 @@ const ContactForm: React.FC<ContactFormProps> = ({
   return (
     <FormGroup>
       <form
-        name='contact'
-        method='post'
-        data-netlify='true'
-        data-netlify-honeypot='bot-field'
+        name="contact"
+        method="post"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
         action={action}
       >
         <input
-          aria-label='form name'
-          type='hidden'
-          name='form-name'
-          value='contact'
+          aria-label="form name"
+          type="hidden"
+          name="form-name"
+          value="contact"
         />
         <p hidden>
-          <label htmlFor='bot-field'>
-            Don’t fill this out:{' '}
-            <input aria-label='bot field' name='bot-field' />
+          <label htmlFor="bot-field">
+            Don’t fill this out:{" "}
+            <input aria-label="bot field" name="bot-field" />
           </label>
         </p>
-        <label htmlFor='name'>Your name</label>
+        <label htmlFor="name">Your name</label>
         <input
-          aria-label='name'
-          type='text'
-          name='name'
-          id='name'
+          aria-label="name"
+          type="text"
+          name="name"
+          id="name"
           required
           ref={forwardRef}
         />
-        <label htmlFor='email'>Your email</label>
+        <label htmlFor="email">Your email</label>
         <input
-          aria-label='email address'
-          type='email'
-          name='email'
-          id='email'
+          aria-label="email address"
+          type="email"
+          name="email"
+          id="email"
           required
         />
-        <label htmlFor='message'>Your message</label>
-        <textarea aria-label='message' name='message' id='message' required />
+        <label htmlFor="message">Your message</label>
+        <textarea aria-label="message" name="message" id="message" required />
         <Button
-          className='button'
-          type='submit'
-          look='primary'
+          className="button"
+          type="submit"
+          look="primary"
           fullWidth
-          label='submit contact form'
+          label="submit contact form"
         >
           {cta}
         </Button>

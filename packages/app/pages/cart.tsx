@@ -91,58 +91,56 @@ const CartForm = () => {
 
   return (
     <Form>
-      {numItems > 0 && (
-        <form
-          name="cart"
-          method="post"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-          action="/thanks"
-          hidden={numItems < 1}
+      <form
+        name="cart"
+        method="post"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
+        action="/thanks"
+        hidden={numItems < 1}
+      >
+        <input
+          aria-label="form name"
+          type="hidden"
+          name="form-name"
+          value="cart"
+        />
+        <p hidden>
+          <label htmlFor="bot-field">
+            Don’t fill this out:{" "}
+            <input aria-label="bot field" name="bot-field" />
+          </label>
+        </p>
+        <label htmlFor="email">Your email</label>
+        <input
+          aria-label="email address"
+          type="email"
+          name="email"
+          id="email"
+          required
+        />
+        <p hidden>
+          <label htmlFor="cartText">Your cart</label>
+          <textarea
+            aria-label="cart text"
+            name="cartText"
+            id="cartText"
+            value={"" + cartText()}
+            readOnly
+          />
+        </p>
+        <label htmlFor="message">Your message</label>
+        <textarea aria-label="message" name="message" id="message" />
+        <Button
+          className="button"
+          type="submit"
+          look="primary"
+          fullWidth
+          label="check availability"
         >
-          <input
-            aria-label="form name"
-            type="hidden"
-            name="form-name"
-            value="cart"
-          />
-          <p hidden>
-            <label htmlFor="bot-field">
-              Don’t fill this out:{" "}
-              <input aria-label="bot field" name="bot-field" />
-            </label>
-          </p>
-          <label htmlFor="email">Your email</label>
-          <input
-            aria-label="email address"
-            type="email"
-            name="email"
-            id="email"
-            required
-          />
-          <p hidden>
-            <label htmlFor="cartText">Your cart</label>
-            <textarea
-              aria-label="cart text"
-              name="cartText"
-              id="cartText"
-              value={"" + cartText()}
-              readOnly
-            />
-          </p>
-          <label htmlFor="message">Your message</label>
-          <textarea aria-label="message" name="message" id="message" />
-          <Button
-            className="button"
-            type="submit"
-            look="primary"
-            fullWidth
-            label="check availability"
-          >
-            Check availability
-          </Button>
-        </form>
-      )}
+          Check availability
+        </Button>
+      </form>
     </Form>
   );
 };
