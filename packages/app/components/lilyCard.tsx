@@ -44,9 +44,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
             {lily.price ? `$${lily.price}` : "display only"}
           </p>
           <div className="bot">
-            <Link href={`/${slugify(lily.name, { lower: true })}`}>
-              View details
-            </Link>
+            <Link href={`/${slugify(lily.name)}`}>View details</Link>
             {cartItem && (
               <button
                 className="iconbutton"

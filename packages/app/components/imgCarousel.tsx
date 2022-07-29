@@ -29,7 +29,7 @@ const ImgCarousel = ({ images }: { images: string[] }) => {
         {images &&
           images.map((image, i) => {
             return (
-              <SquareImage key={i}>
+              <SquareImage key={i} width="100%">
                 <Image src={image} alt={`image ${i}`} />
               </SquareImage>
             );

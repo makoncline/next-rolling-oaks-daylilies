@@ -5,9 +5,10 @@ import Layout from "../components/layout";
 import CatalogCard from "../components/catalogCard";
 import Head from "../components/head";
 import Container from "../components/container";
-import { lists, users, lilies, PrismaClient } from "@prisma/client";
+import { lists, users, lilies } from "@prisma/client";
 import { NextPage } from "next";
 import { siteConfig } from "../siteConfig";
+import { prisma } from "../prisma/db";
 
 const Header: () => JSX.Element = () => <Head title="Catalogs" />;
 
@@ -51,7 +52,6 @@ export type Catalog = {
 };
 
 export async function getStaticProps() {
-  const prisma = new PrismaClient();
   const lists = await prisma.lists.findMany({
     where: { user_id: siteConfig.userId },
   });
@@ -71,14 +71,17 @@ export async function getStaticProps() {
       _count: true,
     });
     const listingImageQuery = await prisma.lilies.findMany({
-      where: { list_id: list.id, img_url: { isEmpty: false } },
+      where: {
+        list_id: list.id,
+        img_url: { isEmpty: false },
+      },
       orderBy: { updated_at: "desc" },
       select: { img_url: true },
     });
     const listImages = listingImageQuery.flatMap((l) => l.img_url);
     listsImages[list.id] = listImages;
     catalogs.push({
-      slug: slugify(list.name, { lower: true }),
+      slug: slugify(list.name),
       name: list.name,
       intro: list.intro,
       totalCount: listCountQuery._count,
@@ -87,6 +90,7 @@ export async function getStaticProps() {
   }
 
   const allListingCountQuery = await prisma.lilies.aggregate({
+    where: { user_id: siteConfig.userId },
     _count: true,
   });
   const allListingImages = Object.values(listsImages).flat();
@@ -115,7 +119,13 @@ export async function getStaticProps() {
   };
 
   return {
-    props: { catalogs: [allCatalog, ...catalogs, forSaleCatalog] },
+    props: {
+      catalogs: [
+        forSaleCatalog,
+        ...catalogs.sort((a, b) => b.totalCount - a.totalCount),
+        allCatalog,
+      ],
+    },
   };
 }
 

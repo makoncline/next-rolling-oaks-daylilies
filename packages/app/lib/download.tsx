@@ -1,51 +1,49 @@
-import { LilyType } from '../types/types';
-
-function download(lilies: LilyType[]): string {
+function download(lilies: any[]): string {
   const columns = [
-    'name',
-    'price',
-    'publicNote',
-    'privateNote',
-    'imgUrl',
-    'hybridizer',
-    'year',
-    'parentage',
-    'color',
-    'ploidy',
-    'bloomSeason',
-    'bloomHabit',
-    'budcount',
-    'branches',
-    'bloomSize',
-    'scapeHeight',
-    'foliageType',
-    'seedlingNum',
-    'fragrance',
-    'form',
-    'foliage',
-    'flower',
-    'sculpting',
+    "name",
+    "price",
+    "publicNote",
+    "privateNote",
+    "imgUrl",
+    "hybridizer",
+    "year",
+    "parentage",
+    "color",
+    "ploidy",
+    "bloomSeason",
+    "bloomHabit",
+    "budcount",
+    "branches",
+    "bloomSize",
+    "scapeHeight",
+    "foliageType",
+    "seedlingNum",
+    "fragrance",
+    "form",
+    "foliage",
+    "flower",
+    "sculpting",
   ];
 
   enum ahsProps {
-    hybridizer = 'hybridizer',
-    year = 'year',
-    parentage = 'parentage',
-    color = 'color',
-    ploidy = 'ploidy',
-    bloomSeason = 'bloomSeason',
-    bloomHabit = 'bloomHabit',
-    budcount = 'budcount',
-    branches = 'branches',
-    bloomSize = 'bloomSize',
-    scapeHeight = 'scapeHeight',
-    foliageType = 'foliageType',
-    seedlingNum = 'seedlingNum',
-    fragrance = 'fragrance',
-    form = 'form',
-    foliage = 'foliage',
-    flower = 'flower',
-    sculpting = 'sculpting',
+    hybridizer = "hybridizer",
+    year = "year",
+    parentage = "parentage",
+    color = "color",
+    ploidy = "ploidy",
+    bloomSeason = "bloomSeason",
+    bloomHabit = "bloomHabit",
+    budcount = "budcount",
+    branches = "branches",
+    bloomSize = "bloomSize",
+    scapeHeight = "scapeHeight",
+    foliageType = "foliageType",
+    seedlingNum = "seedlingNum",
+    fragrance = "fragrance",
+    form = "form",
+    foliage = "foliage",
+    flower = "flower",
+    sculpting = "sculpting",
   }
 
   const getKeyValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
@@ -57,7 +55,7 @@ function download(lilies: LilyType[]): string {
       }
       return `${column}\t`;
     })
-    .join('');
+    .join("");
 
   let output = header;
 
@@ -65,24 +63,24 @@ function download(lilies: LilyType[]): string {
     let row = ``;
     columns.forEach((column, j) => {
       if (
-        column === 'name' ||
-        column === 'price' ||
-        column === 'publicNote' ||
-        column === 'privateNote'
+        column === "name" ||
+        column === "price" ||
+        column === "publicNote" ||
+        column === "privateNote"
       ) {
-        row += `${lily[column] || ''}`;
-      } else if (column === 'imgUrl') {
+        row += `${lily[column] || ""}`;
+      } else if (column === "imgUrl") {
         const imgUrls = lily.imgUrl;
         const urls =
-          imgUrls?.map((url: string) => `"${encodeURI(url)}"`).join(', ') ??
+          imgUrls?.map((url: string) => `"${encodeURI(url)}"`).join(", ") ??
           null;
-        row += `${urls || ''}`;
+        row += `${urls || ""}`;
       } else if (
         lily.ahsDatumByAhsRef &&
         getKeyValue(lily.ahsDatumByAhsRef, column as ahsProps)
       ) {
         row += `${
-          getKeyValue(lily.ahsDatumByAhsRef, column as ahsProps) || ''
+          getKeyValue(lily.ahsDatumByAhsRef, column as ahsProps) || ""
         }`;
       }
       if (j !== columns.length - 1) {

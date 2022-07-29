@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Icon } from '@iconify/react';
-import arrowDown from '@iconify/icons-si-glyph/arrow-down';
+import React from "react";
+import styled from "styled-components";
+import { Icon } from "@iconify/react";
+import arrowDown from "@iconify/icons-si-glyph/arrow-down";
 
 const Select: React.FC<{
   name: string;
@@ -23,7 +23,7 @@ const Select: React.FC<{
         >
           {children}
         </select>
-        <Icon className='carat' icon={arrowDown} />
+        <Icon className="carat" icon={arrowDown} />
       </div>
     </Style>
   );
@@ -50,7 +50,7 @@ const Style = styled.div`
     border-radius: 3rem;
     height: 2rem;
     margin: 0 auto;
-    padding: 0 2rem 0 1rem;
+    padding: 0 3rem 0 1rem;
     cursor: pointer;
     &:hover {
       box-shadow: 0 0 0 1px rgb(var(--rgb-purple));

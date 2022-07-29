@@ -9,11 +9,12 @@ import Container from "../components/container";
 import Layout from "../components/layout";
 import { DaylilyCatAd } from "../components/DaylilyCatAd";
 import { useSnackBar } from "components/snackBarProvider";
-import { ahs_data, lilies, PrismaClient } from "@prisma/client";
+import { ahs_data, lilies } from "@prisma/client";
 import { useCart } from "components/cart";
 import { siteConfig } from "siteConfig";
 import CompHead from "../components/head";
 import slugify from "slugify";
+import { prisma } from "../prisma/db";
 
 const traitLabels: Partial<Record<keyof ahs_data, string>> = {
   hybridizer: "Hybridizer",
@@ -199,10 +200,6 @@ const LilyTemplate = ({
   }, Updated: ${formatDistanceToNow(new Date(listing.updated_at), {
     addSuffix: true,
   })}`;
-  const baseUrl =
-    typeof window !== "undefined"
-      ? `${window.location.protocol}//${window.location.host}`
-      : "";
   const images = [...listing.img_url, listing.ahs_data?.image].filter(
     Boolean
   ) as string[];
@@ -319,15 +316,27 @@ const Style = styled.div`
 `;
 
 export async function getStaticPaths() {
-  const prisma = new PrismaClient();
   const listings = await prisma.lilies.findMany({
     where: { user_id: siteConfig.userId },
     orderBy: { name: "desc" },
     select: { name: true },
   });
-  const paths = listings.map((listing) => ({
+  const listingNames = listings
+    .map((listing) => listing.name)
+    .reduce((result, element) => {
+      if (
+        result.every(
+          (otherElement) => otherElement.toLowerCase() !== element.toLowerCase()
+        )
+      ) {
+        result.push(element);
+      }
+      return result;
+    }, [] as string[]);
+
+  const paths = listingNames.map((listingName) => ({
     params: {
-      listing: slugify(listing.name, { lower: true }),
+      listing: slugify(listingName),
     },
   }));
   return {
@@ -341,7 +350,6 @@ type DisplayListing = lilies & {
 };
 
 export async function getStaticProps(context: any) {
-  const prisma = new PrismaClient();
   const listingSlug = context.params.listing;
   const listingIdsAndNames = await prisma.lilies.findMany({
     where: { user_id: siteConfig.userId },
@@ -349,7 +357,7 @@ export async function getStaticProps(context: any) {
     select: { id: true, name: true },
   });
   const listingId = listingIdsAndNames.find(
-    (node) => slugify(node.name, { lower: true }) === listingSlug
+    (node) => slugify(node.name) === listingSlug
   )?.id;
   const listing = await prisma.lilies.findFirstOrThrow({
     where: { id: listingId },
@@ -360,11 +368,13 @@ export async function getStaticProps(context: any) {
   );
   const previous = listingIdsAndNames[listingIndex - 1]?.name;
   const next = listingIdsAndNames[listingIndex + 1]?.name;
-
+  const listingImages = [...listing.img_url, listing.ahs_data?.image].filter(
+    Boolean
+  ) as string[];
   return {
     props: JSON.parse(
       JSON.stringify({
-        listing,
+        listing: { ...listing, img_url: listingImages },
         previous,
         next,
       })

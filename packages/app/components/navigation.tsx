@@ -31,7 +31,7 @@ const Navigation = () => {
           Search
         </Link>
         <Link href="/cart" className="nav">
-          {`Cart ${numItems > 0 ? ` (${numItems})` : ""}`}
+          <a>Cart {numItems ? ` (${numItems})` : ""} </a>
         </Link>
       </div>
     </Style>

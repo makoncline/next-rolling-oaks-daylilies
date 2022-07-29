@@ -185,6 +185,7 @@ const Cart: React.FC = () => {
               <ClearButton />
             </div>
           }
+          foot={<div></div>}
         />
       </Layout>
     </Style>

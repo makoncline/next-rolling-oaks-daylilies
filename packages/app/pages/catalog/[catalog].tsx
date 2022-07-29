@@ -11,10 +11,11 @@ import LilyCard from "../../components/lilyCard";
 import Input from "../../components/input";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
-import { ahs_data, lilies, Prisma, PrismaClient } from "@prisma/client";
+import { ahs_data, lilies, Prisma } from "@prisma/client";
 import { useSnackBar } from "../../components/snackBarProvider";
 import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
+import { prisma } from "../../prisma/db";
 
 type SearchPageProps = {
   title: string;
@@ -922,14 +923,13 @@ const SearchChange = ({
 };
 
 export async function getStaticPaths() {
-  const prisma = new PrismaClient();
   const lists = await prisma.lists.findMany({
     where: { user_id: siteConfig.userId },
     select: { id: true, name: true },
   });
   const paths = lists.map((list) => ({
     params: {
-      catalog: slugify(list.name, { lower: true }),
+      catalog: slugify(list.name),
     },
   }));
   paths.push({ params: { catalog: "all" } });
@@ -942,12 +942,13 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context: any) {
-  const prisma = new PrismaClient();
   const catalog = context.params.catalog;
-  let where: Prisma.liliesWhereInput | undefined = undefined;
+  let listingsWhere: Prisma.liliesWhereInput | undefined = {
+    user_id: siteConfig.userId,
+  };
   let list: any = undefined;
   if (catalog === "for-sale") {
-    where = { price: { gt: 0 } };
+    listingsWhere = { ...listingsWhere, price: { gt: 0 } };
     list = { name: "For Sale", intro: "" };
   } else if (catalog === "all") {
     list = { name: "All", intro: "" };
@@ -958,16 +959,14 @@ export async function getStaticProps(context: any) {
       where: { user_id: siteConfig.userId },
       select: { id: true, name: true },
     });
-    const listId = listIds.find(
-      (node) => slugify(node.name, { lower: true }) === catalog
-    )?.id;
+    const listId = listIds.find((node) => slugify(node.name) === catalog)?.id;
     list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
-    where = { list_id: listId };
+    listingsWhere = { ...listingsWhere, list_id: listId };
   }
   const listings = await prisma.lilies.findMany({
     orderBy: { name: "desc" },
     include: { ahs_data: true },
-    where,
+    where: listingsWhere,
   });
   const title = list.name;
   const description = list.description;

@@ -36,6 +36,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     "cartItems",
     {}
   );
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const addOrUpdateProduct = (product: Product) => {
     setProducts((prevProducts) => ({
@@ -152,11 +156,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     changeQty,
     addOne,
     removeOne,
-    shipping,
-    subTotal,
-    total,
-    numItems,
     clear,
+    // hack for nextjs hydration-error
+    shipping: mounted ? shipping : 0,
+    subTotal: mounted ? subTotal : 0,
+    total: mounted ? total : 0,
+    numItems: mounted ? numItems : 0,
   };
   return <Cart.Provider value={value}>{children}</Cart.Provider>;
 };

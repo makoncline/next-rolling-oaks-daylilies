@@ -1,17 +1,18 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const LinkButton: React.FC<{
   href: string;
   target: string;
   lookType: string;
   fullWidth: boolean;
+  children: React.ReactNode;
 }> = ({ href, target, lookType, fullWidth, children }) => (
-  <StyledLink lookType={lookType} fullWidth={fullWidth} tabindex='-1'>
-    <a className='text button' href={href} target={target}>
-      <div className='plate'>{children}</div>
+  <StyledLink lookType={lookType} fullWidth={fullWidth} tabindex="-1">
+    <a className="text button" href={href} target={target}>
+      <div className="plate">{children}</div>
     </a>
-    <div className='focus-ring' />
+    <div className="focus-ring" />
   </StyledLink>
 );
 
@@ -23,7 +24,7 @@ const StyledLink = styled.button<{
 }>`
   position: relative;
   height: 3.5rem;
-  ${props => props.fullWidth && `width: 100%;`}
+  ${(props) => props.fullWidth && `width: 100%;`}
   border: none;
   cursor: pointer;
   -webkit-appearance: none;
@@ -37,32 +38,32 @@ const StyledLink = styled.button<{
   .plate {
     height: 2.5rem;
     width: fit-content;
-    ${props => props.fullWidth && `width: 100%;`}
+    ${(props) => props.fullWidth && `width: 100%;`}
     padding-left: 2rem;
     padding-right: 2rem;
-    background: ${props => {
+    background: ${(props) => {
       switch (props.lookType) {
-        case 'primary':
+        case "primary":
           return `var(--yellow--vivid--500)`;
-        case 'secondary':
+        case "secondary":
           return `var(--primary--100)`;
-        case 'light':
+        case "light":
           return `none`;
-        case 'dark':
+        case "dark":
           return `none`;
         default:
           break;
       }
     }};
-    box-shadow: ${props => {
+    box-shadow: ${(props) => {
       switch (props.lookType) {
-        case 'primary':
+        case "primary":
           return `var(--elevation--1)`;
-        case 'secondary':
+        case "secondary":
           return `var(--elevation--1)`;
-        case 'light':
+        case "light":
           return `none`;
-        case 'dark':
+        case "dark":
           return `none`;
         default:
           break;
@@ -77,15 +78,15 @@ const StyledLink = styled.button<{
   }
   .text {
     text-decoration: none;
-    color: ${props => {
+    color: ${(props) => {
       switch (props.lookType) {
-        case 'primary':
+        case "primary":
           return `var(--yellow--vivid--1000)`;
-        case 'secondary':
+        case "secondary":
           return `var(--cyan--1000)`;
-        case 'light':
+        case "light":
           return `var(--white)`;
-        case 'dark':
+        case "dark":
           return `var(--primary--1000)`;
         default:
           break;
@@ -100,11 +101,11 @@ const StyledLink = styled.button<{
     right: 0;
     top: calc(50% - 3.5rem / 2);
     border: 4px solid
-      ${props => {
+      ${(props) => {
         switch (props.lookType) {
-          case 'primary':
+          case "primary":
             return `var(--yellow--vivid--500)`;
-          case 'secondary':
+          case "secondary":
             return `rgb(var(--rgb-blue))`;
           default:
             break;
@@ -116,15 +117,15 @@ const StyledLink = styled.button<{
   &:focus {
     outline: none;
     .focus-ring {
-      visibility: ${props => {
+      visibility: ${(props) => {
         switch (props.lookType) {
-          case 'primary':
+          case "primary":
             return `visible`;
-          case 'secondary':
+          case "secondary":
             return `visible`;
-          case 'light':
+          case "light":
             return `hidden`;
-          case 'dark':
+          case "dark":
             return `hidden`;
           default:
             break;
@@ -140,15 +141,15 @@ const StyledLink = styled.button<{
       box-shadow: none;
     }
     .text {
-      color: ${props => {
+      color: ${(props) => {
         switch (props.lookType) {
-          case 'primary':
+          case "primary":
             return `var(--yellow--vivid--1000)`;
-          case 'secondary':
+          case "secondary":
             return `var(--cyan--1000)`;
-          case 'light':
+          case "light":
             return `var(--yellow--vivid--200)`;
-          case 'dark':
+          case "dark":
             return `var(--cyan--500)`;
           default:
             break;
