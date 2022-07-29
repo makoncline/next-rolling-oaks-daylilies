@@ -9,14 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify/icons-ic": "^1.2.8",
+    "@iconify/icons-si-glyph": "^1.2.3",
+    "@iconify/react": "^3.2.2",
     "@packages/design-system": "0.0.0",
     "@prisma/client": "^4.1.0",
+    "date-fns": "^2.29.1",
     "next": "12.2.2",
     "next-transpile-modules": "^9.0.0",
     "react": "18.2.0",
+    "react-debounce-input": "^3.3.0",
     "react-dom": "18.2.0",
+    "react-responsive-carousel": "^3.2.23",
     "remark": "^14.0.2",
     "remark-html": "^15.0.1",
+    "sharp": "^0.30.7",
+    "slugify": "^1.6.5",
     "styled-components": "^5.3.5"
   },
   "devDependencies": {
