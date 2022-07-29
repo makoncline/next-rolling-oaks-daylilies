@@ -13,7 +13,7 @@ const Header = () => (
 const Thanks: React.FC = () => {
   return (
     <Layout>
-      <Container head={<Header />} />
+      <Container head={<Header />} foot={<div></div>} />
     </Layout>
   );
 };
