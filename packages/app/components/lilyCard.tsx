@@ -7,7 +7,7 @@ import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
 import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
-import { SquareImage } from "../../design-system/src";
+import { SquareImage } from "@packages/design-system";
 import { Image } from "../components/Image";
 
 const LilyCard = ({ lily }: { lily: Listing }) => {

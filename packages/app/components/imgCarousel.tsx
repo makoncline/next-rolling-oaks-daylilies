@@ -3,7 +3,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import styled from "styled-components";
 import { Image } from "./Image";
-import { SquareImage } from "../../design-system/src";
+import { SquareImage } from "@packages/design-system";
 
 const ImgCarousel = ({ images }: { images: string[] }) => {
   return (
