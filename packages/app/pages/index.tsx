@@ -25,7 +25,7 @@ const Home: NextPage = () => {
             >
               Send me a message
             </Button>
-            <form action="tel:6015901349" target="_blank" className="form">
+            <form action="tel:+1-601-590-1349" target="_blank" className="form">
               <Button type="submit" look="secondary" fullWidth label="call">
                 Give me a call
               </Button>

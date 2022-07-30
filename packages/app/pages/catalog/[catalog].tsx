@@ -367,8 +367,12 @@ const SearchPage: NextPage<SearchPageProps> = ({
         <Head>
           <title>{title}</title>
           <meta property="og:title" content={title} />
-          <meta name="description" content={description} />
-          <meta property="og:description" content={description} />
+          {description ? (
+            <>
+              <meta name="description" content={description} />
+              <meta property="og:description" content={description} />
+            </>
+          ) : null}
           <meta property="og:type" content="website" />
           <meta property="og:image" content={`${baseUrl}/logo.png`} />
           <meta property="og:image:width" content="800" />
