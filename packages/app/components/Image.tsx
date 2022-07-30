@@ -8,8 +8,6 @@ const S3_BUCKET_HOST_NAMES = [
   "daylily-catalog-images.s3.amazonaws.com",
 ];
 
-const noLoader = ({ src }: { src: string }) => src;
-
 function Image({
   src: originalSrc,
   thumb = false,

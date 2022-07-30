@@ -5,6 +5,7 @@ import Image from "next/image";
 import logoSquare from "../public/assets/logo-square.png";
 import { darkTheme } from "../styles/theme";
 import { useCart } from "./cart";
+import { SquareImage } from "@packages/design-system";
 
 const Navigation = () => {
   const { numItems } = useCart();
@@ -15,12 +16,9 @@ const Navigation = () => {
         <div className="logo">
           <Link href="/" aria-label="return home">
             <a>
-              <Image
-                src={logoSquare}
-                width={64}
-                height={64}
-                alt="Rolling Oaks Daylilies logo"
-              />
+              <SquareImage width="64px">
+                <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
+              </SquareImage>
             </a>
           </Link>
         </div>
