@@ -352,6 +352,10 @@ const SearchPage: NextPage<SearchPageProps> = ({
       ? `${window.location.protocol}//${window.location.host}`
       : "";
   const url = typeof window !== "undefined" ? window.location.href : "";
+  const topRef = React.useRef<HTMLDivElement>(null);
+  const handlePageChange = () => {
+    topRef.current?.scrollIntoView();
+  };
 
   return (
     <Layout>
@@ -775,7 +779,7 @@ const SearchPage: NextPage<SearchPageProps> = ({
             {showFilters ? "Hide" : "Show"} Search and Filters
           </Button>
         </div>
-        <div className="lilies-container">
+        <div className="lilies-container" ref={topRef}>
           <div className="lilies-container--top">
             {pages && pages > 0 ? (
               <h2>
@@ -790,6 +794,7 @@ const SearchPage: NextPage<SearchPageProps> = ({
                 pages={pages || 0}
                 paginate={paginate}
                 setPaginate={setPaginate}
+                onPageChange={handlePageChange}
               />
             )}
           </div>
@@ -811,6 +816,7 @@ const SearchPage: NextPage<SearchPageProps> = ({
               pages={pages || 0}
               paginate={paginate}
               setPaginate={setPaginate}
+              onPageChange={handlePageChange}
             />
           )}
           {filters.name === "download" && (

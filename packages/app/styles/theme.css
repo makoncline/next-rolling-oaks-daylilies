@@ -1,0 +1,54 @@
+:where(html) {
+  color: var(--text-2);
+  background-color: var(--surface-1);
+
+  --link: var(--indigo-3);
+  --link-visited: var(--grape-3);
+
+  --text-1: var(--gray-1);
+  --text-2: var(--gray-3);
+  --text-3: var(--gray-5);
+  --text-1--reversed: var(--gray-9);
+  --text-2--reversed: var(--gray-8);
+
+  --surface-1: var(--gray-9);
+  --surface-2: var(--gray-8);
+  --surface-3: var(--gray-7);
+  --surface-4: var(--gray-6);
+
+  --primary: var(--blue-6);
+  --primary--glint: var(--blue-5);
+
+  --secondary: var(--violet-6);
+  --secondary--glint: var(--violet-5);
+
+  --hsl-success: var(--hsl-green-6);
+  --success: hsl(var(--hsl-success));
+  --success--glint: var(--green-5);
+  --success--transparent: hsla(var(--hsl-success), 0.1);
+
+  --hsl-danger: var(--hsl-red-6);
+  --danger: hsl(var(--hsl-danger));
+  --danger--glint: var(--red-5);
+  --danger--transparent: hsla(var(--hsl-danger), 0.1);
+
+  --hsl-info: var(--hsl-yellow-6);
+  --info: hsl(var(--hsl-info));
+  --info--glint: var(--yellow-5);
+  --info--transparent: hsla(var(--hsl-info), 0.1);
+
+  --max-width: 80rem;
+  --max-width-form: 30rem;
+  --full-width: calc(100vw - (2 * var(--size-8)));
+}
+
+:where(h1, h2, h3, h4, h5, h6, dt) {
+  color: var(--text-1);
+}
+
+:where(a[href]) {
+  color: var(--link);
+}
+:where(a[href]:visited) {
+  color: var(--link-visited);
+}

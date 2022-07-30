@@ -46,19 +46,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
 export default Layout;
 
-interface ThemeProps {
-  theme: {
-    "bg-1": string;
-    "bg-2": string;
-    "bg-3": string;
-    "bg-4": string;
-    "bg-5": string;
-    "bg-shine": string;
-    "text-high": string;
-    "text-low": string;
-  };
-}
-
 const GlobalStyle = createGlobalStyle`
 :root{
   font-size: 18px;

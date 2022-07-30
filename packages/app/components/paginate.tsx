@@ -19,35 +19,39 @@ const Paginate: React.FC<{
       page: number;
     }>
   >;
-}> = ({ page, pages, paginate, setPaginate }) => {
+  onPageChange?: () => void;
+}> = ({ page, pages, paginate, setPaginate, onPageChange }) => {
   const router = useRouter();
   const pageArray = [];
   for (let i = 0; i <= pages; i++) {
     pageArray.push(i);
   }
+  const handlePageChange = (newPage: number) => {
+    if (onPageChange) {
+      onPageChange();
+    }
+    router.replace(
+      {
+        pathname: router.asPath.split("?")[0],
+        query: { page: newPage + 1 },
+      },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
+    setPaginate({
+      ...paginate,
+      page: newPage,
+    });
+  };
   return (
     <StyledPaginate>
       <div className="pagination">
         <button
           className="back"
           aria-label="page back"
-          onClick={() => {
-            const newPage = page > 0 ? page - 1 : 0;
-            router.replace(
-              {
-                pathname: router.asPath.split("?")[0],
-                query: { page: newPage + 1 },
-              },
-              undefined,
-              {
-                shallow: true,
-              }
-            );
-            setPaginate({
-              ...paginate,
-              page: newPage,
-            });
-          }}
+          onClick={() => handlePageChange(page > 0 ? page - 1 : 0)}
         >
           <Icon icon={arrowLeft} />
         </button>
@@ -58,23 +62,7 @@ const Paginate: React.FC<{
               aria-label="page select"
               name="pages"
               className="page-select"
-              onChange={(e) => {
-                const newPage = parseInt(e.target.value);
-                router.replace(
-                  {
-                    pathname: router.asPath.split("?")[0],
-                    query: { page: newPage + 1 },
-                  },
-                  undefined,
-                  {
-                    shallow: true,
-                  }
-                );
-                setPaginate({
-                  ...paginate,
-                  page: newPage,
-                });
-              }}
+              onChange={(e) => handlePageChange(parseInt(e.target.value))}
               value={page}
             >
               {pageArray &&
@@ -91,23 +79,7 @@ const Paginate: React.FC<{
         <button
           className="forward"
           aria-label="page forward"
-          onClick={() => {
-            const newPage = page + 1 <= pages ? page + 1 : pages;
-            router.replace(
-              {
-                pathname: router.asPath.split("?")[0],
-                query: { page: newPage + 1 },
-              },
-              undefined,
-              {
-                shallow: true,
-              }
-            );
-            setPaginate({
-              ...paginate,
-              page: newPage,
-            });
-          }}
+          onClick={() => handlePageChange(page + 1 <= pages ? page + 1 : pages)}
         >
           <Icon icon={arrowRight} />
         </button>
