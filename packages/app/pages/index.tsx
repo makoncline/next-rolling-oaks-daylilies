@@ -17,25 +17,27 @@ const Home: NextPage = () => {
       <Style>
         <div className="hero">
           <div className="hero-buttons">
-            <Space responsive>
-              <Button
-                onClick={() => emailRef.current && emailRef.current.focus()}
-                block
-              >
-                Send me a message
-              </Button>
-              <form
-                action="https://goo.gl/maps/BKg722pc9e52"
-                target="_blank"
-                className="form"
-              >
-                <Button type="submit" block>
-                  Get directions
+            <Space direction="column" block center>
+              <Space responsive>
+                <Button
+                  onClick={() => emailRef.current && emailRef.current.focus()}
+                  block
+                >
+                  Send me a message
                 </Button>
-              </form>
-              <Button href="tel:+1-601-590-1349" block>
-                Give me a call: 1-601-590-1349
-              </Button>
+                <form
+                  action="https://goo.gl/maps/BKg722pc9e52"
+                  target="_blank"
+                  className="form"
+                >
+                  <Button type="submit" block>
+                    Get directions
+                  </Button>
+                </form>
+              </Space>
+              <span>
+                Give me a call: <a href="tel:+1-601-590-1349">1-601-590-1349</a>
+              </span>
             </Space>
           </div>
           <div className="hero-image">
