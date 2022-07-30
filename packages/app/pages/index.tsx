@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 import Layout from "../components/layout";
-import Button from "../components/button";
 import ContactForm from "../components/contactForm";
 import type { NextPage } from "next";
 import Image from "next/image";
@@ -9,6 +8,7 @@ import logoSquare from "../public/assets/logo-square.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
+import { Button, Space } from "@packages/design-system";
 
 const Home: NextPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -17,33 +17,26 @@ const Home: NextPage = () => {
       <Style>
         <div className="hero">
           <div className="hero-buttons">
-            <Button
-              look="secondary"
-              onClick={() => emailRef.current && emailRef.current.focus()}
-              fullWidth
-              label="message"
-            >
-              Send me a message
-            </Button>
-            <form action="tel:+1-601-590-1349" target="_blank" className="form">
-              <Button type="submit" look="secondary" fullWidth label="call">
-                Give me a call
-              </Button>
-            </form>
-            <form
-              action="https://goo.gl/maps/BKg722pc9e52"
-              target="_blank"
-              className="form"
-            >
+            <Space responsive>
               <Button
-                type="submit"
-                look="secondary"
-                fullWidth
-                label="directions"
+                onClick={() => emailRef.current && emailRef.current.focus()}
+                block
               >
-                Get directions
+                Send me a message
               </Button>
-            </form>
+              <form
+                action="https://goo.gl/maps/BKg722pc9e52"
+                target="_blank"
+                className="form"
+              >
+                <Button type="submit" block>
+                  Get directions
+                </Button>
+              </form>
+              <Button href="tel:+1-601-590-1349" block>
+                Give me a call: 1-601-590-1349
+              </Button>
+            </Space>
           </div>
           <div className="hero-image">
             <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
