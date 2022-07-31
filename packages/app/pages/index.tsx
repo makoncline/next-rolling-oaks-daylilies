@@ -2,65 +2,69 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
+import { Image } from "../components/Image";
 import type { NextPage } from "next";
-import Image from "next/image";
-import logoSquare from "../public/assets/logo-square.png";
+
+import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Button, Space } from "@packages/design-system";
+import { Button, Heading, Space } from "@packages/design-system";
 
 const Home: NextPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   return (
     <Layout>
-      <Style>
-        <div className="hero">
-          <div className="hero-buttons">
-            <Space direction="column" block center>
-              <Space responsive>
-                <Button
-                  onClick={() => emailRef.current && emailRef.current.focus()}
-                  block
-                >
-                  Send me a message
-                </Button>
-                <form
-                  action="https://goo.gl/maps/BKg722pc9e52"
-                  target="_blank"
-                  className="form"
-                >
-                  <Button type="submit" block>
-                    Get directions
-                  </Button>
-                </form>
-              </Space>
-              <span>
-                Give me a call: <a href="tel:+1-601-590-1349">1-601-590-1349</a>
-              </span>
-            </Space>
-          </div>
-          <div className="hero-image">
+      <Space
+        center
+        block
+        direction="column"
+        style={{ maxWidth: "60rem" }}
+        gap="large"
+      >
+        <Space responsive gap="large" center>
+          <figure>
             <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
-          </div>
-          <div className="hero-text">
-            <h1>Welcome to Rolling Oaks Daylilies</h1>
-            <p className="text--mid">
+          </figure>
+          <Space direction="column" as="section">
+            <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
+            <p>
               I grow approximately 1000 named daylilies and a few thousand of my
               own seedlings. My collection includes a wide variety of forms,
               including spiders, unusual forms, and doubles. My current
               hybridizing focus is double and white daylilies. I have been an
               AHS Display Garden for several years.
             </p>
-          </div>
-        </div>
-        <div className="content">
-          <div className="home-image">
-            <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
-          </div>
-          <div>
-            <h2>Ordering</h2>
-            {/*eslint-disable */}
+          </Space>
+        </Space>
+
+        <Space direction="column" block center>
+          <Space responsive block center>
+            <Button
+              styleType="primary"
+              onClick={() => emailRef.current && emailRef.current.focus()}
+              block
+            >
+              Send me a message
+            </Button>
+            <Button
+              href="https://goo.gl/maps/BKg722pc9e52"
+              target="_blank"
+              block
+            >
+              Get directions
+            </Button>
+          </Space>
+          <span>
+            Give me a call: <a href="tel:+1-601-590-1349">1-601-590-1349</a>
+          </span>
+        </Space>
+        <figure>
+          <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
+        </figure>
+        <Space direction="column" block as="section">
+          <Heading level={2}>Ordering</Heading>
+          <Space direction="column" block>
             <p>
               Minimum order is $20.00. The list price is for a double fan. A
               double fan can sometimes share one root system and dormant plants
@@ -73,7 +77,6 @@ const Home: NextPage = () => {
               payment to kaymcline@gmail.com and can send a PayPal Invoice if
               you want. I also accept Venmo (@Karen-Cline-13).
             </p>
-            {/*eslint-enable */}
             <p>
               <strong>Please note</strong>,{" "}
               <a href="https://www.daylilies.org/ahs_dictionary/daylily_rust.html">
@@ -82,82 +85,34 @@ const Home: NextPage = () => {
               can overwinter in our mild southern climate. I cannot gaurantee
               rust-free plants.
             </p>
-          </div>
-          <div className="home-image">
-            <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
-          </div>
-          <div>
-            <h2>Shipping</h2>
-            <p>
-              I ship Priority Mail (USPS) the same day I dig, Monday or Tuesday,
-              to ensure delivery before the weekend. Shipping cost is $13.00 for
-              up to 3 plants, plus $1.00 for each additional plant. I do not
-              ship to California or outside the United States.
-            </p>
-          </div>
-          <div className="home-image">
-            <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
-          </div>
-          <div className="contactForm" id="contact">
-            <h2>Contact me?</h2>
-            <ContactForm
-              cta="Send me a message"
-              forwardRef={emailRef}
-              action="/thanks"
-            />
-          </div>
-        </div>
-      </Style>
+          </Space>
+        </Space>
+        <figure>
+          <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
+        </figure>
+        <Space direction="column" block as="section">
+          <Heading level={2}>Shipping</Heading>
+          <p>
+            I ship Priority Mail (USPS) the same day I dig, Monday or Tuesday,
+            to ensure delivery before the weekend. Shipping cost is $13.00 for
+            up to 3 plants, plus $1.00 for each additional plant. I do not ship
+            to California or outside the United States.
+          </p>
+        </Space>
+        <figure>
+          <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
+        </figure>
+        <Space direction="column" block as="section">
+          <Heading level={2}>Contact me?</Heading>
+          <ContactForm
+            cta="Send me a message"
+            forwardRef={emailRef}
+            action="/thanks"
+          />
+        </Space>
+      </Space>
     </Layout>
   );
 };
 
 export default Home;
-
-const Style = styled.div`
-  .form {
-    width: 100%;
-  }
-  .hero {
-    display: grid;
-    grid-template-columns: 40% 60%;
-    align-items: center;
-    margin-top: 1rem;
-    @media (max-width: 768px) {
-      display: flex;
-      flex-direction: column-reverse;
-    }
-  }
-  .hero-image {
-    width: calc(100% - 2rem);
-    max-width: 400px;
-    height: auto;
-    margin: 0 1rem;
-  }
-  .hero-text {
-    margin: 0 1rem;
-    max-width: 35rem;
-  }
-  .hero-buttons {
-    grid-area: 2/1/3/3;
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: 3rem;
-    @media (max-width: 768px) {
-      flex-direction: column;
-      margin-top: 2rem;
-    }
-  }
-  .content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: auto 1rem;
-    & > div {
-      width: 100%;
-      max-width: 35rem;
-      margin: 3rem 1rem 0 1rem;
-    }
-  }
-`;
