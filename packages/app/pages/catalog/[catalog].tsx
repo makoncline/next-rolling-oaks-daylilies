@@ -6,7 +6,6 @@ import Select from "../../components/select";
 import BackToTop from "../../components/backToTop";
 import download from "../../lib/download";
 import Paginate from "../../components/paginate";
-import Button from "../../components/button";
 import LilyCard from "../../components/lilyCard";
 import Input from "../../components/input";
 import { useRouter } from "next/router";
@@ -16,6 +15,13 @@ import { useSnackBar } from "../../components/snackBarProvider";
 import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
 import { prisma } from "../../prisma/db";
+import {
+  Button,
+  FancyHeading,
+  FormWrapper,
+  Heading,
+  Space,
+} from "@packages/design-system";
 
 type SearchPageProps = {
   title: string;
@@ -356,419 +362,438 @@ const SearchPage: NextPage<SearchPageProps> = ({
   const handlePageChange = () => {
     topRef.current?.scrollIntoView();
   };
-
+  const numResults = filteredLilies?.length || 0;
+  useSearchChange(numResults, filters);
   return (
     <Layout>
-      <SearchChange
-        filters={filters}
-        numResults={filteredLilies?.length || 0}
-      />
-      <Style>
-        <Head>
-          <title>{title}</title>
-          <meta property="og:title" content={title} />
-          {description ? (
-            <>
-              <meta name="description" content={description} />
-              <meta property="og:description" content={description} />
-            </>
-          ) : null}
-          <meta property="og:type" content="website" />
-          <meta property="og:image" content={`${baseUrl}/logo.png`} />
-          <meta property="og:image:width" content="800" />
-          <meta property="og:image:height" content="800" />
-          <meta name="og:image:alt" content={`${title} image`} />
-          <meta property="og:url" content={url} />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:image:alt" content={`${title} image`} />
-        </Head>
-        <div className="top">
-          <h1>
-            <hr />
-            <span>{title}</span>
-          </h1>
-          {description}
+      <Head>
+        <title>{title}</title>
+        <meta property="og:title" content={title} />
+        {description ? (
+          <>
+            <meta name="description" content={description} />
+            <meta property="og:description" content={description} />
+          </>
+        ) : null}
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={`${baseUrl}/logo.png`} />
+        <meta property="og:image:width" content="800" />
+        <meta property="og:image:height" content="800" />
+        <meta name="og:image:alt" content={`${title} image`} />
+        <meta property="og:url" content={url} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image:alt" content={`${title} image`} />
+      </Head>
+      <Space direction="column" block center>
+        <FancyHeading level={1}>{title}</FancyHeading>
+        <p>{description}</p>
+      </Space>
+      <FormWrapper>
+        <Space direction="column">
           {showFilters && (
-            <div className="filter">
-              {/* First char filter */}
-              <br />
-              <label htmlFor="letters">First character of name is:</label>
-              <Select
-                name="letters"
-                value={filters.char}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  {
-                    setFilters({ ...filters, char: e.target.value });
-                    removeQueryParam();
-                  }
-                }}
-              >
-                <option key="char-none" value="">
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings.map(({ name }) =>
-                        name.substring(0, 1).toUpperCase()
+            <>
+              <Heading level={2}>Search and Filter</Heading>
+              <Space block direction="column">
+                {/* First char filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="letters">First character of name is:</label>
+                  <FullWidthSelect
+                    name="letters"
+                    value={filters.char}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      {
+                        setFilters({ ...filters, char: e.target.value });
+                        removeQueryParam();
+                      }
+                    }}
+                  >
+                    <option key="char-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings.map(({ name }) =>
+                            name.substring(0, 1).toUpperCase()
+                          )
+                        )
                       )
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a, b))
-                    .map((char, i) => (
-                      <option key={`char-${i}`} value={char}>
-                        {char}
-                      </option>
-                    ))}
-              </Select>
-              {/* Name filter */}
-              <br />
-              <label htmlFor="search">Name includes:</label>
-              <Input
-                name="search"
-                placeholder="Enter daylily name here..."
-                onChange={(e) => {
-                  removeQueryParam();
-                  setFilters({ ...filters, name: e.target.value });
-                }}
-                value={filters.name}
-              />
-              {/* Color filter */}
-              <br />
-              <label htmlFor="color">Color includes:</label>
-              <Input
-                name="color"
-                placeholder="Enter daylily color here..."
-                onChange={(e) => {
-                  setFilters({ ...filters, color: e.target.value });
-                  removeQueryParam();
-                }}
-                value={filters.color}
-              />
-              {/* Hybridizer filter */}
-              <br />
-              <label htmlFor="hybridizer">Hybridizer is:</label>
-              <Select
-                name="hybridizer"
-                value={filters.hybridizer}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setFilters({ ...filters, hybridizer: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option key="hybridizer-none" value="">
-                  All
-                </option>
-                {listings &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter((lily: Listing) => lily.ahs_data?.hybridizer)
-                        .map((lily: Listing) => lily.ahs_data?.hybridizer)
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .map((hybridizer, i) => (
-                      <option
-                        key={`hybridizer-${i}`}
-                        value={hybridizer as string}
-                      >
-                        {hybridizer}
-                      </option>
-                    ))}
-              </Select>
-              {/* Year filter */}
-              <br />
-              <label htmlFor="year">Year is:</label>
-              <Select
-                name="year"
-                value={filters.year}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setFilters({ ...filters, year: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option key="year-none" value="">
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter(
-                          (lily: Listing) => lily.ahs_data && lily.ahs_data.year
+                        .sort((a, b) => sortAlphaNum(a, b))
+                        .map((char, i) => (
+                          <option key={`char-${i}`} value={char}>
+                            {char}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Name filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="search">Name includes:</label>
+                  <input
+                    name="search"
+                    placeholder="Enter daylily name here..."
+                    onChange={(e) => {
+                      removeQueryParam();
+                      setFilters({ ...filters, name: e.target.value });
+                    }}
+                    value={filters.name}
+                  />
+                </Space>
+                {/* Color filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="color">Color includes:</label>
+                  <input
+                    name="color"
+                    placeholder="Enter daylily color here..."
+                    onChange={(e) => {
+                      setFilters({ ...filters, color: e.target.value });
+                      removeQueryParam();
+                    }}
+                    value={filters.color}
+                  />
+                </Space>
+                {/* Hybridizer filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="hybridizer">Hybridizer is:</label>
+                  <FullWidthSelect
+                    name="hybridizer"
+                    value={filters.hybridizer}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFilters({ ...filters, hybridizer: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="hybridizer-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter(
+                              (lily: Listing) => lily.ahs_data?.hybridizer
+                            )
+                            .map((lily: Listing) => lily.ahs_data?.hybridizer)
                         )
-                        .map(
-                          (lily: Listing) => lily.ahs_data && lily.ahs_data.year
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .map((hybridizer, i) => (
+                          <option
+                            key={`hybridizer-${i}`}
+                            value={hybridizer as string}
+                          >
+                            {hybridizer}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Year filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="year">Year is:</label>
+                  <FullWidthSelect
+                    name="year"
+                    value={filters.year}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFilters({ ...filters, year: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="year-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter(
+                              (lily: Listing) =>
+                                lily.ahs_data && lily.ahs_data.year
+                            )
+                            .map(
+                              (lily: Listing) =>
+                                lily.ahs_data && lily.ahs_data.year
+                            )
                         )
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .reverse()
-                    .map((year, i) => (
-                      <option key={`year-${i}`} value={year as string}>
-                        {year}
-                      </option>
-                    ))}
-              </Select>
-              {/* Ploidy filter */}
-              <br />
-              <label htmlFor="ploidy">Ploidy is:</label>
-              <Select
-                name="ploidy"
-                value={filters.ploidy}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setFilters({ ...filters, ploidy: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option key="ploidy-none" value="">
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter(
-                          (lily: Listing) =>
-                            lily.ahs_data && lily.ahs_data.ploidy
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .reverse()
+                        .map((year, i) => (
+                          <option key={`year-${i}`} value={year as string}>
+                            {year}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Ploidy filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="ploidy">Ploidy is:</label>
+                  <FullWidthSelect
+                    name="ploidy"
+                    value={filters.ploidy}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFilters({ ...filters, ploidy: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="ploidy-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter(
+                              (lily: Listing) =>
+                                lily.ahs_data && lily.ahs_data.ploidy
+                            )
+                            .map(
+                              (lily: Listing) =>
+                                lily.ahs_data && lily.ahs_data.ploidy
+                            )
                         )
-                        .map(
-                          (lily: Listing) =>
-                            lily.ahs_data && lily.ahs_data.ploidy
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .map((ploidy, i) => (
+                          <option key={`ploidy-${i}`} value={ploidy as string}>
+                            {ploidy}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Form filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="form">Form is:</label>
+                  <FullWidthSelect
+                    name="form"
+                    value={filters.form}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFilters({ ...filters, form: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="form-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter((lily: Listing) => lily.ahs_data?.form)
+                            .map((lily: Listing) => lily.ahs_data?.form)
+                            .map((form) => form && form.split(" ")[0])
                         )
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .map((ploidy, i) => (
-                      <option key={`ploidy-${i}`} value={ploidy as string}>
-                        {ploidy}
-                      </option>
-                    ))}
-              </Select>
-              {/* Form filter */}
-              <br />
-              <label htmlFor="form">Form is:</label>
-              <Select
-                name="form"
-                value={filters.form}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setFilters({ ...filters, form: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option key="form-none" value="">
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter((lily: Listing) => lily.ahs_data?.form)
-                        .map((lily: Listing) => lily.ahs_data?.form)
-                        .map((form) => form && form.split(" ")[0])
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .map((form, i) => (
-                      <option key={`form-${i}`} value={form as string}>
-                        {form}
-                      </option>
-                    ))}
-              </Select>
-              {/* Foliage type filter */}
-              <br />
-              <label htmlFor="foliageType">Foliage type is:</label>
-              <Select
-                name="foliageType"
-                value={filters.foliageType}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setFilters({
-                    ...filters,
-                    foliageType: e.target.value,
-                  });
-                  removeQueryParam();
-                }}
-              >
-                <option key="foliageType-none" value="">
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter((lily: Listing) => lily.ahs_data?.foliage_type)
-                        .map((lily: Listing) => lily.ahs_data?.foliage_type)
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .map((foliageType, i) => (
-                      <option
-                        key={`foliageType-${i}`}
-                        value={foliageType as string}
-                      >
-                        {foliageType}
-                      </option>
-                    ))}
-              </Select>
-              {/* Fragrance filter */}
-              <br />
-              <label htmlFor="fragrance">Fragrance is:</label>
-              <Select
-                name="fragrance"
-                value={filters.fragrance}
-                onChange={(e) => {
-                  setFilters({ ...filters, fragrance: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option key="fragrance-none" value={""}>
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter(
-                          (lily) => lily.ahs_data && lily.ahs_data.fragrance
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .map((form, i) => (
+                          <option key={`form-${i}`} value={form as string}>
+                            {form}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Foliage type filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="foliageType">Foliage type is:</label>
+                  <FullWidthSelect
+                    name="foliageType"
+                    value={filters.foliageType}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFilters({
+                        ...filters,
+                        foliageType: e.target.value,
+                      });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="foliageType-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter(
+                              (lily: Listing) => lily.ahs_data?.foliage_type
+                            )
+                            .map((lily: Listing) => lily.ahs_data?.foliage_type)
                         )
-                        .map((lily) => lily.ahs_data?.fragrance)
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .map((fragrance, i) => (
-                      <option
-                        key={"fragrance-" + i}
-                        value={fragrance as string}
-                      >
-                        {fragrance}
-                      </option>
-                    ))}
-              </Select>
-              {/* bloomSize filter */}
-              <br />
-              <label htmlFor="bloomSize">Bloom size is:</label>
-              <Select
-                name="bloomSize"
-                value={filters.bloomSize}
-                onChange={(e) => {
-                  setFilters({ ...filters, bloomSize: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option value={""}>All</option>
-                <option value="miniature">{`Miniature (up to 3")`}</option>
-                <option value="small">{`Small (3" - 4.5")`}</option>
-                <option value="large">{`Large (4.5" - 7")`}</option>
-                <option value="extraLarge">{`Extra-Large (more than 7")`}</option>
-              </Select>
-              {/* scapeHeight filter */}
-              <br />
-              <label htmlFor="scapeHeight">Scape Height is:</label>
-              <Select
-                name="scapeHeight"
-                value={filters.scapeHeight}
-                onChange={(e) => {
-                  setFilters({
-                    ...filters,
-                    scapeHeight: e.target.value,
-                  });
-                  removeQueryParam();
-                }}
-              >
-                <option value={""}>All</option>
-                <option value="miniature">{`Miniature (up to 10")`}</option>
-                <option value="short">{`Short (10" - 20")`}</option>
-                <option value="medium">{`Medium (20" - 30")`}</option>
-                <option value="tall">{`Tall (30" - 40")`}</option>
-                <option value="extraTall">{`Extra-Tall (more than 40")`}</option>
-              </Select>
-              {/* Bloom Season filter */}
-              <br />
-              <label htmlFor="bloomSeason">Bloom Season is:</label>
-              <Select
-                name="bloomSeason"
-                value={filters.bloomSeason}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setFilters({
-                    ...filters,
-                    bloomSeason: e.target.value,
-                  });
-                  removeQueryParam();
-                }}
-              >
-                <option key="bloomSeason-none" value="">
-                  All
-                </option>
-                {listings &&
-                  filteredLilies &&
-                  Array.from(
-                    new Set(
-                      listings
-                        .filter((lily: Listing) => lily.ahs_data?.bloom_season)
-                        .map((lily: Listing) => lily.ahs_data?.bloom_season)
-                    )
-                  )
-                    .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                    .map((bloomSeason, i) => (
-                      <option
-                        key={`bloomSeason-${i}`}
-                        value={bloomSeason as string}
-                      >
-                        {bloomSeason}
-                      </option>
-                    ))}
-              </Select>
-              {/* Price filter */}
-              <br />
-              <label htmlFor="price">Price is:</label>
-              <Select
-                name="price"
-                value={filters.price}
-                onChange={(e) => {
-                  setFilters({ ...filters, price: e.target.value });
-                  removeQueryParam();
-                }}
-              >
-                <option value={""}>All</option>
-                <option value="one">{`up to $9.99`}</option>
-                <option value="two">{`$10 - $19.99`}</option>
-                <option value="three">{`$20 - $29.99`}</option>
-                <option value="four">{`$30 - $39.99`}</option>
-                <option value="five">{`$40 - $49.99`}</option>
-                <option value="six">{`more than $50`}</option>
-              </Select>
-              {/* Note filter */}
-              <br />
-              <label htmlFor="note">Note includes:</label>
-              <Input
-                name="note"
-                placeholder="Enter daylily note text here..."
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setFilters({ ...filters, note: e.target.value });
-                  removeQueryParam();
-                }}
-                value={filters.note}
-              />
-              <br />
-              <Button
-                onClick={() => {
-                  clearFilters();
-                  removeQueryParam();
-                }}
-                look="secondary"
-                fullWidth
-                label="clear filters"
-              >
-                Clear Filters
-              </Button>
-            </div>
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .map((foliageType, i) => (
+                          <option
+                            key={`foliageType-${i}`}
+                            value={foliageType as string}
+                          >
+                            {foliageType}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Fragrance filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="fragrance">Fragrance is:</label>
+                  <FullWidthSelect
+                    name="fragrance"
+                    value={filters.fragrance}
+                    onChange={(e) => {
+                      setFilters({ ...filters, fragrance: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="fragrance-none" value={""}>
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter(
+                              (lily) => lily.ahs_data && lily.ahs_data.fragrance
+                            )
+                            .map((lily) => lily.ahs_data?.fragrance)
+                        )
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .map((fragrance, i) => (
+                          <option
+                            key={"fragrance-" + i}
+                            value={fragrance as string}
+                          >
+                            {fragrance}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* bloomSize filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="bloomSize">Bloom size is:</label>
+                  <FullWidthSelect
+                    name="bloomSize"
+                    value={filters.bloomSize}
+                    onChange={(e) => {
+                      setFilters({ ...filters, bloomSize: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option value={""}>All</option>
+                    <option value="miniature">{`Miniature (up to 3")`}</option>
+                    <option value="small">{`Small (3" - 4.5")`}</option>
+                    <option value="large">{`Large (4.5" - 7")`}</option>
+                    <option value="extraLarge">{`Extra-Large (more than 7")`}</option>
+                  </FullWidthSelect>
+                </Space>
+                {/* scapeHeight filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="scapeHeight">Scape Height is:</label>
+                  <FullWidthSelect
+                    name="scapeHeight"
+                    value={filters.scapeHeight}
+                    onChange={(e) => {
+                      setFilters({
+                        ...filters,
+                        scapeHeight: e.target.value,
+                      });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option value={""}>All</option>
+                    <option value="miniature">{`Miniature (up to 10")`}</option>
+                    <option value="short">{`Short (10" - 20")`}</option>
+                    <option value="medium">{`Medium (20" - 30")`}</option>
+                    <option value="tall">{`Tall (30" - 40")`}</option>
+                    <option value="extraTall">{`Extra-Tall (more than 40")`}</option>
+                  </FullWidthSelect>
+                </Space>
+                {/* Bloom Season filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="bloomSeason">Bloom Season is:</label>
+                  <FullWidthSelect
+                    name="bloomSeason"
+                    value={filters.bloomSeason}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFilters({
+                        ...filters,
+                        bloomSeason: e.target.value,
+                      });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option key="bloomSeason-none" value="">
+                      All
+                    </option>
+                    {listings &&
+                      filteredLilies &&
+                      Array.from(
+                        new Set(
+                          listings
+                            .filter(
+                              (lily: Listing) => lily.ahs_data?.bloom_season
+                            )
+                            .map((lily: Listing) => lily.ahs_data?.bloom_season)
+                        )
+                      )
+                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
+                        .map((bloomSeason, i) => (
+                          <option
+                            key={`bloomSeason-${i}`}
+                            value={bloomSeason as string}
+                          >
+                            {bloomSeason}
+                          </option>
+                        ))}
+                  </FullWidthSelect>
+                </Space>
+                {/* Price filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="price">Price is:</label>
+                  <FullWidthSelect
+                    name="price"
+                    value={filters.price}
+                    onChange={(e) => {
+                      setFilters({ ...filters, price: e.target.value });
+                      removeQueryParam();
+                    }}
+                  >
+                    <option value={""}>All</option>
+                    <option value="one">{`up to $9.99`}</option>
+                    <option value="two">{`$10 - $19.99`}</option>
+                    <option value="three">{`$20 - $29.99`}</option>
+                    <option value="four">{`$30 - $39.99`}</option>
+                    <option value="five">{`$40 - $49.99`}</option>
+                    <option value="six">{`more than $50`}</option>
+                  </FullWidthSelect>
+                </Space>
+                {/* Note filter */}
+                <Space block direction="column" gap="xsmall">
+                  <label htmlFor="note">Note includes:</label>
+                  <input
+                    name="note"
+                    placeholder="Enter daylily note text here..."
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setFilters({ ...filters, note: e.target.value });
+                      removeQueryParam();
+                    }}
+                    value={filters.note}
+                  />
+                </Space>
+                <Button
+                  onClick={() => {
+                    clearFilters();
+                    removeQueryParam();
+                  }}
+                  block
+                  danger
+                >
+                  Clear Filters
+                </Button>
+              </Space>
+            </>
           )}
           <Button
             onClick={() => {
@@ -776,45 +801,15 @@ const SearchPage: NextPage<SearchPageProps> = ({
               clearFilters();
               removeQueryParam();
             }}
-            look="secondary"
-            fullWidth
-            label="toggle search and filter"
+            block
           >
-            {showFilters ? "Hide" : "Show"} Search and Filters
+            {`${showFilters ? "Hide" : "Show"} Search and Filters`}
           </Button>
-        </div>
-        <div className="lilies-container" ref={topRef}>
-          <div className="lilies-container--top">
-            {pages && pages > 0 ? (
-              <h2>
-                {title} - page {paginate.page + 1} of {pages + 1}
-              </h2>
-            ) : (
-              <h2>{title}</h2>
-            )}
-            {filteredLilies && filteredLilies.length > paginate.limit && (
-              <Paginate
-                page={paginate.page}
-                pages={pages || 0}
-                paginate={paginate}
-                setPaginate={setPaginate}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </div>
-          <div className="lilies" id="lilies">
-            {displayLilies &&
-              displayLilies.map((node: Listing) => {
-                if (!node) return;
-                return <LilyCard key={node.id} lily={node} />;
-              })}
-          </div>
-          {displayLilies && !displayLilies.length && (
-            <p>No results found for this search...</p>
-          )}
-        </div>
-        <div className="bottom">
-          {filteredLilies && filteredLilies.length > paginate.limit && (
+        </Space>
+      </FormWrapper>
+      <Space direction="column" ref={topRef} block>
+        <Space direction="column">
+          {filteredLilies.length > paginate.limit && (
             <Paginate
               page={paginate.page}
               pages={pages || 0}
@@ -823,103 +818,43 @@ const SearchPage: NextPage<SearchPageProps> = ({
               onPageChange={handlePageChange}
             />
           )}
-          {filters.name === "download" && (
-            <button onClick={() => downloadTxtFile()}>download data</button>
-          )}
-        </div>
-        <BackToTop />
-      </Style>
+        </Space>
+        <LilyWrapper>
+          {displayLilies.map((node: Listing) => {
+            if (!node) return;
+            return <LilyCard key={node.id} lily={node} />;
+          })}
+        </LilyWrapper>
+        {displayLilies.length < 1 && <p>No results found for this search...</p>}
+        {filteredLilies.length > paginate.limit && (
+          <Paginate
+            page={paginate.page}
+            pages={pages || 0}
+            paginate={paginate}
+            setPaginate={setPaginate}
+            onPageChange={handlePageChange}
+          />
+        )}
+        {filters.name === "download" && (
+          <Button onClick={() => downloadTxtFile()}>download data</Button>
+        )}
+      </Space>
+      <BackToTop />
     </Layout>
   );
 };
 export default SearchPage;
 
-// Component Styles
-const Style = styled.div`
-  margin: 0 1rem;
-  .lilies-container--top {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
-    @media (max-width: 768px) {
-      flex-direction: column;
-      justify-content: center;
-      align-items: stretch;
-    }
-  }
-  h2 {
-    font-size: 1.17rem;
-  }
-  h1 {
-    position: relative;
-    top: 0;
-    left: 0;
-    text-align: center;
-    z-index: 2;
-    span {
-      background-color: var(--bg-3);
-      padding: 0 0.25em;
-    }
-  }
-  h1 hr {
-    background: linear-gradient(
-      to right,
-      rgb(var(--rgb-blue)),
-      rgb(var(--rgb-purple))
-    );
-    height: 1px;
-    width: 100%;
-    border: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-  }
-  .intro {
-    display: block;
-    margin: auto;
-    text-align: center;
-    max-width: 35rem;
-  }
-  .top {
-    margin-top: 2rem;
-    padding: 1rem;
-    background-color: var(--bg-3);
-    border-radius: 1.5rem 1.5rem 0 0;
-    z-index: -1;
-  }
-  .bottom {
-    padding: 1rem;
-    background-color: var(--bg-3);
-    border-radius: 0 0 1.5rem 1.5rem;
-  }
-  .lilies-container {
-    padding: 1rem;
-    background-color: var(--bg-4);
-  }
-  .lilies {
-    margin-top: 1rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 250px);
-    grid-gap: 1rem;
-    justify-content: center;
-  }
-  .filter {
-    display: block;
-    margin: auto;
-    width: 100%;
-    max-width: 35rem;
-  }
+const LilyWrapper = styled.div`
+  // flex wrap
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--size-4);
 `;
 
-const SearchChange = ({
-  numResults,
-  filters,
-}: {
-  numResults: number;
-  filters: any;
-}) => {
+const useSearchChange = (numResults: number, filters: any) => {
   const [prevNum, setPrevNum] = React.useState(numResults);
   const addAlert = useSnackBar().addAlert;
   useEffect(() => {
@@ -928,8 +863,6 @@ const SearchChange = ({
       setPrevNum(numResults);
     }
   }, [addAlert, filters, numResults, prevNum]);
-
-  return <></>;
 };
 
 export async function getStaticPaths() {
@@ -991,3 +924,7 @@ export async function getStaticProps(context: any) {
     ),
   };
 }
+
+const FullWidthSelect = styled.select`
+  width: 100%;
+`;

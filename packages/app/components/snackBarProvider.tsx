@@ -1,3 +1,4 @@
+import { Badge } from "@packages/design-system";
 import React, {
   createContext,
   useMemo,
@@ -48,9 +49,9 @@ export const SnackBarProvider = ({
       {children}
       <SnackBarContainer>
         {alerts.map((alert) => (
-          <div key={alert}>
+          <Badge>
             <p>{alert}</p>
-          </div>
+          </Badge>
         ))}
       </SnackBarContainer>
     </SnackBarContext.Provider>

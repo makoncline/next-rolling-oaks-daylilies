@@ -29,21 +29,39 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <meta name="twitter:image:alt" content={`${title} logo`} />
           <link rel="shortcut icon" href="/favicon.ico" />
         </Head>
-        <Nav
-          logo={
-            <Link href="/">
-              <SquareImage width="64px">
-                <Image src="/assets/logo-square.png" />
-              </SquareImage>
-            </Link>
-          }
-        >
-          <Link href="/catalogs">Catalogs</Link>
-          <Link href="/catalog/search">Search</Link>
-          <Link href="/cart">Cart {numItems ? ` (${numItems})` : ""}</Link>
-        </Nav>
-        <Space direction="column" center as="main">
-          {children}
+        <Space direction="column" center>
+          <Space
+            direction="column"
+            block
+            center
+            style={{ maxWidth: "60rem" }}
+            as="main"
+          >
+            <Nav
+              logo={
+                <Link href="/">
+                  <SquareImage width="64px">
+                    <Image src="/assets/logo-square.png" />
+                  </SquareImage>
+                </Link>
+              }
+            >
+              <Link href="/catalogs">Catalogs</Link>
+              <Link href="/catalog/search">Search</Link>
+              <Link href="/cart">Cart {numItems ? ` (${numItems})` : ""}</Link>
+            </Nav>
+          </Space>
+        </Space>
+        <Space direction="column" center>
+          <Space
+            direction="column"
+            block
+            center
+            style={{ maxWidth: "60rem" }}
+            as="main"
+          >
+            {children}
+          </Space>
         </Space>
         <br />
         <br />

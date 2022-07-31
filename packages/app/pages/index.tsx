@@ -15,101 +15,93 @@ const Home: NextPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   return (
     <Layout>
-      <Space
-        center
-        block
-        direction="column"
-        style={{ maxWidth: "60rem" }}
-        gap="large"
-      >
-        <Space responsive gap="large" center>
-          <figure>
-            <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
-          </figure>
-          <Space direction="column" as="section">
-            <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
-            <p>
-              I grow approximately 1000 named daylilies and a few thousand of my
-              own seedlings. My collection includes a wide variety of forms,
-              including spiders, unusual forms, and doubles. My current
-              hybridizing focus is double and white daylilies. I have been an
-              AHS Display Garden for several years.
-            </p>
-          </Space>
-        </Space>
-
-        <Space direction="column" block center>
-          <Space responsive block center>
-            <Button
-              styleType="primary"
-              onClick={() => emailRef.current && emailRef.current.focus()}
-              block
-            >
-              Send me a message
-            </Button>
-            <Button
-              href="https://goo.gl/maps/BKg722pc9e52"
-              target="_blank"
-              block
-            >
-              Get directions
-            </Button>
-          </Space>
-          <span>
-            Give me a call: <a href="tel:+1-601-590-1349">1-601-590-1349</a>
-          </span>
-        </Space>
+      <Space responsive gap="large" center>
         <figure>
-          <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
+          <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
         </figure>
-        <Space direction="column" block as="section">
-          <Heading level={2}>Ordering</Heading>
-          <Space direction="column" block>
-            <p>
-              Minimum order is $20.00. The list price is for a double fan. A
-              double fan can sometimes share one root system and dormant plants
-              can be small here. Shipped bare root. Please send me a message, or
-              email me to check availability prior to payment at{" "}
-              <a href="mailto:kaymcline@gmail.com">kaymcline@gmail.com</a>.
-              Sometimes, I may be able to sell a daylily that is listed as
-              “display only" (list will not show a price or shopping cart
-              button). I accept checks made payable to Kay Cline or Paypal
-              payment to kaymcline@gmail.com and can send a PayPal Invoice if
-              you want. I also accept Venmo (@Karen-Cline-13).
-            </p>
-            <p>
-              <strong>Please note</strong>,{" "}
-              <a href="https://www.daylilies.org/ahs_dictionary/daylily_rust.html">
-                Daylily Rust
-              </a>{" "}
-              can overwinter in our mild southern climate. I cannot gaurantee
-              rust-free plants.
-            </p>
-          </Space>
-        </Space>
-        <figure>
-          <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
-        </figure>
-        <Space direction="column" block as="section">
-          <Heading level={2}>Shipping</Heading>
+        <Space direction="column" as="section">
+          <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
           <p>
-            I ship Priority Mail (USPS) the same day I dig, Monday or Tuesday,
-            to ensure delivery before the weekend. Shipping cost is $13.00 for
-            up to 3 plants, plus $1.00 for each additional plant. I do not ship
-            to California or outside the United States.
+            I grow approximately 1000 named daylilies and a few thousand of my
+            own seedlings. My collection includes a wide variety of forms,
+            including spiders, unusual forms, and doubles. My current
+            hybridizing focus is double and white daylilies. I have been an AHS
+            Display Garden for several years.
+          </p>
+          <Space direction="column" block>
+            <Space responsive block>
+              <Button
+                styleType="primary"
+                onClick={() => emailRef.current && emailRef.current.focus()}
+                block
+              >
+                Send me a message
+              </Button>
+              <Button
+                href="https://goo.gl/maps/BKg722pc9e52"
+                target="_blank"
+                block
+              >
+                Get directions
+              </Button>
+            </Space>
+            <span>
+              Give me a call: <a href="tel:+1-601-590-1349">1-601-590-1349</a>
+            </span>
+          </Space>
+        </Space>
+      </Space>
+
+      <figure>
+        <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
+      </figure>
+      <Space direction="column" block as="section">
+        <Heading level={2}>Ordering</Heading>
+        <Space direction="column" block>
+          <p>
+            Minimum order is $20.00. The list price is for a double fan. A
+            double fan can sometimes share one root system and dormant plants
+            can be small here. Shipped bare root. Please send me a message, or
+            email me to check availability prior to payment at{" "}
+            <a href="mailto:kaymcline@gmail.com">kaymcline@gmail.com</a>.
+            Sometimes, I may be able to sell a daylily that is listed as
+            “display only" (list will not show a price or shopping cart button).
+            I accept checks made payable to Kay Cline or Paypal payment to
+            kaymcline@gmail.com and can send a PayPal Invoice if you want. I
+            also accept Venmo (@Karen-Cline-13).
+          </p>
+          <p>
+            <strong>Please note</strong>,{" "}
+            <a href="https://www.daylilies.org/ahs_dictionary/daylily_rust.html">
+              Daylily Rust
+            </a>{" "}
+            can overwinter in our mild southern climate. I cannot gaurantee
+            rust-free plants.
           </p>
         </Space>
-        <figure>
-          <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
-        </figure>
-        <Space direction="column" block as="section">
-          <Heading level={2}>Contact me?</Heading>
-          <ContactForm
-            cta="Send me a message"
-            forwardRef={emailRef}
-            action="/thanks"
-          />
-        </Space>
+      </Space>
+      <figure>
+        <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
+      </figure>
+      <Space direction="column" block as="section">
+        <Heading level={2}>Shipping</Heading>
+        <p>
+          I ship Priority Mail (USPS) the same day I dig, Monday or Tuesday, to
+          ensure delivery before the weekend. Shipping cost is $13.00 for up to
+          3 plants, plus $1.00 for each additional plant. I do not ship to
+          California or outside the United States.
+        </p>
+      </Space>
+      <figure>
+        <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
+      </figure>
+      <Space direction="column" block as="section">
+        <Heading level={2}>Contact me?</Heading>
+        <ContactForm
+          cta="Send me a message"
+          forwardRef={emailRef}
+          action="/thanks"
+        />
       </Space>
     </Layout>
   );
