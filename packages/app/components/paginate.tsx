@@ -55,7 +55,7 @@ const Paginate: React.FC<{
         ⬅
       </Button>
       <Space block center gap="xsmall">
-        <p>Page</p>
+        <span>Page</span>
         <select
           aria-label="page select"
           onChange={(e) => handlePageChange(parseInt(e.target.value))}
@@ -69,7 +69,7 @@ const Paginate: React.FC<{
               </option>
             ))}
         </select>
-        <p>of {pages + 1}</p>
+        <span>of {pages + 1}</span>
       </Space>
       <Button
         aria-label="next forward"
