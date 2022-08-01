@@ -1,16 +1,18 @@
 import React from "react";
 import Layout from "../components/layout";
-import Container from "../components/container";
-import Head from "../components/head";
-
-const Header = () => (
-  <Head title="Uh-Oh!" description="This page does not exist!" />
-);
+import { Alert, Heading } from "@packages/design-system";
 
 const Page404: React.FC = () => {
   return (
     <Layout>
-      <Container head={<Header />} foot={<div></div>} />
+      <Alert type="danger">
+        <Alert.Heading>
+          <Heading level={1}>Uh-Oh!</Heading>
+        </Alert.Heading>
+        <Alert.Body>
+          <p>This page does not exist!</p>
+        </Alert.Body>
+      </Alert>
     </Layout>
   );
 };

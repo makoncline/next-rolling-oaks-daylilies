@@ -48,8 +48,8 @@ export const SnackBarProvider = ({
     <SnackBarContext.Provider value={value}>
       {children}
       <SnackBarContainer>
-        {alerts.map((alert) => (
-          <Badge>
+        {alerts.map((alert, i) => (
+          <Badge key={i}>
             <p>{alert}</p>
           </Badge>
         ))}

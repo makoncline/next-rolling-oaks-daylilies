@@ -65,9 +65,9 @@ const Home: NextPage = () => {
             email me to check availability prior to payment at{" "}
             <a href="mailto:kaymcline@gmail.com">kaymcline@gmail.com</a>.
             Sometimes, I may be able to sell a daylily that is listed as
-            “display only" (list will not show a price or shopping cart button).
-            I accept checks made payable to Kay Cline or Paypal payment to
-            kaymcline@gmail.com and can send a PayPal Invoice if you want. I
+            {`"`}display only{`"`} (list will not show a price or shopping cart
+            button). I accept checks made payable to Kay Cline or Paypal payment
+            to kaymcline@gmail.com and can send a PayPal Invoice if you want. I
             also accept Venmo (@Karen-Cline-13).
           </p>
           <p>

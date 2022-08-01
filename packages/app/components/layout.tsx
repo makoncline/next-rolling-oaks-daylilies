@@ -41,7 +41,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               logo={
                 <Link href="/">
                   <SquareImage width="64px">
-                    <Image src="/assets/logo-square.png" />
+                    <Image src="/assets/logo-square.png" alt="logo" />
                   </SquareImage>
                 </Link>
               }
