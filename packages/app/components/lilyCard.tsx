@@ -40,7 +40,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
         <p>{lily.price ? `$${lily.price}` : "display only"}</p>
         <Space block>
           <Space block>
-            <Link href={`/${slugify(lily.name)}`}>View details</Link>
+            <Button href={`/${slugify(lily.name)}`}>View listing</Button>
           </Space>
           {cartItem && (
             <Button
@@ -50,6 +50,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
                 addOrUpdateProduct(cartItem);
                 addAlert && addAlert(`Added ${lily.name} to cart!`);
               }}
+              style={{ alignItems: "center" }}
             >
               <Icon className="icon" icon={cart} />
             </Button>
