@@ -1,11 +1,6 @@
 import React from "react";
-import { Icon } from "@iconify/react";
-import styled from "styled-components";
-import arrowLeft from "@iconify/icons-si-glyph/arrow-left";
-import arrowRight from "@iconify/icons-si-glyph/arrow-right";
-import Select from "./select";
 import { useRouter } from "next/router";
-import { Button, IconButton, Space } from "@packages/design-system";
+import { Button, Space } from "@packages/design-system";
 
 const Paginate: React.FC<{
   page: number;

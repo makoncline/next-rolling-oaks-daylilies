@@ -1,7 +1,5 @@
 import React from "react";
-import styled from "styled-components";
 import Layout from "../components/layout";
-import Head from "../components/head";
 import { useCart } from "components/cart";
 import {
   Button,
@@ -11,21 +9,14 @@ import {
   FormWrapper,
   Heading,
   Hr,
+  Space,
   SubmitButton,
 } from "@packages/design-system";
-
-const Header = () => (
-  <Head
-    title="Cart"
-    description="Add items to your cart from any catalog. Enter your email, and a message if you like, to check for availability before proceeding with your order."
-    id="head"
-  />
-);
 
 const CartTable = () => {
   const { addOne, removeOne, numItems, shipping, cart, total } = useCart();
   return (
-    <FormWrapper>
+    <>
       {numItems ? (
         <table style={{ width: "100%" }}>
           <thead>
@@ -88,7 +79,7 @@ const CartTable = () => {
           </tbody>
         </table>
       ) : null}
-    </FormWrapper>
+    </>
   );
 };
 
@@ -172,10 +163,19 @@ const ClearButton = () => {
 const Cart: React.FC = () => {
   return (
     <Layout>
-      <FancyHeading level={1}>Cart</FancyHeading>
-      <CartTable />
-      <CartForm />
-      <ClearButton />
+      <Space direction="column" gap="large" center>
+        <Space direction="column">
+          <FancyHeading level={1}>Cart</FancyHeading>
+          <p>
+            Add items to your cart from any catalog. Enter your email, and a
+            message if you like, to check for availability before proceeding
+            with your order.
+          </p>
+        </Space>
+        <CartTable />
+        <CartForm />
+        <ClearButton />
+      </Space>
     </Layout>
   );
 };

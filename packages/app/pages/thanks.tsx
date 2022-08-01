@@ -1,14 +1,6 @@
 import React from "react";
 import Layout from "../components/layout";
-import Head from "../components/head";
 import { Alert, Heading } from "@packages/design-system";
-
-const Header = () => (
-  <Head
-    title="Thanks for your interest!"
-    description="I'll review your message and get back to you by email as soon as I can."
-  />
-);
 
 const Thanks: React.FC = () => {
   return (
