@@ -1,78 +1,66 @@
+import {
+  above,
+  Button,
+  Heading,
+  PropertyList,
+  PropertyListItem,
+  Space,
+  SquareImage,
+} from "@packages/design-system";
 import React from "react";
 import styled from "styled-components";
-import Link from "next/link";
-import { Catalog } from "../pages/catalogs";
-import { Image } from "../components/Image";
-import { SquareImage, Thumbnail } from "@packages/design-system";
 
-type CatalogCardProps = {
-  catalog: Catalog;
-};
+import { Image } from "./Image";
 
-const CatalogCard: React.FC<CatalogCardProps> = ({ catalog }) => {
-  const { image, intro, name, slug, totalCount } = catalog;
+export const CatalogCard = ({
+  slug,
+  image,
+  name,
+  intro,
+  numListings,
+}: {
+  slug: string;
+  image: string;
+  name: string;
+  intro?: string | null;
+  numListings: number;
+}) => {
   return (
-    <Style image={image || null}>
-      <div className="container">
-        <div style={{ position: "relative", width: 250, height: 250 }}>
-          {image ? (
-            <SquareImage>
-              <Image src={image} alt={name + "image"} />
-            </SquareImage>
-          ) : (
-            <div className="image" />
-          )}
-        </div>
-        <div className="text">
-          <h2>{name}</h2>
-          {intro && <p>{intro}</p>}
-          {totalCount && <p>{`${totalCount.toLocaleString()} listings`}</p>}
-          <Link href={`/catalog/${slug}`} id={`link-${slug}`}>
-            View catalog
-          </Link>
-        </div>
-      </div>
-    </Style>
+    <StyledCard>
+      <SquareImage width="var(--size-image-card)">
+        <Image src={image} alt={`${name} catalog image`} />
+      </SquareImage>
+      <Body block direction="column">
+        <Heading level={3}>{name}</Heading>
+        <PropertyList divider>
+          <PropertyListItem label="# Listings">
+            {numListings.toLocaleString()}
+          </PropertyListItem>
+        </PropertyList>
+        {intro && <p>{intro}</p>}
+        <Button href={`/catalog/${slug}`}>View Catalog</Button>
+      </Body>
+    </StyledCard>
   );
 };
 
-export default CatalogCard;
-
-type StyleProps = {
-  image: string | null;
-};
-const Style = styled.div<StyleProps>`
+const StyledCard = styled.article`
   width: 100%;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1rem;
-  &:hover {
-    background-color: var(--bg-shine);
-  }
-  .container {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    align-items: center;
-    margin: 1rem;
-    @media (max-width: 700px) {
-      grid-template-columns: auto;
-      justify-content: stretch;
-      justify-items: center;
-    }
-  }
-  .image {
-    width: 250px;
-    height: 250px;
-    background: var(--bg-2);
-    ${(props) =>
-      props.image &&
-      `
-      background-image: url("${props.image}");
-      `}
-  }
-  .text {
-    margin: 0 1rem;
+  display: grid;
+  gap: var(--size-4);
+  grid-template-columns: 1fr;
+  grid-template-rows: var(--size-image-card) auto;
+  justify-items: center;
+  ${above.sm`
+    grid-template-columns: var(--size-image-card) 1fr;
+    grid-template-rows: var(--size-image-card);
     width: 100%;
+  `}
+  :hover {
+    background: var(--surface-2);
   }
+`;
+
+const Body = styled(Space)`
+  padding: var(--size-4);
 `;

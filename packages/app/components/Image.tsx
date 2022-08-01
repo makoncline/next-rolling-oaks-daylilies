@@ -13,10 +13,21 @@ function Image({
   thumb = false,
   ...props
 }: ImageProps & {
-  src: string;
   thumb?: boolean;
 }) {
-  const { hostname, pathname } = new URL(originalSrc);
+  let hostname = "";
+  let pathname = "";
+  let isPlaceholder = false;
+  if (typeof originalSrc === "string") {
+    try {
+      isPlaceholder = originalSrc.includes("boringavatars");
+      const url = new URL(originalSrc);
+      hostname = url.hostname;
+      pathname = url.pathname;
+    } catch {
+      // continue
+    }
+  }
   const filePathNoExt =
     pathname.substring(0, pathname.lastIndexOf(".")) || pathname;
   const base = `https://${process.env.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET}${filePathNoExt}`;
@@ -48,7 +59,7 @@ function Image({
       setShouldOptimize(false);
     }
   }
-  const isPlaceholder = src.includes("boringavatars");
+
   return (
     <Wrapper isPlaceholder={isPlaceholder}>
       <NextImage
@@ -68,8 +79,8 @@ export { Image };
 
 const Wrapper = styled.div<{ isPlaceholder: boolean }>`
   position: relative;
-  width: 100%;
   height: 100%;
+  width: 100%;
   ${({ isPlaceholder }) =>
     isPlaceholder &&
     `

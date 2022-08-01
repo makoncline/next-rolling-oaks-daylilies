@@ -1,3 +1,4 @@
+import { Badge } from "@packages/design-system";
 import React, {
   createContext,
   useMemo,
@@ -47,10 +48,10 @@ export const SnackBarProvider = ({
     <SnackBarContext.Provider value={value}>
       {children}
       <SnackBarContainer>
-        {alerts.map((alert) => (
-          <div key={alert}>
+        {alerts.map((alert, i) => (
+          <Badge key={i}>
             <p>{alert}</p>
-          </div>
+          </Badge>
         ))}
       </SnackBarContainer>
     </SnackBarContext.Provider>

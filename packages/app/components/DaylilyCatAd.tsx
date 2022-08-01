@@ -1,11 +1,14 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Alert, Button, Heading } from "@packages/design-system";
+import React from "react";
+import styled from "styled-components";
 
-export const DaylilyCatAd = () => {
+export const DaylilyCatalogAd = () => {
   return (
     <Wrapper>
-      <Article>
-        <h2>Build Your Own Daylily Website!</h2>
+      <Alert type="success">
+        <Alert.Heading>
+          <Heading level={3}>Build Your Own Daylily Website!</Heading>
+        </Alert.Heading>
         <p>
           With DaylilyCatalog.com, you can build your own daylily website and
           share your flowers with the world. With our easy-to-use tools, you can
@@ -13,8 +16,10 @@ export const DaylilyCatAd = () => {
           to data and photos of 90,000+ registered daylilies with just a few
           clicks.
         </p>
-        <a href='https://app.daylilycatalog.com'>Get Started For Free!</a>
-      </Article>
+        <Button href="https://app.daylilycatalog.com" styleType="primary" block>
+          Get Started For Free!
+        </Button>
+      </Alert>
     </Wrapper>
   );
 };

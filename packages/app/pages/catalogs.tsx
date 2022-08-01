@@ -1,47 +1,32 @@
 import React from "react";
-import styled from "styled-components";
 import slugify from "slugify";
 import Layout from "../components/layout";
-import CatalogCard from "../components/catalogCard";
-import Head from "../components/head";
-import Container from "../components/container";
-import { lists, users, lilies } from "@prisma/client";
+import { CatalogCard } from "../components/catalogCard";
 import { NextPage } from "next";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
-
-const Header: () => JSX.Element = () => <Head title="Catalogs" />;
+import { Heading } from "@packages/design-system";
+import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 
 const Catalogs: NextPage<{ catalogs: Catalog[] }> = ({ catalogs }) => {
   return (
     <Layout>
-      <Style>
-        <Container
-          head={Header()}
-          content={
-            <div className="catalogs">
-              {catalogs &&
-                catalogs.map((node) => (
-                  <CatalogCard key={node.slug} catalog={node} />
-                ))}
-            </div>
-          }
+      <Heading level={1}>Catalogs</Heading>
+      {catalogs.map((node) => (
+        <CatalogCard
+          key={node.slug}
+          image={node.image || getPlaceholderImageUrl(node.slug)}
+          name={node.name}
+          intro={node.intro}
+          numListings={node.totalCount}
+          slug={node.slug}
         />
-      </Style>
+      ))}
     </Layout>
   );
 };
 
 export default Catalogs;
-
-const Style = styled.div`
-  .catalogs {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-`;
 
 export type Catalog = {
   slug: string;

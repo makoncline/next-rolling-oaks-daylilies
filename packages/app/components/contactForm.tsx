@@ -1,21 +1,23 @@
+import {
+  Button,
+  Field,
+  Form,
+  FormWrapper,
+  SubmitButton,
+} from "@packages/design-system";
 import React from "react";
 import styled from "styled-components";
-import Button from "./button";
 
 type ContactFormProps = {
   action: string;
   cta: string;
-  forwardRef: React.RefObject<HTMLInputElement>;
 };
 
-const ContactForm: React.FC<ContactFormProps> = ({
-  action,
-  cta,
-  forwardRef,
-}) => {
+const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
   return (
-    <FormGroup>
-      <form
+    <FormWrapper>
+      <Form
+        formId="contact-form"
         name="contact"
         method="post"
         data-netlify="true"
@@ -34,36 +36,22 @@ const ContactForm: React.FC<ContactFormProps> = ({
             <input aria-label="bot field" name="bot-field" />
           </label>
         </p>
-        <label htmlFor="name">Your name</label>
-        <input
-          aria-label="name"
-          type="text"
-          name="name"
-          id="name"
-          required
-          ref={forwardRef}
-        />
-        <label htmlFor="email">Your email</label>
-        <input
-          aria-label="email address"
-          type="email"
-          name="email"
-          id="email"
-          required
-        />
-        <label htmlFor="message">Your message</label>
-        <textarea aria-label="message" name="message" id="message" required />
-        <Button
-          className="button"
-          type="submit"
-          look="primary"
-          fullWidth
-          label="submit contact form"
-        >
-          {cta}
-        </Button>
-      </form>
-    </FormGroup>
+        <Field name="name" required>
+          Your name
+        </Field>
+        <Field name="email" required>
+          Your email
+        </Field>
+        <Field name="message" required textarea>
+          Your message
+        </Field>
+        <SubmitButton>
+          <Button styleType="primary" block>
+            {cta}
+          </Button>
+        </SubmitButton>
+      </Form>
+    </FormWrapper>
   );
 };
 export default ContactForm;
