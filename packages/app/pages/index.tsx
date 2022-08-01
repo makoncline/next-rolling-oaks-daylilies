@@ -12,7 +12,7 @@ import home3 from "../public/assets/home-3.jpeg";
 import { Button, Heading, Space } from "@packages/design-system";
 
 const Home: NextPage = () => {
-  const emailRef = useRef<HTMLInputElement>(null);
+  const contactFormRef = useRef<HTMLDivElement>(null);
   return (
     <Layout>
       <Space responsive gap="large" center>
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
             <Space responsive block>
               <Button
                 styleType="primary"
-                onClick={() => emailRef.current && emailRef.current.focus()}
+                onClick={() => contactFormRef.current?.scrollIntoView()}
                 block
               >
                 Send me a message
@@ -97,11 +97,9 @@ const Home: NextPage = () => {
       </figure>
       <Space direction="column" block as="section">
         <Heading level={2}>Contact me?</Heading>
-        <ContactForm
-          cta="Send me a message"
-          forwardRef={emailRef}
-          action="/thanks"
-        />
+        <div ref={contactFormRef}>
+          <ContactForm cta="Send me a message" action="/thanks" />
+        </div>
       </Space>
     </Layout>
   );

@@ -3,7 +3,6 @@ import {
   Field,
   Form,
   FormWrapper,
-  Space,
   SubmitButton,
 } from "@packages/design-system";
 import React from "react";
@@ -12,14 +11,9 @@ import styled from "styled-components";
 type ContactFormProps = {
   action: string;
   cta: string;
-  forwardRef: React.RefObject<HTMLInputElement>;
 };
 
-const ContactForm: React.FC<ContactFormProps> = ({
-  action,
-  cta,
-  forwardRef,
-}) => {
+const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
   return (
     <FormWrapper>
       <Form
@@ -42,7 +36,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
             <input aria-label="bot field" name="bot-field" />
           </label>
         </p>
-        <Field name="name" required ref={forwardRef}>
+        <Field name="name" required>
           Your name
         </Field>
         <Field name="email" required>
