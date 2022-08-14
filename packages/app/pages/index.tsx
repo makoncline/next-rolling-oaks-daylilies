@@ -16,9 +16,8 @@ const Home: NextPage = () => {
   return (
     <Layout>
       <Space responsive gap="large" center>
-        <figure>
-          <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
-        </figure>
+        <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
+
         <Space direction="column" as="section">
           <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
           <p>
@@ -52,9 +51,8 @@ const Home: NextPage = () => {
         </Space>
       </Space>
 
-      <figure>
-        <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
-      </figure>
+      <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
+
       <Space direction="column" block as="section">
         <Heading level={2}>Ordering</Heading>
         <Space direction="column" block>
@@ -80,9 +78,9 @@ const Home: NextPage = () => {
           </p>
         </Space>
       </Space>
-      <figure>
-        <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
-      </figure>
+
+      <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
+
       <Space direction="column" block as="section">
         <Heading level={2}>Shipping</Heading>
         <p>
@@ -92,9 +90,9 @@ const Home: NextPage = () => {
           California or outside the United States.
         </p>
       </Space>
-      <figure>
-        <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
-      </figure>
+
+      <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
+
       <Space direction="column" block as="section">
         <Heading level={2}>Contact me?</Heading>
         <div ref={contactFormRef}>
