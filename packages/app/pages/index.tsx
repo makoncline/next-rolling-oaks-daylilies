@@ -9,7 +9,7 @@ import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Button, Heading, Space } from "@packages/design-system";
+import { Button, Heading, Link, Space } from "@packages/design-system";
 
 const Home: NextPage = () => {
   const contactFormRef = useRef<HTMLDivElement>(null);
@@ -98,6 +98,22 @@ const Home: NextPage = () => {
         <div ref={contactFormRef}>
           <ContactForm cta="Send me a message" action="/thanks" />
         </div>
+      </Space>
+      <br />
+      <br />
+      <br />
+      <Space
+        block
+        css={`
+          justify-content: flex-end;
+        `}
+      >
+        <Link href="/catalogs">
+          <Button as="a">View Catalogs</Button>
+        </Link>
+        <Link href="/catalog/search">
+          <Button as="a">Search</Button>
+        </Link>
       </Space>
     </Layout>
   );
