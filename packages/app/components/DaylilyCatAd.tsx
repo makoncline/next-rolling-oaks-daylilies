@@ -16,7 +16,7 @@ export const DaylilyCatalogAd = () => {
           to data and photos of 90,000+ registered daylilies with just a few
           clicks.
         </p>
-        <Button href="https://app.daylilycatalog.com" styleType="primary" block>
+        <Button href="https://daylilycatalog.com" styleType="primary" block>
           Get Started For Free!
         </Button>
       </Alert>
