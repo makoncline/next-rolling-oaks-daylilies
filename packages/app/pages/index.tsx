@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import styled from "styled-components";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
 import { Image } from "../components/Image";
@@ -37,6 +36,7 @@ const Home: NextPage = () => {
                 Send me a message
               </Button>
               <Button
+                as="a"
                 href="https://goo.gl/maps/BKg722pc9e52"
                 target="_blank"
                 block

@@ -9,6 +9,7 @@ import {
 } from "@packages/design-system";
 import React from "react";
 import styled from "styled-components";
+import Link from "next/link";
 
 import { Image } from "./Image";
 
@@ -38,7 +39,9 @@ export const CatalogCard = ({
           </PropertyListItem>
         </PropertyList>
         {intro && <p>{intro}</p>}
-        <Button href={`/catalog/${slug}`}>View Catalog</Button>
+        <Link href={`/catalog/${slug}`} passHref>
+          <Button as="a">View Catalog</Button>
+        </Link>
       </Body>
     </StyledCard>
   );
@@ -63,4 +66,5 @@ const StyledCard = styled.article`
 
 const Body = styled(Space)`
   padding: var(--size-4);
+  align-items: flex-start;
 `;

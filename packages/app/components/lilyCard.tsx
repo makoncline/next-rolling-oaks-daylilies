@@ -40,7 +40,9 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
         <p>{lily.price ? `$${lily.price}` : "display only"}</p>
         <Space block>
           <Space block>
-            <Button href={`/${slugify(lily.name)}`}>View listing</Button>
+            <Link href={`/${slugify(lily.name)}`} passHref>
+              <Button as="a">View listing</Button>
+            </Link>
           </Space>
           {cartItem && (
             <Button

@@ -1,6 +1,6 @@
-import { Alert, Button, Heading } from "@packages/design-system";
 import React from "react";
 import styled from "styled-components";
+import { Alert, Button, Heading } from "@packages/design-system";
 
 export const DaylilyCatalogAd = () => {
   return (
@@ -16,7 +16,12 @@ export const DaylilyCatalogAd = () => {
           to data and photos of 90,000+ registered daylilies with just a few
           clicks.
         </p>
-        <Button href="https://daylilycatalog.com" styleType="primary" block>
+        <Button
+          as="a"
+          href="https://daylilycatalog.com"
+          styleType="primary"
+          block
+        >
           Get Started For Free!
         </Button>
       </Alert>
