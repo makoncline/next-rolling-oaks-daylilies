@@ -2,12 +2,13 @@ import React from "react";
 import styled from "styled-components";
 
 import { Image } from "./Image";
+import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 
 function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
   const [imageIndex, setImageIndex] = React.useState(0);
-  const imageUrl = imageUrls[imageIndex];
+  const imageUrl = imageUrls[imageIndex] || getPlaceholderImageUrl();
   return (
-    <Wrapper>
+    <Wrapper hasMultipleImages={imageUrls.length > 1}>
       <DisplayImage>
         {imageUrl && (
           <Image
@@ -19,7 +20,7 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
           />
         )}
       </DisplayImage>
-      {imageUrls.length > 0 &&
+      {imageUrls.length > 1 &&
         imageUrls.map((url, i) => (
           <Thumbnail key={i} selected={i === imageIndex}>
             <Image
@@ -40,12 +41,16 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
 
 export { ImageDisplay };
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ hasMultipleImages: boolean }>`
   display: grid;
-  grid-template-rows: min(var(--full-width), var(--size-image)) min(
-      calc(var(--full-width) / 4),
-      var(--size-image-thumbnail)
-    );
+
+  grid-template-rows: min(var(--full-width), var(--size-image)) ${({
+      hasMultipleImages,
+    }) =>
+      hasMultipleImages
+        ? "min(calc(var(--full-width) / 4), var(--size-image-thumbnail))"
+        : ""};
+
   grid-template-columns: repeat(
     4,
     min(calc(var(--full-width) / 4), var(--size-image-thumbnail))
