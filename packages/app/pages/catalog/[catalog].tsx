@@ -7,8 +7,8 @@ import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import { useRouter } from "next/router";
-import { NextPage } from "next";
-import { ahs_data, lilies, Prisma } from "@prisma/client";
+import { GetStaticProps, NextPage } from "next";
+import { ahs_data, lilies, lists, Prisma } from "@prisma/client";
 import { useSnackBar } from "../../components/snackBarProvider";
 import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
@@ -20,22 +20,16 @@ import {
   Heading,
   Space,
 } from "@packages/design-system";
+import { InferGetStaticPropsType } from "next";
 
-type SearchPageProps = {
-  title: string;
-  description: string;
-  listings: Listing[];
-};
-export type Listing = lilies & {
-  ahs_data: ahs_data | null;
-};
-const SearchPage: NextPage<SearchPageProps> = ({
+const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   title,
   description,
   listings,
 }) => {
   const defaultFilters = {
     name: "",
+    list: "",
     char: "",
     hybridizer: "",
     year: "",
@@ -76,6 +70,20 @@ const SearchPage: NextPage<SearchPageProps> = ({
     if (!filters.name) return listings;
     return lilyArr.filter((node: Listing) => {
       return node.name.toLowerCase().includes(filters.name.toLowerCase());
+    });
+  };
+
+  const filterByList = (lilyArr: Listing[]) => {
+    if (!filters.list) return lilyArr;
+    if (filters.list.toLowerCase() === "no list") {
+      return lilyArr.filter((node: Listing) => {
+        return node.lists === null;
+      });
+    }
+    return lilyArr.filter((node: Listing) => {
+      return node.lists?.name
+        .toLowerCase()
+        .includes(filters.list.toLowerCase());
     });
   };
 
@@ -292,6 +300,7 @@ const SearchPage: NextPage<SearchPageProps> = ({
   const filterLilies = () => {
     let filtered = listings;
     if (filters.name) filtered = filtered && filterByName(filtered);
+    if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.color) filtered = filtered && filterByColor(filtered);
     if (filters.char) filtered = filtered && filterByFirstChar(filtered);
     if (filters.note) filtered = filtered && filterByNote(filtered);
@@ -362,6 +371,7 @@ const SearchPage: NextPage<SearchPageProps> = ({
   };
   const numResults = filteredLilies?.length || 0;
   useSearchChange(numResults, filters);
+  const isSearch = title === "Search";
   return (
     <Layout>
       <Head>
@@ -438,6 +448,39 @@ const SearchPage: NextPage<SearchPageProps> = ({
                     value={filters.name}
                   />
                 </Space>
+                {/* List filter */}
+                {isSearch && (
+                  <Space block direction="column" gap="xsmall">
+                    <label htmlFor="list">On list:</label>
+                    <FullWidthSelect
+                      name="list"
+                      value={filters.list}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                        setFilters({ ...filters, list: e.target.value });
+                        removeQueryParam();
+                      }}
+                    >
+                      <option key="list-none" value="">
+                        Any
+                      </option>
+                      {listings &&
+                        filteredLilies &&
+                        Array.from(
+                          new Set(
+                            listings.map(({ lists }) =>
+                              lists ? lists.name : "No List"
+                            )
+                          )
+                        )
+                          .sort((a, b) => sortAlphaNum(a, b))
+                          .map((list, i) => (
+                            <option key={`list-${i}`} value={list}>
+                              {list}
+                            </option>
+                          ))}
+                    </FullWidthSelect>
+                  </Space>
+                )}
                 {/* Color filter */}
                 <Space block direction="column" gap="xsmall">
                   <label htmlFor="color">Color includes:</label>
@@ -882,36 +925,57 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(context: any) {
+const defaultList: lists = {
+  id: 0,
+  user_id: siteConfig.userId,
+  name: "All",
+  intro: "",
+  bio: "",
+  created_at: new Date(),
+  updated_at: new Date(),
+};
+
+type Props = {
+  title: string;
+  description: string;
+  listings: (lilies & {
+    ahs_data: ahs_data | null;
+    lists: lists | null;
+  })[];
+};
+export type Listing = Props["listings"][number];
+
+export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   const catalog = context.params.catalog;
   let listingsWhere: Prisma.liliesWhereInput | undefined = {
     user_id: siteConfig.userId,
   };
-  let list: any = undefined;
+  let list: lists | undefined = undefined;
   if (catalog === "for-sale") {
     listingsWhere = { ...listingsWhere, price: { gt: 0 } };
-    list = { name: "For Sale", intro: "" };
+    list = { ...defaultList, name: "For Sale", intro: "" };
   } else if (catalog === "all") {
-    list = { name: "All", intro: "" };
+    list = { ...defaultList, name: "All", intro: "" };
   } else if (catalog === "search") {
-    list = { name: "Search", intro: "" };
+    list = { ...defaultList, name: "Search", intro: "" };
   } else {
     const listIds = await prisma.lists.findMany({
       where: { user_id: siteConfig.userId },
       select: { id: true, name: true },
     });
     const listId = listIds.find((node) => slugify(node.name) === catalog)?.id;
-    list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
     listingsWhere = { ...listingsWhere, list_id: listId };
+  }
+  if (!list) {
+    throw new Error("List not found");
   }
   const listings = await prisma.lilies.findMany({
     orderBy: { name: "desc" },
-    include: { ahs_data: true },
+    include: { ahs_data: true, lists: true },
     where: listingsWhere,
   });
   const title = list.name;
-  const description = list.description;
-
+  const description = list.intro;
   return {
     props: JSON.parse(
       JSON.stringify({
@@ -921,7 +985,7 @@ export async function getStaticProps(context: any) {
       })
     ),
   };
-}
+};
 
 const FullWidthSelect = styled.select`
   width: 100%;
