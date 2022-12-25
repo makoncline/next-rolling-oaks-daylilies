@@ -102,7 +102,6 @@ export async function getStaticProps() {
     totalCount: forSaleListingCountQuery._count,
     image: randomImageUrl(forSalesListingImagesQuery.flatMap((l) => l.img_url)),
   };
-
   return {
     props: {
       catalogs: [
@@ -114,5 +113,10 @@ export async function getStaticProps() {
   };
 }
 
-const randomImageUrl = (imageUrls: string[]) =>
-  imageUrls ? imageUrls[Math.floor(Math.random() * imageUrls.length)] : null;
+const randomImageUrl = (imageUrls: string[]): string | null => {
+  if (imageUrls.length === 0) {
+    return null;
+  }
+  const randomIndex = Math.floor(Math.random() * imageUrls.length);
+  return imageUrls[randomIndex];
+};

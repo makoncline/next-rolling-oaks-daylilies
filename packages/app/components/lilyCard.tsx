@@ -9,17 +9,16 @@ import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
 import { Button, Heading, Space, SquareImage } from "@packages/design-system";
 import { Image } from "../components/Image";
+import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 
 const LilyCard = ({ lily }: { lily: Listing }) => {
-  const { addOrUpdateProduct, addOne } = useCart();
+  const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
-  let image = lily.img_url.find(Boolean);
-  if (!image && lily?.img_url && lily?.img_url.length > 0) {
-    image = lily.img_url.reverse()[0];
-  }
-  if (!image && lily.ahs_data?.image) {
-    image = lily.ahs_data?.image;
-  }
+  let image =
+    lily?.img_url?.reverse()[0] ??
+    lily.ahs_data?.image ??
+    getPlaceholderImageUrl(lily.name);
+
   const cartItem = lily.price && {
     id: lily.id,
     name: lily.name,

@@ -46,8 +46,8 @@ const traitLabels: Partial<Record<keyof ahs_data, string>> = {
 
 const getKeyValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
 
-function objectKeys<Obj>(obj: Obj): (keyof Obj)[] {
-  return Object.keys(obj) as (keyof Obj)[];
+function objectKeys<T extends {}>(obj: T): Array<keyof T> {
+  return Object.keys(obj) as Array<keyof T>;
 }
 
 const LilyTemplate = ({
@@ -115,7 +115,10 @@ const LilyTemplate = ({
       <FancyHeading level={1}>{name}</FancyHeading>
       <Space center responsive gap="medium">
         <ImageDisplay imageUrls={images} />
-        <Space direction="column" style={{ overflowX: "hidden" }}>
+        <Space
+          direction="column"
+          style={{ overflowX: "hidden", width: "100%" }}
+        >
           <PropertyList divider>
             {price && (
               <PropertyListItem label="Price">{`$${price}`}</PropertyListItem>
