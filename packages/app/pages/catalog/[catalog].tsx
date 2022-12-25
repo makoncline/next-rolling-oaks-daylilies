@@ -965,6 +965,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
     });
     const listId = listIds.find((node) => slugify(node.name) === catalog)?.id;
     listingsWhere = { ...listingsWhere, list_id: listId };
+    list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
   }
   if (!list) {
     throw new Error("List not found");
