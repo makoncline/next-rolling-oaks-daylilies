@@ -29,7 +29,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <meta name="twitter:image:alt" content={`${title} logo`} />
           <link rel="shortcut icon" href="/favicon.ico" />
         </Head>
-        <Space direction="column" center>
+        <Space
+          direction="column"
+          center
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            background: "var(--surface-1)",
+            opacity: 0.9,
+          }}
+        >
           <Space
             direction="column"
             block
