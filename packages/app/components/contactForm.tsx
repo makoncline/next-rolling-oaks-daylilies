@@ -30,12 +30,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
           name="form-name"
           value="contact"
         />
-        <p hidden>
+        <div hidden>
           <label htmlFor="bot-field">
             Don’t fill this out:{" "}
             <input aria-label="bot field" name="bot-field" />
           </label>
-        </p>
+        </div>
         <Field name="name" required>
           Your name
         </Field>

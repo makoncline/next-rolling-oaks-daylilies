@@ -116,24 +116,24 @@ const CartForm = () => {
           name="form-name"
           value="cart"
         />
-        <p hidden>
+        <div hidden>
           <label htmlFor="bot-field">
             Don’t fill this out:{" "}
             <input aria-label="bot field" name="bot-field" />
           </label>
           <Field name="bot-field">bot-field</Field>
-        </p>
+        </div>
         <Field name="name" required>
           Your name
         </Field>
         <Field name="email" required>
           Your email
         </Field>
-        <p hidden>
+        <div hidden>
           <Field name="cartText" textarea readOnly value={"" + cartText()}>
             Your cart
           </Field>
-        </p>
+        </div>
         <Field name="message" textarea>
           Your message
         </Field>

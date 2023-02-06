@@ -1,14 +1,15 @@
 import React, { useRef } from "react";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
-import { Image } from "../components/Image";
 import type { NextPage } from "next";
+import Image from "next/image";
 
 import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Button, Heading, Link, Space } from "@packages/design-system";
+import { Button, Heading, Space } from "@packages/design-system";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const contactFormRef = useRef<HTMLDivElement>(null);
@@ -108,12 +109,8 @@ const Home: NextPage = () => {
           justify-content: flex-end;
         `}
       >
-        <Link href="/catalogs">
-          <Button as="a">View Catalogs</Button>
-        </Link>
-        <Link href="/catalog/search">
-          <Button as="a">Search</Button>
-        </Link>
+        <Link href="/catalogs">View Catalogs</Link>
+        <Link href="/catalog/search">Search</Link>
       </Space>
     </Layout>
   );

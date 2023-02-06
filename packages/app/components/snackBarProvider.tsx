@@ -1,4 +1,4 @@
-import { Badge } from "@packages/design-system";
+import { Badge, GreenBadge } from "@packages/design-system";
 import React, {
   createContext,
   useMemo,
@@ -16,7 +16,7 @@ export const SnackBarContext = createContext<
   | undefined
 >(undefined);
 
-const AUTO_DISMISS = 1500;
+const AUTO_DISMISS = 500;
 
 export const SnackBarProvider = ({
   children,
@@ -49,7 +49,14 @@ export const SnackBarProvider = ({
       {children}
       <SnackBarContainer>
         {alerts.map((alert, i) => (
-          <Badge key={i}>
+          <Badge
+            key={i}
+            css={`
+              border: 1px solid var(--green-4);
+              background-color: var(--surface-2);
+              color: var(--text-1);
+            `}
+          >
             <p>{alert}</p>
           </Badge>
         ))}
@@ -76,6 +83,8 @@ const SnackBarContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  gap: var(--size-2);
+
   p {
     margin: 0 0 2.5px 10px;
     background-color: var(--bg-shine);

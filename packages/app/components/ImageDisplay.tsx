@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-
-import { Image } from "./Image";
+import Image from "next/image";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 
 function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
@@ -17,6 +16,7 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             alt={`listing photo`}
             layout="fill"
             objectFit="cover"
+            priority
           />
         )}
       </DisplayImage>
@@ -24,14 +24,11 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
         imageUrls.map((url, i) => (
           <Thumbnail key={i} selected={i === imageIndex}>
             <Image
-              key={i}
               src={url}
               alt={`listing photo ${i}`}
               layout="fill"
               objectFit="cover"
               onClick={() => setImageIndex(i)}
-              thumb
-              sizes="200px"
             />
           </Thumbnail>
         ))}

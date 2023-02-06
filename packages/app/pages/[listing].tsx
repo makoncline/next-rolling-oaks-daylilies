@@ -109,6 +109,7 @@ const LilyTemplate = ({
         <meta property="og:image" content={image} />
         <meta name="og:image:alt" content={`${title} image`} />
         <meta property="og:url" content={url} />
+        <meta property="canonical" content={url} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image:alt" content={`${title} image`} />
       </Head>
