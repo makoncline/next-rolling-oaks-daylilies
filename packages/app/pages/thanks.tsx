@@ -6,13 +6,11 @@ const Thanks: React.FC = () => {
   return (
     <Layout>
       <Alert type="success">
-        <Alert.Heading>
-          <Heading level={1}>Thanks for your interest!</Heading>
-        </Alert.Heading>
+        <Alert.Heading>Thanks for your interest!</Alert.Heading>
         <Alert.Body>
           <p>
-            I{`'`}ll review your message and get back to you by email as soon as
-            I can.
+            I'll review your message and get back to you by email as soon as I
+            can.
           </p>
         </Alert.Body>
       </Alert>

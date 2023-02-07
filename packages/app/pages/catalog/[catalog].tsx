@@ -367,7 +367,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const url = typeof window !== "undefined" ? window.location.href : "";
   const topRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = () => {
-    topRef.current?.scrollIntoView();
+    window.scrollTo(0, 0);
   };
   const numResults = filteredLilies?.length || 0;
   useSearchChange(numResults, filters);
@@ -389,6 +389,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <meta property="og:image:height" content="800" />
         <meta name="og:image:alt" content={`${title} image`} />
         <meta property="og:url" content={url} />
+        <meta property="canonical" content={url} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image:alt" content={`${title} image`} />
       </Head>
@@ -863,7 +864,11 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <LilyWrapper>
           {displayLilies.map((node: Listing) => {
             if (!node) return;
-            return <LilyCard key={node.id} lily={node} />;
+            return (
+              <React.Fragment key={node.id}>
+                <LilyCard lily={node} />
+              </React.Fragment>
+            );
           })}
         </LilyWrapper>
         {displayLilies.length < 1 && <p>No results found for this search...</p>}
@@ -913,7 +918,7 @@ export async function getStaticPaths() {
   });
   const paths = lists.map((list) => ({
     params: {
-      catalog: slugify(list.name),
+      catalog: slugify(list.name, { lower: true }),
     },
   }));
   paths.push({ params: { catalog: "all" } });
@@ -963,7 +968,9 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
       where: { user_id: siteConfig.userId },
       select: { id: true, name: true },
     });
-    const listId = listIds.find((node) => slugify(node.name) === catalog)?.id;
+    const listId = listIds.find(
+      (node) => slugify(node.name, { lower: true }) === catalog
+    )?.id;
     listingsWhere = { ...listingsWhere, list_id: listId };
     list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
   }

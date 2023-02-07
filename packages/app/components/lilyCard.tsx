@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import slugify from "slugify";
 import { Icon } from "@iconify/react";
 import cart from "@iconify/icons-ic/round-shopping-cart";
@@ -7,17 +6,20 @@ import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
 import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
-import { Button, Heading, Space, SquareImage } from "@packages/design-system";
-import { Image } from "../components/Image";
+import { Button, Heading, Space } from "@packages/design-system";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
+import Image from "next/image";
+import { getImageUrls } from "./Image";
+import styled from "styled-components";
 
 const LilyCard = ({ lily }: { lily: Listing }) => {
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
   let image =
-    lily?.img_url?.reverse()[0] ??
-    lily.ahs_data?.image ??
+    lily?.img_url?.reverse()[0] ||
+    lily.ahs_data?.image ||
     getPlaceholderImageUrl(lily.name);
+  const images = getImageUrls(image);
 
   const cartItem = lily.price && {
     id: lily.id,
@@ -28,9 +30,22 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
   return (
     <LilyCardWrapper direction="column">
       {image ? (
-        <SquareImage width="100%">
-          <Image src={image} alt={lily.name + "image"} />
-        </SquareImage>
+        <div
+          css={`
+            height: var(--size-image-card);
+            aspect-ratio: var(--ratio-square);
+            position: relative;
+          `}
+        >
+          <Image
+            src={images.full}
+            placeholder={images.blur === images.full ? "empty" : "blur"}
+            blurDataURL={images.blur}
+            alt={lily.name + "image"}
+            layout="fill"
+            objectFit="cover"
+          />
+        </div>
       ) : (
         <div style={{ height: "100%" }} />
       )}
@@ -39,8 +54,8 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
         <p>{lily.price ? `$${lily.price}` : "display only"}</p>
         <Space block>
           <Space block>
-            <Link href={`/${slugify(lily.name)}`} passHref>
-              <Button as="a">View listing</Button>
+            <Link href={`/${slugify(lily.name, { lower: true })}`}>
+              View listing
             </Link>
           </Space>
           {cartItem && (

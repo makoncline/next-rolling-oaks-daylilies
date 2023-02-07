@@ -1,21 +1,26 @@
 import React, { useRef } from "react";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
-import { Image } from "../components/Image";
 import type { NextPage } from "next";
+import Image from "next/image";
 
 import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Button, Heading, Link, Space } from "@packages/design-system";
+import { Button, Heading, Space } from "@packages/design-system";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const contactFormRef = useRef<HTMLDivElement>(null);
   return (
     <Layout>
       <Space responsive gap="large" center>
-        <Image src={logoSquare} alt="Rolling Oaks Daylilies logo" />
+        <Image
+          src={logoSquare}
+          placeholder="blur"
+          alt="Rolling Oaks Daylilies logo"
+        />
 
         <Space direction="column" as="section">
           <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
@@ -51,7 +56,11 @@ const Home: NextPage = () => {
         </Space>
       </Space>
 
-      <Image src={home1} alt="Rolling Oaks Daylilies Landscape" />
+      <Image
+        src={home1}
+        placeholder="blur"
+        alt="Rolling Oaks Daylilies Landscape"
+      />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Ordering</Heading>
@@ -79,7 +88,11 @@ const Home: NextPage = () => {
         </Space>
       </Space>
 
-      <Image src={home2} alt="Rolling Oaks Daylilies Landscape" />
+      <Image
+        src={home2}
+        placeholder="blur"
+        alt="Rolling Oaks Daylilies Landscape"
+      />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Shipping</Heading>
@@ -91,7 +104,11 @@ const Home: NextPage = () => {
         </p>
       </Space>
 
-      <Image src={home3} alt="Rolling Oaks Daylilies Landscape" />
+      <Image
+        src={home3}
+        placeholder="blur"
+        alt="Rolling Oaks Daylilies Landscape"
+      />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Contact me?</Heading>
@@ -108,12 +125,8 @@ const Home: NextPage = () => {
           justify-content: flex-end;
         `}
       >
-        <Link href="/catalogs">
-          <Button as="a">View Catalogs</Button>
-        </Link>
-        <Link href="/catalog/search">
-          <Button as="a">Search</Button>
-        </Link>
+        <Link href="/catalogs">View Catalogs</Link>
+        <Link href="/catalog/search">Search</Link>
       </Space>
     </Layout>
   );

@@ -147,7 +147,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart({});
     setProducts({});
   };
-
   const value = {
     products,
     cart: displayCart,

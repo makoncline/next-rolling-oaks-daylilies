@@ -1,14 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { Alert, Button, Heading } from "@packages/design-system";
+import { Alert, Button } from "@packages/design-system";
 
 export const DaylilyCatalogAd = () => {
   return (
     <Wrapper>
       <Alert type="success">
-        <Alert.Heading>
-          <Heading level={3}>Build Your Own Daylily Website!</Heading>
-        </Alert.Heading>
+        <Alert.Heading>Build Your Own Daylily Website!</Alert.Heading>
         <p>
           With DaylilyCatalog.com, you can build your own daylily website and
           share your flowers with the world. With our easy-to-use tools, you can
