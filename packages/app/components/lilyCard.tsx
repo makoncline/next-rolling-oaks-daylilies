@@ -54,7 +54,9 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
         <p>{lily.price ? `$${lily.price}` : "display only"}</p>
         <Space block>
           <Space block>
-            <Link href={`/${slugify(lily.name)}`}>View listing</Link>
+            <Link href={`/${slugify(lily.name, { lower: true })}`}>
+              View listing
+            </Link>
           </Space>
           {cartItem && (
             <Button

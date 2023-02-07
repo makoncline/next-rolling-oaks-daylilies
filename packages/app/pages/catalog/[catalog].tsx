@@ -918,7 +918,7 @@ export async function getStaticPaths() {
   });
   const paths = lists.map((list) => ({
     params: {
-      catalog: slugify(list.name),
+      catalog: slugify(list.name, { lower: true }),
     },
   }));
   paths.push({ params: { catalog: "all" } });
@@ -968,7 +968,9 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
       where: { user_id: siteConfig.userId },
       select: { id: true, name: true },
     });
-    const listId = listIds.find((node) => slugify(node.name) === catalog)?.id;
+    const listId = listIds.find(
+      (node) => slugify(node.name, { lower: true }) === catalog
+    )?.id;
     listingsWhere = { ...listingsWhere, list_id: listId };
     list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
   }

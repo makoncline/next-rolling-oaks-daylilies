@@ -66,7 +66,7 @@ export async function getStaticProps() {
     const listImages = listingImageQuery.flatMap((l) => l.img_url);
     listsImages[list.id] = listImages;
     catalogs.push({
-      slug: slugify(list.name),
+      slug: slugify(list.name, { lower: true }),
       name: list.name,
       intro: list.intro,
       totalCount: listCountQuery._count,

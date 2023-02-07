@@ -1,9 +1,8 @@
 import React from "react";
 import Head from "next/head";
-import { SnackBarProvider } from "./snackBarProvider";
 import { siteConfig } from "../siteConfig";
 import { useRouter } from "next/router";
-import { CartProvider, useCart } from "./cart";
+import { useCart } from "./cart";
 import { Nav, Space } from "@packages/design-system";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,13 +49,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         >
           <Nav
             logo={
-              <Link href="/">
-                <Image
-                  src="/assets/logo-square.png"
-                  alt="logo"
-                  width={64}
-                  height={64}
-                />
+              <Link href="/" passHref>
+                <a>
+                  <Image
+                    src="/assets/logo-square.png"
+                    alt="logo"
+                    width={64}
+                    height={64}
+                  />
+                </a>
               </Link>
             }
           >

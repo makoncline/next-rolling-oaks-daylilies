@@ -231,7 +231,7 @@ export async function getStaticPaths() {
 
   const paths = listingNames.map((listingName) => ({
     params: {
-      listing: slugify(listingName),
+      listing: slugify(listingName, { lower: true }),
     },
   }));
   return {
@@ -255,7 +255,7 @@ export async function getStaticProps(context: any) {
     select: { id: true, name: true },
   });
   const listingId = listingIdsAndNames.find(
-    (node) => slugify(node.name) === listingSlug
+    (node) => slugify(node.name, { lower: true }) === listingSlug
   )?.id;
   const listing = await prisma.lilies.findFirstOrThrow({
     where: { id: listingId },

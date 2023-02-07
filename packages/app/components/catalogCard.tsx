@@ -1,11 +1,9 @@
 import {
   above,
-  Button,
   Heading,
   PropertyList,
   PropertyListItem,
   Space,
-  SquareImage,
 } from "@packages/design-system";
 import React from "react";
 import styled from "styled-components";
