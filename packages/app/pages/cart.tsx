@@ -109,6 +109,7 @@ const CartForm = () => {
         data-netlify-honeypot="bot-field"
         action="/thanks"
         hidden={numItems < 1}
+        autocomplete="off"
       >
         <input
           aria-label="form name"

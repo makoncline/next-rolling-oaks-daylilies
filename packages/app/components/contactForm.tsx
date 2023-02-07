@@ -23,6 +23,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
         data-netlify="true"
         data-netlify-honeypot="bot-field"
         action={action}
+        autocomplete="off"
       >
         <input
           aria-label="form name"
