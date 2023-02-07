@@ -6,6 +6,7 @@ import { useCart } from "./cart";
 import { Nav, Space } from "@packages/design-system";
 import Image from "next/image";
 import Link from "next/link";
+import logo from "../public/assets/logo-square.png";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useRouter();
@@ -52,8 +53,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <Link href="/" passHref>
                 <a>
                   <Image
-                    src="/assets/logo-square.png"
+                    src={logo}
                     alt="logo"
+                    placeholder="blur"
                     width={64}
                     height={64}
                   />

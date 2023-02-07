@@ -36,7 +36,7 @@ export const CatalogCard = ({
       >
         <Image
           src={images.full}
-          placeholder={images.blur === images.full ? "blur" : "empty"}
+          placeholder={images.blur === images.full ? "empty" : "blur"}
           blurDataURL={images.blur}
           alt={`${name} catalog image`}
           layout="fill"

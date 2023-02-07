@@ -2,17 +2,21 @@ import React from "react";
 import styled from "styled-components";
 import Image from "next/image";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
+import { getImageUrls } from "./Image";
 
 function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
   const [imageIndex, setImageIndex] = React.useState(0);
   const imageUrl = imageUrls[imageIndex] || getPlaceholderImageUrl();
+  const images = getImageUrls(imageUrl);
   return (
     <Wrapper hasMultipleImages={imageUrls.length > 1}>
       <DisplayImage>
         {imageUrl && (
           <Image
             key={imageIndex}
-            src={imageUrl}
+            src={images.full}
+            placeholder={images.blur === images.full ? "empty" : "blur"}
+            blurDataURL={images.blur}
             alt={`listing photo`}
             layout="fill"
             objectFit="cover"
@@ -21,17 +25,24 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
         )}
       </DisplayImage>
       {imageUrls.length > 1 &&
-        imageUrls.map((url, i) => (
-          <Thumbnail key={i} selected={i === imageIndex}>
-            <Image
-              src={url}
-              alt={`listing photo ${i}`}
-              layout="fill"
-              objectFit="cover"
-              onClick={() => setImageIndex(i)}
-            />
-          </Thumbnail>
-        ))}
+        imageUrls.map((url, i) => {
+          const thumbImages = getImageUrls(url);
+          return (
+            <Thumbnail key={i} selected={i === imageIndex}>
+              <Image
+                src={thumbImages.thumb}
+                placeholder={
+                  thumbImages.blur === thumbImages.thumb ? "empty" : "blur"
+                }
+                blurDataURL={thumbImages.blur}
+                alt={`listing photo ${i}`}
+                layout="fill"
+                objectFit="cover"
+                onClick={() => setImageIndex(i)}
+              />
+            </Thumbnail>
+          );
+        })}
     </Wrapper>
   );
 }
