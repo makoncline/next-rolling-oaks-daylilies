@@ -47,6 +47,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
               object-fit: cover;
             `}
             sizes="600px"
+            unoptimized
           />
         </div>
       ) : (

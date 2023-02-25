@@ -57,6 +57,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   placeholder="blur"
                   width={64}
                   height={64}
+                  unoptimized
                 />
               </Link>
             }

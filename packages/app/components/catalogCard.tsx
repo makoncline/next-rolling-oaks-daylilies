@@ -25,6 +25,7 @@ export const CatalogCard = ({
   numListings: number;
 }) => {
   const images = getImageUrls(image);
+  console.log(images);
   return (
     <StyledCard>
       <div
@@ -44,6 +45,7 @@ export const CatalogCard = ({
             object-fit: cover;
           `}
           sizes="600px"
+          unoptimized
         />
       </div>
       <Body block direction="column">
