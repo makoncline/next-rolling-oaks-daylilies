@@ -25,7 +25,6 @@ export const CatalogCard = ({
   numListings: number;
 }) => {
   const images = getImageUrls(image);
-  console.log(images);
   return (
     <StyledCard>
       <div
