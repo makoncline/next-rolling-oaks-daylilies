@@ -20,7 +20,6 @@ const Home: NextPage = () => {
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
-          unoptimized
         />
 
         <Space direction="column" as="section">
@@ -61,7 +60,6 @@ const Home: NextPage = () => {
         src={home1}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-        unoptimized
       />
 
       <Space direction="column" block as="section">
@@ -94,7 +92,6 @@ const Home: NextPage = () => {
         src={home2}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-        unoptimized
       />
 
       <Space direction="column" block as="section">
@@ -111,7 +108,6 @@ const Home: NextPage = () => {
         src={home3}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-        unoptimized
       />
 
       <Space direction="column" block as="section">

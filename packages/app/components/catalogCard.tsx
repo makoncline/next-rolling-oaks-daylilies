@@ -44,7 +44,6 @@ export const CatalogCard = ({
             object-fit: cover;
           `}
           sizes="600px"
-          unoptimized
         />
       </div>
       <Body block direction="column">

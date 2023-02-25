@@ -24,7 +24,6 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             `}
             sizes="600px"
             priority
-            unoptimized
           />
         )}
       </DisplayImage>
@@ -46,7 +45,6 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
                 `}
                 sizes="200px"
                 onClick={() => setImageIndex(i)}
-                unoptimized
               />
             </Thumbnail>
           );
