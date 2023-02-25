@@ -18,8 +18,11 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             placeholder={images.blur === images.full ? "empty" : "blur"}
             blurDataURL={images.blur}
             alt={`listing photo`}
-            layout="fill"
-            objectFit="cover"
+            fill
+            css={`
+              object-fit: cover;
+            `}
+            sizes="600px"
             priority
           />
         )}
@@ -36,8 +39,11 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
                 }
                 blurDataURL={thumbImages.blur}
                 alt={`listing photo ${i}`}
-                layout="fill"
-                objectFit="cover"
+                fill
+                css={`
+                  object-fit: cover;
+                `}
+                sizes="200px"
                 onClick={() => setImageIndex(i)}
               />
             </Thumbnail>

@@ -42,8 +42,11 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
             placeholder={images.blur === images.full ? "empty" : "blur"}
             blurDataURL={images.blur}
             alt={lily.name + "image"}
-            layout="fill"
-            objectFit="cover"
+            fill
+            css={`
+              object-fit: cover;
+            `}
+            sizes="600px"
           />
         </div>
       ) : (

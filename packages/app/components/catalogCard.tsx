@@ -39,9 +39,11 @@ export const CatalogCard = ({
           placeholder={images.blur === images.full ? "empty" : "blur"}
           blurDataURL={images.blur}
           alt={`${name} catalog image`}
-          layout="fill"
-          objectFit="cover"
-          priority
+          fill
+          css={`
+            object-fit: cover;
+          `}
+          sizes="600px"
         />
       </div>
       <Body block direction="column">
@@ -52,9 +54,7 @@ export const CatalogCard = ({
           </PropertyListItem>
         </PropertyList>
         {intro && <p>{intro}</p>}
-        <Link href={`/catalog/${slug}`} passHref>
-          View Catalog
-        </Link>
+        <Link href={`/catalog/${slug}`}>View Catalog</Link>
       </Body>
     </StyledCard>
   );
