@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { Alert, Button } from "@packages/design-system";
+import { Alert } from "@packages/design-system";
+import Link from "next/link";
 
 export const DaylilyCatalogAd = () => {
   return (
@@ -14,14 +15,9 @@ export const DaylilyCatalogAd = () => {
           to data and photos of 90,000+ registered daylilies with just a few
           clicks.
         </p>
-        <Button
-          as="a"
-          href="https://daylilycatalog.com"
-          styleType="primary"
-          block
-        >
-          Get Started For Free!
-        </Button>
+        <Link href="https://daylilycatalog.com">
+          <button>Get Started For Free!</button>
+        </Link>
       </Alert>
     </Wrapper>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { Button, Space } from "@packages/design-system";
+import { Space } from "@packages/design-system";
 
 const Paginate: React.FC<{
   page: number;
@@ -43,12 +43,12 @@ const Paginate: React.FC<{
   };
   return (
     <Space block>
-      <Button
+      <button
         aria-label="previous page"
         onClick={() => handlePageChange(page > 0 ? page - 1 : 0)}
       >
         ⬅
-      </Button>
+      </button>
       <Space block center gap="xsmall">
         <span>Page</span>
         <select
@@ -66,12 +66,12 @@ const Paginate: React.FC<{
         </select>
         <span>of {pages + 1}</span>
       </Space>
-      <Button
+      <button
         aria-label="next forward"
         onClick={() => handlePageChange(page + 1 <= pages ? page + 1 : pages)}
       >
         ➡
-      </Button>
+      </button>
     </Space>
   );
 };

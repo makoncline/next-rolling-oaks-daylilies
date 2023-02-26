@@ -40,6 +40,12 @@
   --max-width: 80rem;
   --max-width-form: 30rem;
   --full-width: calc(100vw - (2 * var(--size-8)));
+
+  --size-image: 400px;
+  --size-image-card: 300px;
+  --size-image-thumbnail: 100px;
+
+  --size-icon: var(--size-6);
 }
 
 :where(h1, h2, h3, h4, h5, h6, dt) {

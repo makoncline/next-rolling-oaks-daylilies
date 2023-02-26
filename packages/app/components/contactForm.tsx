@@ -1,5 +1,4 @@
 import {
-  Button,
   Field,
   Form,
   FormWrapper,
@@ -47,9 +46,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
           Your message
         </Field>
         <SubmitButton>
-          <Button styleType="primary" block>
-            {cta}
-          </Button>
+          <button>{cta}</button>
         </SubmitButton>
       </Form>
     </FormWrapper>

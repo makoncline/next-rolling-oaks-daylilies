@@ -8,20 +8,19 @@ import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Button, Heading, Space } from "@packages/design-system";
+import { Heading, Space } from "@packages/design-system";
 import Link from "next/link";
 
 const Home: NextPage = () => {
   const contactFormRef = useRef<HTMLDivElement>(null);
   return (
     <Layout>
-      <Space responsive gap="large" center>
+      <Space responsive gap="small" center>
         <Image
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
         />
-
         <Space direction="column" as="section">
           <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
           <p>
@@ -33,21 +32,12 @@ const Home: NextPage = () => {
           </p>
           <Space direction="column" block>
             <Space responsive block>
-              <Button
-                styleType="primary"
-                onClick={() => contactFormRef.current?.scrollIntoView()}
-                block
-              >
+              <button onClick={() => contactFormRef.current?.scrollIntoView()}>
                 Send me a message
-              </Button>
-              <Button
-                as="a"
-                href="https://goo.gl/maps/BKg722pc9e52"
-                target="_blank"
-                block
-              >
-                Get directions
-              </Button>
+              </button>
+              <Link href="https://goo.gl/maps/BKg722pc9e52" target="_blank">
+                <button>Get directions</button>
+              </Link>
             </Space>
             <span>
               Give me a call: <a href="tel:+1-601-590-1349">1-601-590-1349</a>

@@ -2,12 +2,10 @@ import React from "react";
 import Layout from "../components/layout";
 import { useCart } from "components/cart";
 import {
-  Button,
   FancyHeading,
   Field,
   Form,
   FormWrapper,
-  Heading,
   Hr,
   Space,
   SubmitButton,
@@ -40,20 +38,20 @@ const CartTable = () => {
                   <td style={{ textAlign: "left" }}>{item.name}</td>
                   <td style={{ textAlign: "center" }}>{item.quantity}</td>
                   <td className="btn">
-                    <Button
+                    <button
                       aria-label="quantity minus"
                       onClick={() => removeOne(item.id)}
                     >
                       -
-                    </Button>
+                    </button>
                   </td>
                   <td className="btn">
-                    <Button
+                    <button
                       aria-label="quantity plus"
                       onClick={() => addOne(item.id)}
                     >
                       +
-                    </Button>
+                    </button>
                   </td>
                   <td style={{ textAlign: "right" }}>{`$${item.price}`}</td>
                 </tr>
@@ -139,9 +137,7 @@ const CartForm = () => {
           Your message
         </Field>
         <SubmitButton>
-          <Button type="submit" styleType="primary" block>
-            Check availability
-          </Button>
+          <button type="submit">Check availability</button>
         </SubmitButton>
       </Form>
     </FormWrapper>
@@ -153,9 +149,9 @@ const ClearButton = () => {
   return (
     <>
       {numItems > 0 && (
-        <Button onClick={clear} danger>
+        <button onClick={clear} type="reset">
           Empty Cart
-        </Button>
+        </button>
       )}
     </>
   );

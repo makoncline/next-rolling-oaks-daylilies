@@ -6,7 +6,7 @@ import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
 import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
-import { Button, Heading, Space } from "@packages/design-system";
+import { Heading, Space } from "@packages/design-system";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 import Image from "next/image";
 import { getImageUrls } from "./Image";
@@ -59,7 +59,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
             </Link>
           </Space>
           {cartItem && (
-            <Button
+            <button
               className="iconbutton"
               aria-label="add to cart"
               onClick={() => {
@@ -69,7 +69,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
               style={{ alignItems: "center" }}
             >
               <Icon className="icon" icon={cart} />
-            </Button>
+            </button>
           )}
         </Space>
       </Space>

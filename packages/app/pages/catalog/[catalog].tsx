@@ -14,7 +14,6 @@ import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
 import { prisma } from "../../prisma/db";
 import {
-  Button,
   FancyHeading,
   FormWrapper,
   Heading,
@@ -824,29 +823,27 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                     value={filters.note}
                   />
                 </Space>
-                <Button
+                <button
                   onClick={() => {
                     clearFilters();
                     removeQueryParam();
                   }}
-                  block
-                  danger
+                  type="reset"
                 >
                   Clear Filters
-                </Button>
+                </button>
               </Space>
             </>
           )}
-          <Button
+          <button
             onClick={() => {
               setShowFilters((prev) => !prev);
               clearFilters();
               removeQueryParam();
             }}
-            block
           >
             {`${showFilters ? "Hide" : "Show"} Search and Filters`}
-          </Button>
+          </button>
         </Space>
       </FormWrapper>
       <Space direction="column" ref={topRef} block>
@@ -882,7 +879,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           />
         )}
         {filters.name === "download" && (
-          <Button onClick={() => downloadTxtFile()}>download data</Button>
+          <button onClick={() => downloadTxtFile()}>download data</button>
         )}
       </Space>
       <BackToTop />

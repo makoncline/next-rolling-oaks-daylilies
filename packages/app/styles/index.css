@@ -1,2 +1,4 @@
-@import "@packages/design-system/src/styles/index.css";
+@import "open-props/postcss/style";
+@import "open-props/postcss/normalize/dark";
+@import "open-props/postcss/buttons/dark";
 @import "./theme.css";

@@ -148,7 +148,7 @@ const LilyTemplate = ({
           </PropertyList>
           {cartItem && (
             <div>
-              <Button
+              <button
                 aria-label="add to cart"
                 onClick={() => {
                   addOrUpdateProduct(cartItem);
@@ -159,7 +159,7 @@ const LilyTemplate = ({
                   Add to cart
                   <Icon className="icon" icon={cart} />
                 </Space>
-              </Button>
+              </button>
             </div>
           )}
           {ahsData && (
