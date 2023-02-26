@@ -1,4 +1,4 @@
-:where(html) {
+html {
   color: var(--text-2);
   background-color: var(--surface-1);
 
@@ -46,15 +46,4 @@
   --size-image-thumbnail: 100px;
 
   --size-icon: var(--size-6);
-}
-
-:where(h1, h2, h3, h4, h5, h6, dt) {
-  color: var(--text-1);
-}
-
-:where(a[href]) {
-  color: var(--link);
-}
-:where(a[href]:visited) {
-  color: var(--link-visited);
 }
