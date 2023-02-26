@@ -37,5 +37,11 @@
     "eslint-config-next": "13.2.1",
     "prisma": "^4.10.1",
     "typescript": "4.9.5"
-  }
+  },
+  "browserlist": [
+    "> 0.3%",
+    "Safari >= 12",
+    "last 2 versions",
+    "not dead"
+  ]
 }
