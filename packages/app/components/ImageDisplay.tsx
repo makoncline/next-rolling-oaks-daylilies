@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 import { getImageUrls } from "./Image";
 

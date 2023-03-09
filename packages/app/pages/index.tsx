@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
 import type { NextPage } from "next";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";

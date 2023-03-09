@@ -8,7 +8,7 @@ import {
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { getImageUrls } from "./Image";
 
 export const CatalogCard = ({

@@ -8,7 +8,7 @@ import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
 import { Button, Heading, Space } from "@packages/design-system";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { getImageUrls } from "./Image";
 import styled from "styled-components";
 

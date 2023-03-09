@@ -4,7 +4,7 @@ import { siteConfig } from "../siteConfig";
 import { useRouter } from "next/router";
 import { useCart } from "./cart";
 import { Nav, Space } from "@packages/design-system";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
 import logo from "../public/assets/logo-square.png";
 
