@@ -8,7 +8,7 @@ import {
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { getImageUrls } from "./Image";
 
 export const CatalogCard = ({
@@ -39,9 +39,13 @@ export const CatalogCard = ({
           placeholder={images.blur === images.full ? "empty" : "blur"}
           blurDataURL={images.blur}
           alt={`${name} catalog image`}
-          layout="fill"
-          objectFit="cover"
           priority
+          fill
+          sizes="600px"
+          style={{
+            objectFit: "cover",
+          }}
+          unoptimized
         />
       </div>
       <Body block direction="column">

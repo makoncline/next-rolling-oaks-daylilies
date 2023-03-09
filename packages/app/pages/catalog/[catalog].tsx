@@ -6,7 +6,6 @@ import BackToTop from "../../components/backToTop";
 import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
-import { useRouter } from "next/router";
 import { GetStaticProps, NextPage } from "next";
 import { ahs_data, lilies, lists, Prisma } from "@prisma/client";
 import { useSnackBar } from "../../components/snackBarProvider";
@@ -21,6 +20,7 @@ import {
   Space,
 } from "@packages/design-system";
 import { InferGetStaticPropsType } from "next";
+import { useRouter } from "next/router";
 
 const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   title,
@@ -50,18 +50,18 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const page = query.page;
   const pageString = page && Array.isArray(page) ? page[0] : page;
   const pageNum = pageString && parseInt(pageString);
-  const [filters, setFilters] = useState(defaultFilters);
   const [paginate, setPaginate] = useState({
     limit: 24,
     page: pageNum ? pageNum - 1 : 0,
   });
-  const [showFilters, setShowFilters] = useState(false);
   useEffect(() => {
     setPaginate({
       limit: 24,
       page: pageNum ? pageNum - 1 : 0,
     });
   }, [pageNum]);
+  const [filters, setFilters] = useState(defaultFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
   const sortAlphaNum = (a: string | number, b: string | number) =>
     `${a}`.localeCompare(`${b}`, "en", { numeric: true }) < 0 ? -1 : 1;

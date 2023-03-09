@@ -8,7 +8,7 @@ import { Listing } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
 import { Button, Heading, Space } from "@packages/design-system";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { getImageUrls } from "./Image";
 import styled from "styled-components";
 
@@ -42,8 +42,12 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
             placeholder={images.blur === images.full ? "empty" : "blur"}
             blurDataURL={images.blur}
             alt={lily.name + "image"}
-            layout="fill"
-            objectFit="cover"
+            fill
+            sizes="600px"
+            style={{
+              objectFit: "cover",
+            }}
+            unoptimized
           />
         </div>
       ) : (

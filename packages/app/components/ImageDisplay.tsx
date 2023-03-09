@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 import { getImageUrls } from "./Image";
 
@@ -18,9 +18,13 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             placeholder={images.blur === images.full ? "empty" : "blur"}
             blurDataURL={images.blur}
             alt={`listing photo`}
-            layout="fill"
-            objectFit="cover"
             priority
+            fill
+            sizes="600px"
+            style={{
+              objectFit: "cover",
+            }}
+            unoptimized
           />
         )}
       </DisplayImage>
@@ -36,9 +40,12 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
                 }
                 blurDataURL={thumbImages.blur}
                 alt={`listing photo ${i}`}
-                layout="fill"
-                objectFit="cover"
                 onClick={() => setImageIndex(i)}
+                fill
+                sizes="200px"
+                style={{
+                  objectFit: "cover",
+                }}
               />
             </Thumbnail>
           );

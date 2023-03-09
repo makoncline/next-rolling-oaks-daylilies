@@ -1,12 +1,12 @@
 import React from "react";
 import Head from "next/head";
 import { siteConfig } from "../siteConfig";
-import { useRouter } from "next/router";
 import { useCart } from "./cart";
 import { Nav, Space } from "@packages/design-system";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import Link from "next/link";
 import logo from "../public/assets/logo-square.png";
+import { useRouter } from "next/router";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useRouter();
@@ -36,7 +36,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         style={{
           position: "sticky",
           top: 0,
-          zIndex: 1,
+          zIndex: 2,
           background: "var(--surface-1)",
           opacity: 0.9,
         }}
@@ -57,6 +57,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   placeholder="blur"
                   width={64}
                   height={64}
+                  style={{
+                    maxWidth: "100%",
+                    height: "auto",
+                  }}
                 />
               </Link>
             }

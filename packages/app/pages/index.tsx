@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
 import type { NextPage } from "next";
-import Image from "next/legacy/image";
+import Image from "next/image";
 
 import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
@@ -20,7 +20,10 @@ const Home: NextPage = () => {
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
-        />
+          style={{
+            maxWidth: "100%",
+            height: "auto"
+          }} />
 
         <Space direction="column" as="section">
           <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
@@ -60,7 +63,10 @@ const Home: NextPage = () => {
         src={home1}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-      />
+        style={{
+          maxWidth: "100%",
+          height: "auto"
+        }} />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Ordering</Heading>
@@ -92,7 +98,10 @@ const Home: NextPage = () => {
         src={home2}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-      />
+        style={{
+          maxWidth: "100%",
+          height: "auto"
+        }} />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Shipping</Heading>
@@ -108,7 +117,10 @@ const Home: NextPage = () => {
         src={home3}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-      />
+        style={{
+          maxWidth: "100%",
+          height: "auto"
+        }} />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Contact me?</Heading>
