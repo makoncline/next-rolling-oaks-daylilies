@@ -50,16 +50,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         >
           <Nav
             logo={
-              <Link href="/" passHref>
-                <a>
-                  <Image
-                    src={logo}
-                    alt="logo"
-                    placeholder="blur"
-                    width={64}
-                    height={64}
-                  />
-                </a>
+              <Link href="/">
+                <Image
+                  src={logo}
+                  alt="logo"
+                  placeholder="blur"
+                  width={64}
+                  height={64}
+                />
               </Link>
             }
           >
