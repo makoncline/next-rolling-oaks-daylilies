@@ -15,8 +15,6 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
           <Image
             key={imageIndex}
             src={images.full}
-            placeholder={images.blur === images.full ? "empty" : "blur"}
-            blurDataURL={images.blur}
             alt={`listing photo`}
             priority
             fill
@@ -35,10 +33,6 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             <Thumbnail key={i} selected={i === imageIndex}>
               <Image
                 src={thumbImages.thumb}
-                placeholder={
-                  thumbImages.blur === thumbImages.thumb ? "empty" : "blur"
-                }
-                blurDataURL={thumbImages.blur}
                 alt={`listing photo ${i}`}
                 onClick={() => setImageIndex(i)}
                 fill
