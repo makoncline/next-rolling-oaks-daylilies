@@ -15,12 +15,14 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
           <Image
             key={imageIndex}
             src={images.full}
-            placeholder={images.blur === images.full ? "empty" : "blur"}
-            blurDataURL={images.blur}
             alt={`listing photo`}
-            layout="fill"
-            objectFit="cover"
             priority
+            fill
+            sizes="600px"
+            style={{
+              objectFit: "cover",
+            }}
+            unoptimized
           />
         )}
       </DisplayImage>
@@ -31,14 +33,13 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             <Thumbnail key={i} selected={i === imageIndex}>
               <Image
                 src={thumbImages.thumb}
-                placeholder={
-                  thumbImages.blur === thumbImages.thumb ? "empty" : "blur"
-                }
-                blurDataURL={thumbImages.blur}
                 alt={`listing photo ${i}`}
-                layout="fill"
-                objectFit="cover"
                 onClick={() => setImageIndex(i)}
+                fill
+                sizes="200px"
+                style={{
+                  objectFit: "cover",
+                }}
               />
             </Thumbnail>
           );

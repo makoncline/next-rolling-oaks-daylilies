@@ -36,12 +36,14 @@ export const CatalogCard = ({
       >
         <Image
           src={images.full}
-          placeholder={images.blur === images.full ? "empty" : "blur"}
-          blurDataURL={images.blur}
           alt={`${name} catalog image`}
-          layout="fill"
-          objectFit="cover"
           priority
+          fill
+          sizes="600px"
+          style={{
+            objectFit: "cover",
+          }}
+          unoptimized
         />
       </div>
       <Body block direction="column">

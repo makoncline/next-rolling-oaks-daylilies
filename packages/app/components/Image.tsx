@@ -1,3 +1,5 @@
+import sharp from "sharp";
+
 const S3_BUCKET_HOST_NAMES = [
   "daylily-catalog-images-stage.s3.amazonaws.com",
   "daylily-catalog-images.s3.amazonaws.com",
