@@ -31,7 +31,7 @@ const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       >
         <thead>
           <tr>
-            <th>Image</th>
+            {/* <th>Image</th> */}
             <th>Name</th>
             <th>Hybridizer</th>
             <th>Price</th>
@@ -44,7 +44,7 @@ const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             const images = listing.image ? getImageUrls(listing.image) : null;
             return (
               <tr key={listing.id}>
-                <td>
+                {/* <td>
                   {images && (
                     <Thumbnail>
                       <Image
@@ -58,7 +58,7 @@ const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                       />
                     </Thumbnail>
                   )}
-                </td>
+                </td> */}
                 <td>{listing.name}</td>
                 <td>{listing.hybridizer}</td>
                 <td>{listing.price ? `$${listing.price}` : "display only"}</td>
@@ -92,7 +92,7 @@ export const getStaticProps: GetStaticProps<{
 }> = async () => {
   const listings = await prisma.lilies.findMany({
     where: { user_id: siteConfig.userId },
-    orderBy: { name: "desc" },
+    orderBy: { name: "asc" },
     select: {
       id: true,
       name: true,
