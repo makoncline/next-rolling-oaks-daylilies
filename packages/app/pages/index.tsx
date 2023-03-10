@@ -159,9 +159,21 @@ const Home: NextPage = () => {
       <br />
       <br />
       <br />
-      <center>
-        <Link href="/list">View All Listing</Link>
-      </center>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <Space>
+        <Link href="/list">listings</Link>
+        <Link href="/blog">blog</Link>
+      </Space>
     </Layout>
   );
 };

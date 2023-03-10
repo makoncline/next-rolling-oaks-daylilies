@@ -16,6 +16,7 @@ const nextConfig = {
       "daylily-catalog-images-stage.s3.amazonaws.com",
       "images.daylilycatalog.com",
       "www.daylilydatabase.org",
+      "garden.org",
     ],
   },
   experimental: {

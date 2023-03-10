@@ -103,13 +103,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </Space>
       </Space>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </>
   );
 };
