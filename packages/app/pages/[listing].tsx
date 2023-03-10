@@ -22,6 +22,7 @@ import {
   PropertyListItem,
   Space,
 } from "@packages/design-system";
+import { useRouter } from "next/router";
 
 const traitLabels: Partial<Record<keyof ahs_data, string>> = {
   hybridizer: "Hybridizer",
@@ -77,7 +78,7 @@ const LilyTemplate = ({
   }, Updated: ${formatDistanceToNow(new Date(listing.updated_at), {
     addSuffix: true,
   })}`;
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const { asPath } = useRouter();
   const title = `${listing.name} Daylily`;
   const {
     name,
@@ -101,17 +102,31 @@ const LilyTemplate = ({
   return (
     <Layout>
       <Head>
-        <title>{title}</title>
-        <meta property="og:title" content={title} />
-        <meta name="description" content={description} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="article" />
-        <meta property="og:image" content={image} />
-        <meta name="og:image:alt" content={`${title} image`} />
-        <meta property="og:url" content={url} />
-        <meta property="canonical" content={url} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image:alt" content={`${title} image`} />
+        <title key="title">{title}</title>
+        <meta property="og:title" content={title} key="og:title" />
+        <meta name="description" content={description} key="description" />
+        <meta
+          property="og:description"
+          content={description}
+          key="og:description"
+        />
+        <meta property="og:type" content="article" key="og:type" />
+        <meta property="og:image" content={image} key="og:image" />
+        <meta
+          name="og:image:alt"
+          content={`${title} image`}
+          key="og:image:alt"
+        />
+        <meta
+          name="twitter:card"
+          content="summary_large_image"
+          key="twitter:card"
+        />
+        <meta
+          name="twitter:image:alt"
+          content={`${title} image`}
+          key="twitter:image:alt"
+        />
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
       <Space center responsive gap="medium">

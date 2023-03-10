@@ -360,11 +360,6 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     element.click();
   }
 
-  const baseUrl =
-    typeof window !== "undefined"
-      ? `${window.location.protocol}//${window.location.host}`
-      : "";
-  const url = typeof window !== "undefined" ? window.location.href : "";
   const topRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = () => {
     window.scrollTo(0, 0);
@@ -375,23 +370,41 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   return (
     <Layout>
       <Head>
-        <title>{title}</title>
-        <meta property="og:title" content={title} />
+        <title key="title">{title}</title>
+        <meta key="og:title" property="og:title" content={title} />
         {description ? (
           <>
-            <meta name="description" content={description} />
-            <meta property="og:description" content={description} />
+            <meta key="description" name="description" content={description} />
+            <meta
+              key="og:description"
+              property="og:description"
+              content={description}
+            />
           </>
         ) : null}
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content={`${baseUrl}/logo.png`} />
-        <meta property="og:image:width" content="800" />
-        <meta property="og:image:height" content="800" />
-        <meta name="og:image:alt" content={`${title} image`} />
-        <meta property="og:url" content={url} />
-        <meta property="canonical" content={url} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image:alt" content={`${title} image`} />
+        <meta key="og:type" property="og:type" content="website" />
+        <meta
+          key="og:image"
+          property="og:image"
+          content={`${siteConfig.baseUrl}/logo.png`}
+        />
+        <meta key="og:image:width" property="og:image:width" content="800" />
+        <meta key="og:image:height" property="og:image:height" content="800" />
+        <meta
+          key="og:image:alt"
+          name="og:image:alt"
+          content={`${title} image`}
+        />
+        <meta
+          key="twitter:card"
+          name="twitter:card"
+          content="summary_large_image"
+        />
+        <meta
+          key="twitter:image:alt"
+          name="twitter:image:alt"
+          content={`${title} image`}
+        />
       </Head>
       <Space direction="column" block center>
         <FancyHeading level={1}>{title}</FancyHeading>

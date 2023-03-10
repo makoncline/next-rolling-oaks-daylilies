@@ -9,25 +9,40 @@ import logo from "../public/assets/logo-square.png";
 import { useRouter } from "next/router";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { pathname } = useRouter();
+  const { asPath } = useRouter();
   const { title, description, baseUrl } = siteConfig;
   const { numItems } = useCart();
   return (
     <>
       <Head>
-        <title>{title}</title>
-        <meta property="og:title" content={title} />
-        <meta property="og:site_name" content={title} />
-        <meta name="description" content={description} />
-        <meta property="canonical" content={baseUrl + pathname} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content={`/assets/logo.png`} />
-        <meta name="og:image:alt" content={`${title} logo`} />
-        <meta property="og:url" content={baseUrl + pathname} />
-        <meta property="canonical" content={baseUrl + pathname} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image:alt" content={`${title} logo`} />
+        <title key="title">{title}</title>
+        <meta key="og:title" property="og:title" content={title} />
+        <meta key="og:site_name" property="og:site_name" content={title} />
+        <meta key="description" name="description" content={description} />
+        <meta
+          key="og:description"
+          property="og:description"
+          content={description}
+        />
+        <meta key="og:type" property="og:type" content="website" />
+        <meta key="og:image" property="og:image" content={`/assets/logo.png`} />
+        <meta
+          key="og:image:alt"
+          name="og:image:alt"
+          content={`${title} logo`}
+        />
+        <meta key="og:url" property="og:url" content={baseUrl + asPath} />
+        <meta key="canonical" property="canonical" content={baseUrl + asPath} />
+        <meta
+          key="twitter:card"
+          name="twitter:card"
+          content="summary_large_image"
+        />
+        <meta
+          key="twitter:image:alt"
+          name="twitter:image:alt"
+          content={`${title} logo`}
+        />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <Space
