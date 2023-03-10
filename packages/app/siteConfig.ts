@@ -1,8 +1,8 @@
 export const siteConfig = {
   userId: 3,
-  title: "Rolling Oaks Daylilies",
+  title: "Rolling Oaks Daylilies - Purchase Unique and Rare Varieties",
   description:
-    "I grow approximately 1000 named daylilies and a few thousand of my own seedlings. My collection includes a wide variety of forms, including spiders, unusual forms, and doubles. My current hybridizing focus is double and white daylilies. I have been an AHS Display Garden for several years",
+    "My catalog includes over 1,000 varieties in many forms. Spiders, unusual, doubles and unique forms. Double and white daylily specialist. AHS Display Garden.",
   baseUrl: "https://rollingoaksdaylilies.com",
   shipping: {
     baseRate: 13,

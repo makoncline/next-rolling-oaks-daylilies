@@ -374,11 +374,15 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <meta key="og:title" property="og:title" content={title} />
         {description ? (
           <>
-            <meta key="description" name="description" content={description} />
+            <meta
+              key="description"
+              name="description"
+              content={description.substring(0, 160)}
+            />
             <meta
               key="og:description"
               property="og:description"
-              content={description}
+              content={description.substring(0, 160)}
             />
           </>
         ) : null}

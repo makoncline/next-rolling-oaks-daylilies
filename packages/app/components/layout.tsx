@@ -18,11 +18,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <title key="title">{title}</title>
         <meta key="og:title" property="og:title" content={title} />
         <meta key="og:site_name" property="og:site_name" content={title} />
-        <meta key="description" name="description" content={description} />
+        <meta
+          key="description"
+          name="description"
+          content={description.substring(0, 160)}
+        />
         <meta
           key="og:description"
           property="og:description"
-          content={description}
+          content={description.substring(0, 160)}
         />
         <meta key="og:type" property="og:type" content="website" />
         <meta key="og:image" property="og:image" content={`/assets/logo.png`} />

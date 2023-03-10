@@ -77,7 +77,7 @@ const LilyTemplate = ({
       .join(", ")
   }, Updated: ${formatDistanceToNow(new Date(listing.updated_at), {
     addSuffix: true,
-  })}`;
+  })}`.substring(0, 160);
   const { asPath } = useRouter();
   const title = `${listing.name} Daylily`;
   const {
@@ -104,10 +104,14 @@ const LilyTemplate = ({
       <Head>
         <title key="title">{title}</title>
         <meta property="og:title" content={title} key="og:title" />
-        <meta name="description" content={description} key="description" />
+        <meta
+          name="description"
+          content={description.substring(0, 160)}
+          key="description"
+        />
         <meta
           property="og:description"
-          content={description}
+          content={description.substring(0, 160)}
           key="og:description"
         />
         <meta property="og:type" content="article" key="og:type" />
