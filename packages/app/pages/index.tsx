@@ -22,8 +22,9 @@ const Home: NextPage = () => {
           alt="Rolling Oaks Daylilies logo"
           style={{
             maxWidth: "100%",
-            height: "auto"
-          }} />
+            height: "auto",
+          }}
+        />
 
         <Space direction="column" as="section">
           <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
@@ -65,8 +66,9 @@ const Home: NextPage = () => {
         alt="Rolling Oaks Daylilies Landscape"
         style={{
           maxWidth: "100%",
-          height: "auto"
-        }} />
+          height: "auto",
+        }}
+      />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Ordering</Heading>
@@ -100,8 +102,9 @@ const Home: NextPage = () => {
         alt="Rolling Oaks Daylilies Landscape"
         style={{
           maxWidth: "100%",
-          height: "auto"
-        }} />
+          height: "auto",
+        }}
+      />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Shipping</Heading>
@@ -119,8 +122,9 @@ const Home: NextPage = () => {
         alt="Rolling Oaks Daylilies Landscape"
         style={{
           maxWidth: "100%",
-          height: "auto"
-        }} />
+          height: "auto",
+        }}
+      />
 
       <Space direction="column" block as="section">
         <Heading level={2}>Contact me?</Heading>
@@ -140,6 +144,20 @@ const Home: NextPage = () => {
         <Link href="/catalogs">View Catalogs</Link>
         <Link href="/catalog/search">Search</Link>
       </Space>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <center>
+        <Link href="/list">View All Listing</Link>
+      </center>
     </Layout>
   );
 };
