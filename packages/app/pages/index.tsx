@@ -27,13 +27,18 @@ const Home: NextPage = () => {
         />
 
         <Space direction="column" as="section">
-          <Heading level={1}>Welcome to Rolling Oaks Daylilies</Heading>
+          <Heading level={1}>Rolling Oaks Daylilies</Heading>
+          <span css={``}>
+            Shop Our Stunning Collection of Named Daylilies and Seedlings.
+          </span>
+          <br />
           <p>
-            I grow approximately 1000 named daylilies and a few thousand of my
-            own seedlings. My collection includes a wide variety of forms,
-            including spiders, unusual forms, and doubles. My current
-            hybridizing focus is double and white daylilies. I have been an AHS
-            Display Garden for several years.
+            Welcome to Rolling Oaks Daylilies, where you'll find a stunning
+            collection of over 1000 named daylilies and unique seedlings. Our
+            hybridizing focus is double and white daylilies, including a wide
+            variety of forms like spiders and unusual doubles. As an AHS Display
+            Garden, we pride ourselves on delivering the highest quality plants
+            to our customers.
           </p>
           <Space direction="column" block>
             <Space responsive block>
@@ -74,24 +79,22 @@ const Home: NextPage = () => {
         <Heading level={2}>Ordering</Heading>
         <Space direction="column" block>
           <p>
-            Minimum order is $20.00. The list price is for a double fan. A
-            double fan can sometimes share one root system and dormant plants
-            can be small here. Shipped bare root. Please send me a message, or
-            email me to check availability prior to payment at{" "}
-            <a href="mailto:kaymcline@gmail.com">kaymcline@gmail.com</a>.
-            Sometimes, I may be able to sell a daylily that is listed as
-            {`"`}display only{`"`} (list will not show a price or shopping cart
-            button). I accept checks made payable to Kay Cline or Paypal payment
-            to kaymcline@gmail.com and can send a PayPal Invoice if you want. I
-            also accept Venmo (@Karen-Cline-13).
+            To order, simply choose your favorite daylilies and checkout with a
+            minimum order of $20.00. Our list prices are for double fans, which
+            sometimes share one root system and may have small dormant plants.
+            For availability, contact us at{" "}
+            <a href="mailto:kaymcline@gmail.com">kaymcline@gmail.com</a> before
+            payment or inquire about our "display only" plants. We accept checks
+            made payable to Kay Cline, PayPal payments, and Venmo
+            (@Karen-Cline-13).
           </p>
           <p>
-            <strong>Please note</strong>,{" "}
+            <strong>Please note</strong>, that while our mild southern climate
+            is perfect for daylilies,{" "}
             <a href="https://www.daylilies.org/ahs_dictionary/daylily_rust.html">
               Daylily Rust
             </a>{" "}
-            can overwinter in our mild southern climate. I cannot gaurantee
-            rust-free plants.
+            can overwinter, and we cannot guarantee rust-free plants.
           </p>
         </Space>
       </Space>
@@ -109,10 +112,11 @@ const Home: NextPage = () => {
       <Space direction="column" block as="section">
         <Heading level={2}>Shipping</Heading>
         <p>
-          I ship Priority Mail (USPS) the same day I dig, Monday or Tuesday, to
-          ensure delivery before the weekend. Shipping cost is $13.00 for up to
-          3 plants, plus $1.00 for each additional plant. I do not ship to
-          California or outside the United States.
+          We ship Priority Mail (USPS) every Monday or Tuesday to ensure
+          delivery before the weekend. Shipping costs $13.00 for up to 3 plants
+          and $1.00 for each additional plant. Unfortunately, we do not ship to
+          California or outside of the United States. Order now and experience
+          the beauty of Rolling Oaks Daylilies in your own garden!
         </p>
       </Space>
 
