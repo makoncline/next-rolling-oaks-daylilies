@@ -113,8 +113,8 @@ const Home: NextPage = () => {
         <Heading level={2}>Shipping</Heading>
         <p>
           We ship Priority Mail (USPS) every Monday or Tuesday to ensure
-          delivery before the weekend. Shipping costs $13.00 for up to 3 plants
-          and $1.00 for each additional plant. Unfortunately, we do not ship to
+          delivery before the weekend. Shipping costs $15.00 for up to 3 plants
+          and $1.50 for each additional plant. Unfortunately, we do not ship to
           California or outside of the United States. Order now and experience
           the beauty of Rolling Oaks Daylilies in your own garden!
         </p>
