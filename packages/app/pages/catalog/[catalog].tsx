@@ -72,11 +72,9 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       }));
     }
     if (isReady) {
-      const queryKeys = Object.keys(query);
-      setShowFilters(
-        queryKeys.length > 1 ||
-          (queryKeys.length === 1 && queryKeys[0] !== "catalog")
-      );
+      const { catalog, page, ...rest } = query;
+      const queryKeys = Object.keys(rest);
+      setShowFilters(queryKeys.length > 0);
     }
   }, [query, pathname, isReady]);
   const [showFilters, setShowFilters] = useState(false);
@@ -91,10 +89,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (!newValue) {
       delete newQuery[filterKey];
     }
-    if (filterKey === "page" && parseInt(newValue) === 0) {
+    if (
+      filterKey === "page" &&
+      parseInt(newValue) - 1 === defaultFilters.page
+    ) {
       delete newQuery[filterKey];
     } else {
-      newQuery.page = 1;
+      newQuery.page = "1";
     }
     router.replace(
       {
