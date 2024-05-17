@@ -43,25 +43,68 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     scapeHeight: "",
     bloomSeason: "",
     price: "",
+    page: 0,
   };
   const router = useRouter();
-  const { query } = router;
-
-  const page = query.page;
-  const pageString = page && Array.isArray(page) ? page[0] : page;
-  const pageNum = pageString && parseInt(pageString);
-  const [paginate, setPaginate] = useState({
-    limit: 24,
-    page: pageNum ? pageNum - 1 : 0,
-  });
-  useEffect(() => {
-    setPaginate({
-      limit: 24,
-      page: pageNum ? pageNum - 1 : 0,
-    });
-  }, [pageNum]);
+  const { query, pathname, isReady } = router;
   const [filters, setFilters] = useState(defaultFilters);
+
+  useEffect(() => {
+    if (isReady) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        name: query.name ? query.name.toString() : "",
+        char: query.char ? query.char.toString() : "",
+        list: query.list ? query.list.toString() : "",
+        hybridizer: query.hybridizer ? query.hybridizer.toString() : "",
+        year: query.year ? query.year.toString() : "",
+        ploidy: query.ploidy ? query.ploidy.toString() : "",
+        color: query.color ? query.color.toString() : "",
+        form: query.form ? query.form.toString() : "",
+        foliageType: query.foliageType ? query.foliageType.toString() : "",
+        note: query.note ? query.note.toString() : "",
+        fragrance: query.fragrance ? query.fragrance.toString() : "",
+        bloomSize: query.bloomSize ? query.bloomSize.toString() : "",
+        scapeHeight: query.scapeHeight ? query.scapeHeight.toString() : "",
+        bloomSeason: query.bloomSeason ? query.bloomSeason.toString() : "",
+        price: query.price ? query.price.toString() : "",
+        page: query.page ? parseInt(query.page.toString()) - 1 : 0,
+      }));
+    }
+    if (isReady) {
+      const { catalog, page, ...rest } = query;
+      const queryKeys = Object.keys(rest);
+      setShowFilters(queryKeys.length > 0);
+    }
+  }, [query, pathname, isReady]);
   const [showFilters, setShowFilters] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    filterKey: string
+  ) => {
+    const newValue = e.target.value;
+    setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: newValue }));
+    const newQuery = { ...router.query, [filterKey]: newValue };
+    if (!newValue) {
+      delete newQuery[filterKey];
+    }
+    if (
+      filterKey === "page" &&
+      parseInt(newValue) - 1 === defaultFilters.page
+    ) {
+      delete newQuery[filterKey];
+    } else {
+      newQuery.page = "1";
+    }
+    router.replace(
+      {
+        query: newQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   const sortAlphaNum = (a: string | number, b: string | number) =>
     `${a}`.localeCompare(`${b}`, "en", { numeric: true }) < 0 ? -1 : 1;
@@ -300,6 +343,8 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const filterLilies = () => {
     let filtered = listings;
     if (filters.name) filtered = filtered && filterByName(filtered);
+    if (filters.char) filtered = filtered && filterByFirstChar(filtered);
+    if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.color) filtered = filtered && filterByColor(filtered);
     if (filters.char) filtered = filtered && filterByFirstChar(filtered);
@@ -325,22 +370,24 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const filteredLilies = filterLilies();
 
+  const pageLimit = 24;
   const displayLilies =
     listings &&
     filteredLilies &&
     filteredLilies.slice(
-      paginate.page * paginate.limit,
-      (paginate.page + 1) * paginate.limit
+      filters.page * pageLimit,
+      (filters.page + 1) * pageLimit
     );
 
   const pages =
     listings.length &&
     filteredLilies &&
-    Math.floor(filteredLilies.length / paginate.limit);
+    Math.floor(filteredLilies.length / pageLimit);
 
   const removeQueryParam = () => {
     const { asPath } = router;
-    router.replace({ pathname: asPath, query: null }, undefined, {
+    const pathname = asPath.split("?")[0];
+    router.replace({ pathname, query: null }, undefined, {
       shallow: true,
     });
   };
@@ -362,7 +409,11 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const topRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = () => {
-    window.scrollTo(0, 0);
+    if (topRef.current) {
+      const topPosition =
+        topRef.current.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: topPosition, behavior: "smooth" });
+    }
   };
   const numResults = filteredLilies?.length || 0;
   useSearchChange(numResults, filters);
@@ -426,12 +477,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="letters"
                     value={filters.char}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      {
-                        setFilters({ ...filters, char: e.target.value });
-                        removeQueryParam();
-                      }
-                    }}
+                    onChange={(e) => handleChange(e, "char")}
                   >
                     <option key="char-none" value="">
                       All
@@ -459,10 +505,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <input
                     name="search"
                     placeholder="Enter daylily name here..."
-                    onChange={(e) => {
-                      removeQueryParam();
-                      setFilters({ ...filters, name: e.target.value });
-                    }}
+                    onChange={(e) => handleChange(e, "name")}
                     value={filters.name}
                   />
                 </Space>
@@ -473,10 +516,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                     <FullWidthSelect
                       name="list"
                       value={filters.list}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                        setFilters({ ...filters, list: e.target.value });
-                        removeQueryParam();
-                      }}
+                      onChange={(e) => handleChange(e, "list")}
                     >
                       <option key="list-none" value="">
                         Any
@@ -505,10 +545,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <input
                     name="color"
                     placeholder="Enter daylily color here..."
-                    onChange={(e) => {
-                      setFilters({ ...filters, color: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "color")}
                     value={filters.color}
                   />
                 </Space>
@@ -518,10 +555,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="hybridizer"
                     value={filters.hybridizer}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, hybridizer: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "hybridizer")}
                   >
                     <option key="hybridizer-none" value="">
                       All
@@ -553,10 +587,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="year"
                     value={filters.year}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, year: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "year")}
                   >
                     <option key="year-none" value="">
                       All
@@ -591,10 +622,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="ploidy"
                     value={filters.ploidy}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, ploidy: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "ploidy")}
                   >
                     <option key="ploidy-none" value="">
                       All
@@ -628,10 +656,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="form"
                     value={filters.form}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, form: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "form")}
                   >
                     <option key="form-none" value="">
                       All
@@ -660,13 +685,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="foliageType"
                     value={filters.foliageType}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({
-                        ...filters,
-                        foliageType: e.target.value,
-                      });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "foliageType")}
                   >
                     <option key="foliageType-none" value="">
                       All
@@ -699,10 +718,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="fragrance"
                     value={filters.fragrance}
-                    onChange={(e) => {
-                      setFilters({ ...filters, fragrance: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "fragrance")}
                   >
                     <option key="fragrance-none" value={""}>
                       All
@@ -735,10 +751,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="bloomSize"
                     value={filters.bloomSize}
-                    onChange={(e) => {
-                      setFilters({ ...filters, bloomSize: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "bloomSize")}
                   >
                     <option value={""}>All</option>
                     <option value="miniature">{`Miniature (up to 3")`}</option>
@@ -753,13 +766,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="scapeHeight"
                     value={filters.scapeHeight}
-                    onChange={(e) => {
-                      setFilters({
-                        ...filters,
-                        scapeHeight: e.target.value,
-                      });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "scapeHeight")}
                   >
                     <option value={""}>All</option>
                     <option value="miniature">{`Miniature (up to 10")`}</option>
@@ -775,13 +782,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="bloomSeason"
                     value={filters.bloomSeason}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({
-                        ...filters,
-                        bloomSeason: e.target.value,
-                      });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "bloomSeason")}
                   >
                     <option key="bloomSeason-none" value="">
                       All
@@ -814,10 +815,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="price"
                     value={filters.price}
-                    onChange={(e) => {
-                      setFilters({ ...filters, price: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "price")}
                   >
                     <option value={""}>All</option>
                     <option value="one">{`up to $9.99`}</option>
@@ -834,17 +832,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <input
                     name="note"
                     placeholder="Enter daylily note text here..."
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setFilters({ ...filters, note: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "note")}
                     value={filters.note}
                   />
                 </Space>
                 <Button
                   onClick={() => {
                     clearFilters();
-                    removeQueryParam();
                   }}
                   block
                   danger
@@ -857,8 +851,6 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <Button
             onClick={() => {
               setShowFilters((prev) => !prev);
-              clearFilters();
-              removeQueryParam();
             }}
             block
           >
@@ -868,12 +860,14 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       </FormWrapper>
       <Space direction="column" ref={topRef} block>
         <Space direction="column">
-          {filteredLilies.length > paginate.limit && (
+          {filteredLilies.length > pageLimit && (
             <Paginate
-              page={paginate.page}
+              page={filters.page}
               pages={pages || 0}
-              paginate={paginate}
-              setPaginate={setPaginate}
+              paginate={{ page: filters.page, limit: pageLimit }}
+              setPaginate={({ page, limit }) =>
+                setFilters({ ...filters, page })
+              }
               onPageChange={handlePageChange}
             />
           )}
@@ -889,12 +883,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           })}
         </LilyWrapper>
         {displayLilies.length < 1 && <p>No results found for this search...</p>}
-        {filteredLilies.length > paginate.limit && (
+        {filteredLilies.length > pageLimit && (
           <Paginate
-            page={paginate.page}
+            page={filters.page}
             pages={pages || 0}
-            paginate={paginate}
-            setPaginate={setPaginate}
+            paginate={{ page: filters.page, limit: pageLimit }}
+            setPaginate={({ page, limit }) => setFilters({ ...filters, page })}
             onPageChange={handlePageChange}
           />
         )}

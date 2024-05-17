@@ -9,12 +9,8 @@ const Paginate: React.FC<{
     limit: number;
     page: number;
   };
-  setPaginate: React.Dispatch<
-    React.SetStateAction<{
-      limit: number;
-      page: number;
-    }>
-  >;
+  setPaginate: ({ limit, page }: { limit: number; page: number }) => void;
+
   onPageChange?: () => void;
 }> = ({ page, pages, paginate, setPaginate, onPageChange }) => {
   const router = useRouter();
@@ -26,10 +22,15 @@ const Paginate: React.FC<{
     if (onPageChange) {
       onPageChange();
     }
+    const { catalog, ...rest } = router.query;
+    const newQuery = { ...rest, page: newPage + 1 };
+    if (newPage === 0) {
+      delete (newQuery as { page?: number }).page;
+    }
     router.replace(
       {
         pathname: router.asPath.split("?")[0],
-        query: { page: newPage + 1 },
+        query: newQuery,
       },
       undefined,
       {
