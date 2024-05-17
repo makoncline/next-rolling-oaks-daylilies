@@ -85,7 +85,10 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
     if (isReady) {
       const queryKeys = Object.keys(query);
-      setShowFilters(queryKeys.length > 1 || (queryKeys.length === 1 && queryKeys[0] !== 'catalog'));
+      setShowFilters(
+        queryKeys.length > 1 ||
+          (queryKeys.length === 1 && queryKeys[0] !== "catalog")
+      );
     }
   }, [query, pathname, isReady]);
   const [showFilters, setShowFilters] = useState(false);
@@ -412,7 +415,9 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const topRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = () => {
     if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: "smooth" });
+      const topPosition =
+        topRef.current.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: topPosition, behavior: "smooth" });
     }
   };
   const numResults = filteredLilies?.length || 0;
