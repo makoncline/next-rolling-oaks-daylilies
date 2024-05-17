@@ -84,17 +84,15 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   }, [query]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, filterKey: string) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    filterKey: string
+  ) => {
     const newValue = e.target.value;
     setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: newValue }));
-    router.push(
-      {
-        pathname: router.pathname,
-        query: { ...router.query, [filterKey]: newValue },
-      },
-      undefined,
-      { shallow: true }
-    );
+    router.replace({
+      query: { ...router.query, [filterKey]: newValue },
+    });
   };
 
   const sortAlphaNum = (a: string | number, b: string | number) =>
@@ -376,7 +374,8 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const removeQueryParam = () => {
     const { asPath } = router;
-    router.replace({ pathname: asPath, query: null }, undefined, {
+    const pathname = asPath.split("?")[0];
+    router.replace({ pathname, query: null }, undefined, {
       shallow: true,
     });
   };
@@ -824,7 +823,6 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 <Button
                   onClick={() => {
                     clearFilters();
-                    removeQueryParam();
                   }}
                   block
                   danger
@@ -837,8 +835,6 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <Button
             onClick={() => {
               setShowFilters((prev) => !prev);
-              clearFilters();
-              removeQueryParam();
             }}
             block
           >
