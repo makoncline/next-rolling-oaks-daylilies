@@ -83,11 +83,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         price: query.price ? query.price.toString() : "",
       }));
     }
+    if (isReady) {
+      const queryKeys = Object.keys(query);
+      setShowFilters(queryKeys.length > 1 || (queryKeys.length === 1 && queryKeys[0] !== 'catalog'));
+    }
   }, [query, pathname, isReady]);
-  const [showFilters, setShowFilters] = useState(() => {
-    const queryKeys = Object.keys(router.query);
-    return queryKeys.length > 1 || (queryKeys.length === 1 && queryKeys[0] !== 'catalog');
-  });
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
