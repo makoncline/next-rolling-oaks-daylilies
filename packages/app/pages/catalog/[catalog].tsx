@@ -100,9 +100,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (!newValue) {
       delete newQuery[filterKey];
     }
-    router.replace({
-      query: newQuery,
-    }, undefined, { shallow: true });
+    router.replace(
+      {
+        query: { ...newQuery, page: 1 },
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   const sortAlphaNum = (a: string | number, b: string | number) =>
