@@ -91,9 +91,14 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (!newValue) {
       delete newQuery[filterKey];
     }
+    if (filterKey === "page" && parseInt(newValue) === 0) {
+      delete newQuery[filterKey];
+    } else {
+      newQuery.page = 1;
+    }
     router.replace(
       {
-        query: { ...newQuery, page: 1 },
+        query: newQuery,
       },
       undefined,
       { shallow: true }
