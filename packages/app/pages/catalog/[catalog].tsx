@@ -45,7 +45,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     price: "",
   };
   const router = useRouter();
-  const { query } = router;
+  const { query, pathname } = router;
 
   const page = query.page;
   const pageString = page && Array.isArray(page) ? page[0] : page;
@@ -81,7 +81,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       bloomSeason: query.bloomSeason ? query.bloomSeason.toString() : "",
       price: query.price ? query.price.toString() : "",
     }));
-  }, [query]);
+  }, [query, pathname]);
   const [showFilters, setShowFilters] = useState(false);
 
   const handleChange = (
@@ -90,9 +90,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   ) => {
     const newValue = e.target.value;
     setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: newValue }));
+    const newQuery = { ...router.query, [filterKey]: newValue };
+    if (!newValue) {
+      delete newQuery[filterKey];
+    }
     router.replace({
-      query: { ...router.query, [filterKey]: newValue },
-    });
+      query: newQuery,
+    }, undefined, { shallow: true });
   };
 
   const sortAlphaNum = (a: string | number, b: string | number) =>
