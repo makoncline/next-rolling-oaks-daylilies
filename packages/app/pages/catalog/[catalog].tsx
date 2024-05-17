@@ -60,7 +60,10 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       page: pageNum ? pageNum - 1 : 0,
     });
   }, [pageNum]);
-  const [filters, setFilters] = useState(defaultFilters);
+  const [filters, setFilters] = useState({
+    ...defaultFilters,
+    name: query.name ? query.name.toString() : "",
+  });
   const [showFilters, setShowFilters] = useState(false);
 
   const sortAlphaNum = (a: string | number, b: string | number) =>
@@ -460,8 +463,16 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                     name="search"
                     placeholder="Enter daylily name here..."
                     onChange={(e) => {
-                      removeQueryParam();
-                      setFilters({ ...filters, name: e.target.value });
+                      const newName = e.target.value;
+                      setFilters({ ...filters, name: newName });
+                      router.push(
+                        {
+                          pathname: router.pathname,
+                          query: { ...router.query, name: newName },
+                        },
+                        undefined,
+                        { shallow: true }
+                      );
                     }}
                     value={filters.name}
                   />
