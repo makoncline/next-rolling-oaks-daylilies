@@ -43,23 +43,10 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     scapeHeight: "",
     bloomSeason: "",
     price: "",
+    page: 0,
   };
   const router = useRouter();
   const { query, pathname, isReady } = router;
-
-  const page = query.page;
-  const pageString = page && Array.isArray(page) ? page[0] : page;
-  const pageNum = pageString && parseInt(pageString);
-  const [paginate, setPaginate] = useState({
-    limit: 24,
-    page: pageNum ? pageNum - 1 : 0,
-  });
-  useEffect(() => {
-    setPaginate({
-      limit: 24,
-      page: pageNum ? pageNum - 1 : 0,
-    });
-  }, [pageNum]);
   const [filters, setFilters] = useState(defaultFilters);
 
   useEffect(() => {
@@ -81,6 +68,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         scapeHeight: query.scapeHeight ? query.scapeHeight.toString() : "",
         bloomSeason: query.bloomSeason ? query.bloomSeason.toString() : "",
         price: query.price ? query.price.toString() : "",
+        page: query.page ? parseInt(query.page.toString()) - 1 : 0,
       }));
     }
     if (isReady) {
@@ -376,18 +364,19 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const filteredLilies = filterLilies();
 
+  const pageLimit = 24;
   const displayLilies =
     listings &&
     filteredLilies &&
     filteredLilies.slice(
-      paginate.page * paginate.limit,
-      (paginate.page + 1) * paginate.limit
+      filters.page * pageLimit,
+      (filters.page + 1) * pageLimit
     );
 
   const pages =
     listings.length &&
     filteredLilies &&
-    Math.floor(filteredLilies.length / paginate.limit);
+    Math.floor(filteredLilies.length / pageLimit);
 
   const removeQueryParam = () => {
     const { asPath } = router;
@@ -865,12 +854,14 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       </FormWrapper>
       <Space direction="column" ref={topRef} block>
         <Space direction="column">
-          {filteredLilies.length > paginate.limit && (
+          {filteredLilies.length > pageLimit && (
             <Paginate
-              page={paginate.page}
+              page={filters.page}
               pages={pages || 0}
-              paginate={paginate}
-              setPaginate={setPaginate}
+              paginate={{ page: filters.page, limit: pageLimit }}
+              setPaginate={({ page, limit }) =>
+                setFilters({ ...filters, page })
+              }
               onPageChange={handlePageChange}
             />
           )}
@@ -886,12 +877,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           })}
         </LilyWrapper>
         {displayLilies.length < 1 && <p>No results found for this search...</p>}
-        {filteredLilies.length > paginate.limit && (
+        {filteredLilies.length > pageLimit && (
           <Paginate
-            page={paginate.page}
+            page={filters.page}
             pages={pages || 0}
-            paginate={paginate}
-            setPaginate={setPaginate}
+            paginate={{ page: filters.page, limit: pageLimit }}
+            setPaginate={({ page, limit }) => setFilters({ ...filters, page })}
             onPageChange={handlePageChange}
           />
         )}

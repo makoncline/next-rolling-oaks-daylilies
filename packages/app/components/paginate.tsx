@@ -9,12 +9,8 @@ const Paginate: React.FC<{
     limit: number;
     page: number;
   };
-  setPaginate: React.Dispatch<
-    React.SetStateAction<{
-      limit: number;
-      page: number;
-    }>
-  >;
+  setPaginate: ({ limit, page }: { limit: number; page: number }) => void;
+
   onPageChange?: () => void;
 }> = ({ page, pages, paginate, setPaginate, onPageChange }) => {
   const router = useRouter();
