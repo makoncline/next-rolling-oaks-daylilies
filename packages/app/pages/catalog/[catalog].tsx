@@ -64,6 +64,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     ...defaultFilters,
     name: query.name ? query.name.toString() : "",
     char: query.char ? query.char.toString() : "",
+    list: query.list ? query.list.toString() : "",
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -318,6 +319,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     let filtered = listings;
     if (filters.name) filtered = filtered && filterByName(filtered);
     if (filters.char) filtered = filtered && filterByFirstChar(filtered);
+    if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.color) filtered = filtered && filterByColor(filtered);
     if (filters.char) filtered = filtered && filterByFirstChar(filtered);
