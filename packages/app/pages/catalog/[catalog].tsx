@@ -411,7 +411,9 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const topRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = () => {
-    window.scrollTo(0, 0);
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
   const numResults = filteredLilies?.length || 0;
   useSearchChange(numResults, filters);
