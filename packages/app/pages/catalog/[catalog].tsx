@@ -66,6 +66,19 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   });
   const [showFilters, setShowFilters] = useState(false);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, filterKey: string) => {
+    const newValue = e.target.value;
+    setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: newValue }));
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, [filterKey]: newValue },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   const sortAlphaNum = (a: string | number, b: string | number) =>
     `${a}`.localeCompare(`${b}`, "en", { numeric: true }) < 0 ? -1 : 1;
 
@@ -429,12 +442,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="letters"
                     value={filters.char}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      {
-                        setFilters({ ...filters, char: e.target.value });
-                        removeQueryParam();
-                      }
-                    }}
+                    onChange={(e) => handleChange(e, "char")}
                   >
                     <option key="char-none" value="">
                       All
@@ -462,18 +470,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <input
                     name="search"
                     placeholder="Enter daylily name here..."
-                    onChange={(e) => {
-                      const newName = e.target.value;
-                      setFilters({ ...filters, name: newName });
-                      router.push(
-                        {
-                          pathname: router.pathname,
-                          query: { ...router.query, name: newName },
-                        },
-                        undefined,
-                        { shallow: true }
-                      );
-                    }}
+                    onChange={(e) => handleChange(e, "name")}
                     value={filters.name}
                   />
                 </Space>
@@ -484,10 +481,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                     <FullWidthSelect
                       name="list"
                       value={filters.list}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                        setFilters({ ...filters, list: e.target.value });
-                        removeQueryParam();
-                      }}
+                      onChange={(e) => handleChange(e, "list")}
                     >
                       <option key="list-none" value="">
                         Any
@@ -516,10 +510,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <input
                     name="color"
                     placeholder="Enter daylily color here..."
-                    onChange={(e) => {
-                      setFilters({ ...filters, color: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "color")}
                     value={filters.color}
                   />
                 </Space>
@@ -529,10 +520,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="hybridizer"
                     value={filters.hybridizer}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, hybridizer: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "hybridizer")}
                   >
                     <option key="hybridizer-none" value="">
                       All
@@ -564,10 +552,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="year"
                     value={filters.year}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, year: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "year")}
                   >
                     <option key="year-none" value="">
                       All
@@ -602,10 +587,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="ploidy"
                     value={filters.ploidy}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, ploidy: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "ploidy")}
                   >
                     <option key="ploidy-none" value="">
                       All
@@ -639,10 +621,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="form"
                     value={filters.form}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({ ...filters, form: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "form")}
                   >
                     <option key="form-none" value="">
                       All
@@ -671,13 +650,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="foliageType"
                     value={filters.foliageType}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({
-                        ...filters,
-                        foliageType: e.target.value,
-                      });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "foliageType")}
                   >
                     <option key="foliageType-none" value="">
                       All
@@ -710,10 +683,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="fragrance"
                     value={filters.fragrance}
-                    onChange={(e) => {
-                      setFilters({ ...filters, fragrance: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "fragrance")}
                   >
                     <option key="fragrance-none" value={""}>
                       All
@@ -746,10 +716,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="bloomSize"
                     value={filters.bloomSize}
-                    onChange={(e) => {
-                      setFilters({ ...filters, bloomSize: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "bloomSize")}
                   >
                     <option value={""}>All</option>
                     <option value="miniature">{`Miniature (up to 3")`}</option>
@@ -764,13 +731,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="scapeHeight"
                     value={filters.scapeHeight}
-                    onChange={(e) => {
-                      setFilters({
-                        ...filters,
-                        scapeHeight: e.target.value,
-                      });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "scapeHeight")}
                   >
                     <option value={""}>All</option>
                     <option value="miniature">{`Miniature (up to 10")`}</option>
@@ -786,13 +747,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="bloomSeason"
                     value={filters.bloomSeason}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      setFilters({
-                        ...filters,
-                        bloomSeason: e.target.value,
-                      });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "bloomSeason")}
                   >
                     <option key="bloomSeason-none" value="">
                       All
@@ -825,10 +780,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <FullWidthSelect
                     name="price"
                     value={filters.price}
-                    onChange={(e) => {
-                      setFilters({ ...filters, price: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "price")}
                   >
                     <option value={""}>All</option>
                     <option value="one">{`up to $9.99`}</option>
@@ -845,10 +797,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   <input
                     name="note"
                     placeholder="Enter daylily note text here..."
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setFilters({ ...filters, note: e.target.value });
-                      removeQueryParam();
-                    }}
+                    onChange={(e) => handleChange(e, "note")}
                     value={filters.note}
                   />
                 </Space>
