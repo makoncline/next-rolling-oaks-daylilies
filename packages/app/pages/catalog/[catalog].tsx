@@ -60,12 +60,28 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       page: pageNum ? pageNum - 1 : 0,
     });
   }, [pageNum]);
-  const [filters, setFilters] = useState({
-    ...defaultFilters,
-    name: query.name ? query.name.toString() : "",
-    char: query.char ? query.char.toString() : "",
-    list: query.list ? query.list.toString() : "",
-  });
+  const [filters, setFilters] = useState(defaultFilters);
+
+  useEffect(() => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      name: query.name ? query.name.toString() : "",
+      char: query.char ? query.char.toString() : "",
+      list: query.list ? query.list.toString() : "",
+      hybridizer: query.hybridizer ? query.hybridizer.toString() : "",
+      year: query.year ? query.year.toString() : "",
+      ploidy: query.ploidy ? query.ploidy.toString() : "",
+      color: query.color ? query.color.toString() : "",
+      form: query.form ? query.form.toString() : "",
+      foliageType: query.foliageType ? query.foliageType.toString() : "",
+      note: query.note ? query.note.toString() : "",
+      fragrance: query.fragrance ? query.fragrance.toString() : "",
+      bloomSize: query.bloomSize ? query.bloomSize.toString() : "",
+      scapeHeight: query.scapeHeight ? query.scapeHeight.toString() : "",
+      bloomSeason: query.bloomSeason ? query.bloomSeason.toString() : "",
+      price: query.price ? query.price.toString() : "",
+    }));
+  }, [query]);
   const [showFilters, setShowFilters] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, filterKey: string) => {
