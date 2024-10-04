@@ -1,7 +1,5 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -25,9 +23,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 300
       - name: Run Playwright tests
-        run: |
-          cd packages/app
-          npx playwright test
+        run: cd packages/app && npx playwright test
         env:
           TEST_BASE_URL: ${{ steps.waitFor200.outputs.url }}
       - uses: actions/upload-artifact@v3
