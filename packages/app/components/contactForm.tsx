@@ -24,6 +24,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
         data-netlify-honeypot="bot-field"
         action={action}
         autocomplete="off"
+        data-testid="contact-form"
       >
         <input
           aria-label="form name"
@@ -37,17 +38,17 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
             <input aria-label="bot field" name="bot-field" />
           </label>
         </div>
-        <Field name="name" required>
+        <Field name="name" required data-testid="contact-name">
           Your name
         </Field>
-        <Field name="email" required>
+        <Field name="email" required data-testid="contact-email">
           Your email
         </Field>
-        <Field name="message" required textarea>
+        <Field name="message" required textarea data-testid="contact-message">
           Your message
         </Field>
         <SubmitButton>
-          <Button styleType="primary" block>
+          <Button styleType="primary" block data-testid="contact-submit">
             {cta}
           </Button>
         </SubmitButton>
@@ -55,8 +56,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
     </FormWrapper>
   );
 };
-export default ContactForm;
 
+export default ContactForm;
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;

@@ -12,7 +12,17 @@ const Paginate: React.FC<{
   setPaginate: ({ limit, page }: { limit: number; page: number }) => void;
 
   onPageChange?: () => void;
-}> = ({ page, pages, paginate, setPaginate, onPageChange }) => {
+  nextButtonProps?: { [key: string]: any };
+  paginationId?: string;
+}> = ({
+  page,
+  pages,
+  paginate,
+  setPaginate,
+  onPageChange,
+  nextButtonProps,
+  paginationId = "default",
+}) => {
   const router = useRouter();
   const pageArray = [];
   for (let i = 0; i <= pages; i++) {
@@ -70,6 +80,8 @@ const Paginate: React.FC<{
       <Button
         aria-label="next forward"
         onClick={() => handlePageChange(page + 1 <= pages ? page + 1 : pages)}
+        data-testid={`next-page-button-${paginationId}`}
+        {...nextButtonProps}
       >
         ➡
       </Button>

@@ -11,7 +11,9 @@ import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 const Catalogs: NextPage<{ catalogs: Catalog[] }> = ({ catalogs }) => {
   return (
     <Layout>
-      <Heading level={1}>Catalogs</Heading>
+      <Heading level={1}>
+        <span data-testid="catalogs-title">Catalogs</span>
+      </Heading>
       {catalogs.map((node) => (
         <CatalogCard
           key={node.slug}

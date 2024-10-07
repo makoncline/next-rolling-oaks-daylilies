@@ -36,7 +36,7 @@ const CartTable = () => {
             </tr>
             {cart &&
               cart.map((item, i) => (
-                <tr key={i}>
+                <tr key={i} data-testid="cart-item">
                   <td style={{ textAlign: "left" }}>{item.name}</td>
                   <td style={{ textAlign: "center" }}>{item.quantity}</td>
                   <td className="btn">
@@ -110,6 +110,7 @@ const CartForm = () => {
         action="/thanks"
         hidden={numItems < 1}
         autocomplete="off"
+        data-testid="cart-form"
       >
         <input
           aria-label="form name"
@@ -124,10 +125,10 @@ const CartForm = () => {
           </label>
           <Field name="bot-field">bot-field</Field>
         </div>
-        <Field name="name" required>
+        <Field name="name" required data-testid="cart-name-input">
           Your name
         </Field>
-        <Field name="email" required>
+        <Field name="email" required data-testid="cart-email-input">
           Your email
         </Field>
         <div hidden>
@@ -135,11 +136,16 @@ const CartForm = () => {
             Your cart
           </Field>
         </div>
-        <Field name="message" textarea>
+        <Field name="message" textarea data-testid="cart-message-input">
           Your message
         </Field>
         <SubmitButton>
-          <Button type="submit" styleType="primary" block>
+          <Button
+            type="submit"
+            styleType="primary"
+            block
+            data-testid="cart-submit-button"
+          >
             Check availability
           </Button>
         </SubmitButton>
@@ -153,7 +159,7 @@ const ClearButton = () => {
   return (
     <>
       {numItems > 0 && (
-        <Button onClick={clear} danger>
+        <Button onClick={clear} danger data-testid="empty-cart-button">
           Empty Cart
         </Button>
       )}
@@ -166,7 +172,9 @@ const Cart: React.FC = () => {
     <Layout>
       <Space direction="column" gap="large" center>
         <Space direction="column">
-          <FancyHeading level={1}>Cart</FancyHeading>
+          <FancyHeading level={1} data-testid="cart-title">
+            Cart
+          </FancyHeading>
           <p>
             Add items to your cart from any catalog. Enter your email, and a
             message if you like, to check for availability before proceeding

@@ -69,7 +69,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         >
           <Nav
             logo={
-              <Link href="/">
+              <Link href="/" data-testid="home-link">
                 <Image
                   src={logo}
                   alt="logo"
@@ -84,9 +84,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Link>
             }
           >
-            <Link href="/catalogs">Catalogs</Link>
-            <Link href="/catalog/search">Search</Link>
-            <Link href="/cart">
+            <Link href="/catalogs" data-testid="view-catalogs-link">
+              Catalogs
+            </Link>
+            <Link href="/catalog/search" data-testid="search-link">
+              Search
+            </Link>
+            <Link href="/cart" data-testid="cart-link">
               {`Cart ${numItems ? ` (${numItems})` : ""}`}
             </Link>
           </Nav>

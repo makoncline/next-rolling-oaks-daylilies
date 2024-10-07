@@ -26,7 +26,7 @@ export const CatalogCard = ({
 }) => {
   const images = getImageUrls(image);
   return (
-    <StyledCard>
+    <StyledCard data-testid="catalog-card">
       <div
         css={`
           width: var(--size-image-card);
@@ -54,7 +54,11 @@ export const CatalogCard = ({
           </PropertyListItem>
         </PropertyList>
         {intro && <p>{intro}</p>}
-        <Link href={`/catalog/${slug}`} passHref>
+        <Link
+          href={`/catalog/${slug}`}
+          passHref
+          data-testid="view-catalog-link"
+        >
           View Catalog
         </Link>
       </Body>

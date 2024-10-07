@@ -24,5 +24,4 @@ const nextConfig = {
     scrollRestoration: true,
   },
 };
-
 module.exports = nextConfig;

@@ -869,6 +869,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 setFilters({ ...filters, page })
               }
               onPageChange={handlePageChange}
+              paginationId="catalog"
             />
           )}
         </Space>
@@ -890,6 +891,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             paginate={{ page: filters.page, limit: pageLimit }}
             setPaginate={({ page, limit }) => setFilters({ ...filters, page })}
             onPageChange={handlePageChange}
+            paginationId="catalog"
           />
         )}
         {filters.name === "download" && (
