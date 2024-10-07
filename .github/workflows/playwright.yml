@@ -21,13 +21,8 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Build app
-        run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET }}
-      - name: Start app
-        run: npm run start &
+      - name: Start dev app
+        run: npm run dev &
         working-directory: packages/app
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
