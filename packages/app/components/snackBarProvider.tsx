@@ -50,6 +50,7 @@ export const SnackBarProvider = ({
       <SnackBarContainer>
         {alerts.map((alert, i) => (
           <Badge
+            data-testid="snackbar-badge"
             key={i}
             css={`
               border: 1px solid var(--green-4);

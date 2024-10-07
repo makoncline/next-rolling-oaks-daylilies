@@ -132,68 +132,72 @@ const LilyTemplate = ({
           key="twitter:image:alt"
         />
       </Head>
-      <FancyHeading level={1}>{name}</FancyHeading>
-      <Space center responsive gap="medium">
-        <ImageDisplay imageUrls={images} />
-        <Space
-          direction="column"
-          style={{ overflowX: "hidden", width: "100%" }}
-        >
-          <PropertyList divider>
-            {price && (
-              <PropertyListItem label="Price">{`$${price}`}</PropertyListItem>
+      <Space direction="column" gap="large">
+        <Space direction="column">
+          <FancyHeading level={1}>
+            <span data-testid="listing-title">{name}</span>
+          </FancyHeading>
+          <ImageDisplay imageUrls={images} />
+          <Space
+            direction="column"
+            style={{ overflowX: "hidden", width: "100%" }}
+          >
+            <PropertyList divider>
+              {price && (
+                <PropertyListItem label="Price">{`$${price}`}</PropertyListItem>
+              )}
+              {updatedAt && (
+                <PropertyListItem label="Updated">
+                  {new Date(updatedAt).toLocaleDateString("en-US", {
+                    year: "2-digit",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </PropertyListItem>
+              )}
+              {listName && (
+                <PropertyListItem label="List">
+                  <Badge>{listName}</Badge>
+                </PropertyListItem>
+              )}
+            </PropertyList>
+            <PropertyList column>
+              {publicNote && (
+                <PropertyListItem label="Description">
+                  {publicNote}
+                </PropertyListItem>
+              )}
+            </PropertyList>
+            {cartItem && (
+              <div>
+                <Button
+                  aria-label="add to cart"
+                  onClick={() => {
+                    addOrUpdateProduct(cartItem);
+                    addAlert(`Added ${listing.name} to cart!`);
+                  }}
+                >
+                  <Space>
+                    Add to cart
+                    <Icon className="icon" icon={cart} />
+                  </Space>
+                </Button>
+              </div>
             )}
-            {updatedAt && (
-              <PropertyListItem label="Updated">
-                {new Date(updatedAt).toLocaleDateString("en-US", {
-                  year: "2-digit",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </PropertyListItem>
+            {ahsData && (
+              <div>
+                <Heading level={3}>Details</Heading>
+                <Hr />
+                <PropertyList column padding="var(--size-1)">
+                  {getTraits(ahsData).map(([key, value]) => (
+                    <PropertyListItem inline label={key} key={key}>
+                      {value}
+                    </PropertyListItem>
+                  ))}
+                </PropertyList>
+              </div>
             )}
-            {listName && (
-              <PropertyListItem label="List">
-                <Badge>{listName}</Badge>
-              </PropertyListItem>
-            )}
-          </PropertyList>
-          <PropertyList column>
-            {publicNote && (
-              <PropertyListItem label="Description">
-                {publicNote}
-              </PropertyListItem>
-            )}
-          </PropertyList>
-          {cartItem && (
-            <div>
-              <Button
-                aria-label="add to cart"
-                onClick={() => {
-                  addOrUpdateProduct(cartItem);
-                  addAlert(`Added ${listing.name} to cart!`);
-                }}
-              >
-                <Space>
-                  Add to cart
-                  <Icon className="icon" icon={cart} />
-                </Space>
-              </Button>
-            </div>
-          )}
-          {ahsData && (
-            <div>
-              <Heading level={3}>Details</Heading>
-              <Hr />
-              <PropertyList column padding="var(--size-1)">
-                {getTraits(ahsData).map(([key, value]) => (
-                  <PropertyListItem inline label={key} key={key}>
-                    {value}
-                  </PropertyListItem>
-                ))}
-              </PropertyList>
-            </div>
-          )}
+          </Space>
         </Space>
       </Space>
       <DaylilyCatalogAd />

@@ -11,7 +11,9 @@ const Thanks: React.FC = () => {
   return (
     <Layout>
       <Alert type="success">
-        <Alert.Heading>Thanks for your interest!</Alert.Heading>
+        <Alert.Heading>
+          <span data-testid="thanks-title">Thanks for your interest!</span>
+        </Alert.Heading>
         <Alert.Body>
           <p>
             I'll review your message and get back to you by email as soon as I

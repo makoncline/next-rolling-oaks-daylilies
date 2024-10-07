@@ -7,8 +7,13 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -16,16 +21,24 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Wait for Vercel Preview
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: waitFor200
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 300
-      - name: Run Playwright tests
-        run: cd packages/app && npx playwright test
+      - name: Build app
+        run: npm run build
         env:
-          TEST_BASE_URL: ${{ steps.waitFor200.outputs.url }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET }}
+      - name: Start app
+        run: npm run start &
+        working-directory: packages/app
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET }}
+      - name: Run Playwright tests
+        run: npx playwright test
+        working-directory: packages/app
+        env:
+          TEST_BASE_URL: http://localhost:3000
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:

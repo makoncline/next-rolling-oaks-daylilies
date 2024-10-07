@@ -11,12 +11,12 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "packages/*": ["packages/*"]
+      "@packages/*": ["*"]
     }
   },
   "include": [],
   "references": [
-    { "path": "packages/app" },
-    { "path": "packages/design-system" }
+    { "path": "./packages/app" },
+    { "path": "./packages/design-system" }
   ]
 }

@@ -28,7 +28,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
   };
 
   return (
-    <LilyCardWrapper direction="column">
+    <LilyCardWrapper direction="column" data-testid="lily-card">
       {image ? (
         <div
           css={`

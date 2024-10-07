@@ -21,16 +21,6 @@ const config: PlaywrightTestConfig = {
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  // Only use the webServer option when running locally
-  ...(process.env.CI
-    ? {}
-    : {
-        webServer: {
-          command: "npm run dev",
-          port: 3000,
-          reuseExistingServer: !process.env.CI,
-        },
-      }),
 };
 
 export default config;
