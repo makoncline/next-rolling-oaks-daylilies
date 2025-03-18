@@ -2,3 +2,6 @@
   base = "packages/app"
   publish = ".next"
   command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18.18.0"
