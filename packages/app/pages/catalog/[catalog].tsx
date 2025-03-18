@@ -7,7 +7,12 @@ import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import { GetStaticProps, NextPage } from "next";
-import { ahs_data, lilies, lists, Prisma } from "@prisma/client";
+import {
+  AhsListing,
+  Listing,
+  List,
+  Image,
+} from "../../prisma/generated/sqlite-client";
 import { useSnackBar } from "../../components/snackBarProvider";
 import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
@@ -21,6 +26,13 @@ import {
 } from "@packages/design-system";
 import { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
+
+// Add this type declaration before the getStaticProps declaration
+type Props = {
+  title: string;
+  description: string;
+  listings: DisplayListing[];
+};
 
 const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   title,
@@ -109,50 +121,50 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const sortAlphaNum = (a: string | number, b: string | number) =>
     `${a}`.localeCompare(`${b}`, "en", { numeric: true }) < 0 ? -1 : 1;
 
-  const filterByName = (lilyArr: Listing[]) => {
+  const filterByName = (lilyArr: DisplayListing[]) => {
     if (!filters.name) return listings;
-    return lilyArr.filter((node: Listing) => {
-      return node.name.toLowerCase().includes(filters.name.toLowerCase());
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.title.toLowerCase().includes(filters.name.toLowerCase());
     });
   };
 
-  const filterByList = (lilyArr: Listing[]) => {
+  const filterByList = (lilyArr: DisplayListing[]) => {
     if (!filters.list) return lilyArr;
     if (filters.list.toLowerCase() === "no list") {
-      return lilyArr.filter((node: Listing) => {
+      return lilyArr.filter((node: DisplayListing) => {
         return node.lists === null;
       });
     }
-    return lilyArr.filter((node: Listing) => {
-      return node.lists?.name
-        .toLowerCase()
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.lists?.title
+        ?.toLowerCase()
         .includes(filters.list.toLowerCase());
     });
   };
 
-  const filterByColor = (lilyArr: Listing[]) => {
+  const filterByColor = (lilyArr: DisplayListing[]) => {
     if (!filters.color) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
-      return node.ahs_data?.color
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.ahsListing?.color
         ?.toLowerCase()
         .includes(filters.color.toLowerCase());
     });
   };
 
-  const filterByNote = (lilyArr: Listing[]) => {
+  const filterByNote = (lilyArr: DisplayListing[]) => {
     if (!filters.note) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.public_note &&
-        node.public_note.toLowerCase().includes(filters.note.toLowerCase())
+        node.description &&
+        node.description.toLowerCase().includes(filters.note.toLowerCase())
       );
     });
   };
 
-  const filterByFirstChar = (lilyArr: Listing[]) => {
+  const filterByFirstChar = (lilyArr: DisplayListing[]) => {
     if (!filters.char) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
-      return node.name
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.title
         .substring(0, 1)
         .toLowerCase()
         .includes(filters.char.toLowerCase());
@@ -345,9 +357,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (filters.name) filtered = filtered && filterByName(filtered);
     if (filters.char) filtered = filtered && filterByFirstChar(filtered);
     if (filters.list) filtered = filtered && filterByList(filtered);
-    if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.color) filtered = filtered && filterByColor(filtered);
-    if (filters.char) filtered = filtered && filterByFirstChar(filtered);
     if (filters.note) filtered = filtered && filterByNote(filtered);
     if (filters.hybridizer) filtered = filtered && filterByHybridizer(filtered);
     if (filters.year) filtered = filtered && filterByYear(filtered);
@@ -923,78 +933,89 @@ const useSearchChange = (numResults: number, filters: any) => {
 };
 
 export async function getStaticPaths() {
-  const lists = await prisma.lists.findMany({
-    where: { user_id: siteConfig.userId },
-    select: { id: true, name: true },
+  const lists = await prisma.list.findMany({
+    where: { userId: siteConfig.userId },
+    select: { title: true },
   });
+
   const paths = lists.map((list) => ({
     params: {
-      catalog: slugify(list.name, { lower: true }),
+      catalog: list.title.toLowerCase().replace(/\s+/g, "-"),
     },
   }));
+
+  // Add paths for special catalogs
   paths.push({ params: { catalog: "all" } });
-  paths.push({ params: { catalog: "search" } });
   paths.push({ params: { catalog: "for-sale" } });
+  paths.push({ params: { catalog: "search" } });
+
   return {
-    paths: paths,
+    paths,
     fallback: false,
   };
 }
 
-const defaultList: lists = {
-  id: 0,
-  user_id: siteConfig.userId,
-  name: "All",
-  intro: "",
-  bio: "",
-  created_at: new Date(),
-  updated_at: new Date(),
+type DisplayListing = Listing & {
+  ahsListing: AhsListing | null;
+  lists: List | null;
+  images: Image[];
 };
 
-type Props = {
-  title: string;
-  description: string;
-  listings: (lilies & {
-    ahs_data: ahs_data | null;
-    lists: lists | null;
-  })[];
-};
-export type Listing = Props["listings"][number];
+export type ListingType = DisplayListing;
 
 export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   const catalog = context.params.catalog;
-  let listingsWhere: Prisma.liliesWhereInput | undefined = {
-    user_id: siteConfig.userId,
+  let listingsWhere: any = {
+    userId: siteConfig.userId,
   };
-  let list: lists | undefined = undefined;
+  let list: any = undefined;
+
+  const defaultList = { id: "", title: "", description: "" };
+
   if (catalog === "for-sale") {
     listingsWhere = { ...listingsWhere, price: { gt: 0 } };
-    list = { ...defaultList, name: "For Sale", intro: "" };
+    list = { ...defaultList, title: "For Sale", description: "" };
   } else if (catalog === "all") {
-    list = { ...defaultList, name: "All", intro: "" };
+    list = { ...defaultList, title: "All", description: "" };
   } else if (catalog === "search") {
-    list = { ...defaultList, name: "Search", intro: "" };
+    list = { ...defaultList, title: "Search", description: "" };
   } else {
-    const listIds = await prisma.lists.findMany({
-      where: { user_id: siteConfig.userId },
-      select: { id: true, name: true },
+    // Look up list by slug
+    list = await prisma.list.findFirst({
+      where: {
+        userId: siteConfig.userId,
+        title: {
+          contains: catalog.replace(/-/g, " "),
+          mode: "insensitive",
+        },
+      },
     });
-    const listId = listIds.find(
-      (node) => slugify(node.name, { lower: true }) === catalog
-    )?.id;
-    listingsWhere = { ...listingsWhere, list_id: listId };
-    list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
+
+    if (list) {
+      listingsWhere = {
+        ...listingsWhere,
+        lists: { some: { id: list.id } },
+      };
+    }
   }
+
   if (!list) {
     throw new Error("List not found");
   }
-  const listings = await prisma.lilies.findMany({
-    orderBy: { name: "desc" },
-    include: { ahs_data: true, lists: true },
+
+  const listings = await prisma.listing.findMany({
+    orderBy: { title: "desc" },
+    include: {
+      ahsListing: true,
+      lists: true,
+      images: true,
+    },
     where: listingsWhere,
   });
-  const title = list.name;
-  const description = list.intro;
+
+  const title = list.title;
+  const description = list.description;
+
   return {
     props: JSON.parse(
       JSON.stringify({
@@ -1003,6 +1024,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
         listings: listings,
       })
     ),
+    revalidate: 60,
   };
 };
 

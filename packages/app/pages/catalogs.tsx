@@ -37,71 +37,84 @@ export type Catalog = {
 };
 
 export async function getStaticProps() {
-  const lists = await prisma.lists.findMany({
-    where: { user_id: siteConfig.userId },
+  const lists = await prisma.list.findMany({
+    where: { userId: siteConfig.userId },
   });
-  const listingCounts: Record<number, number> = {};
-  for (const list of lists) {
-    const listingCountQuery = await prisma.lilies.aggregate({
-      where: { list_id: list.id },
-      _count: true,
-    });
-    listingCounts[list.id] = listingCountQuery._count;
-  }
-  const listsImages: Record<number, string[]> = {};
+
   const catalogs: Catalog[] = [];
+  const listsImages: Record<string, string[]> = {};
+
   for (const list of lists) {
-    const listCountQuery = await prisma.lilies.aggregate({
-      where: { list_id: list.id },
-      _count: true,
-    });
-    const listingImageQuery = await prisma.lilies.findMany({
+    // Count listings for this list
+    const listCountQuery = await prisma.listing.count({
       where: {
-        list_id: list.id,
-        img_url: { isEmpty: false },
+        lists: { some: { id: list.id } },
       },
-      orderBy: { updated_at: "desc" },
-      select: { img_url: true },
     });
-    const listImages = listingImageQuery.flatMap((l) => l.img_url);
+
+    // Get images for listings in this list
+    const listingImageQuery = await prisma.image.findMany({
+      where: {
+        listing: {
+          lists: { some: { id: list.id } },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      select: { url: true },
+    });
+
+    const listImages = listingImageQuery.map((img) => img.url);
     listsImages[list.id] = listImages;
+
     catalogs.push({
-      slug: slugify(list.name, { lower: true }),
-      name: list.name,
-      intro: list.intro,
-      totalCount: listCountQuery._count,
+      slug: list.title.toLowerCase().replace(/\s+/g, "-"),
+      name: list.title,
+      intro: list.description,
+      totalCount: listCountQuery,
       image: randomImageUrl(listImages),
     });
   }
 
-  const allListingCountQuery = await prisma.lilies.aggregate({
-    where: { user_id: siteConfig.userId },
-    _count: true,
+  // All listings catalog
+  const allListingCountQuery = await prisma.listing.count({
+    where: { userId: siteConfig.userId },
   });
+
   const allListingImages = Object.values(listsImages).flat();
   const allCatalog = {
     slug: "all",
     name: "All Rolling Oaks Daylilies",
     intro: `View all of my daylilies in a single list. This is a great place to start if you're searching for something specific.`,
-    totalCount: allListingCountQuery._count,
+    totalCount: allListingCountQuery,
     image: randomImageUrl(allListingImages),
   };
 
-  const forSaleListingCountQuery = await prisma.lilies.aggregate({
-    where: { price: { gt: 0 } },
-    _count: true,
+  // For sale catalog
+  const forSaleListingCountQuery = await prisma.listing.count({
+    where: {
+      price: { gt: 0 },
+      userId: siteConfig.userId,
+    },
   });
-  const forSalesListingImagesQuery = await prisma.lilies.findMany({
-    where: { price: { gt: 0 }, img_url: { isEmpty: false } },
-    select: { img_url: true },
+
+  const forSalesListingImagesQuery = await prisma.image.findMany({
+    where: {
+      listing: {
+        price: { gt: 0 },
+        userId: siteConfig.userId,
+      },
+    },
+    select: { url: true },
   });
+
   const forSaleCatalog = {
     slug: "for-sale",
     name: "For Sale",
     intro: `Daylilies available for purchase. Send me a message to check availability`,
-    totalCount: forSaleListingCountQuery._count,
-    image: randomImageUrl(forSalesListingImagesQuery.flatMap((l) => l.img_url)),
+    totalCount: forSaleListingCountQuery,
+    image: randomImageUrl(forSalesListingImagesQuery.map((img) => img.url)),
   };
+
   return {
     props: {
       catalogs: [

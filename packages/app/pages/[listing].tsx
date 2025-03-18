@@ -6,7 +6,7 @@ import cart from "@iconify/icons-ic/round-shopping-cart";
 import Layout from "../components/layout";
 import { DaylilyCatalogAd } from "../components/DaylilyCatAd";
 import { useSnackBar } from "components/snackBarProvider";
-import { ahs_data, lilies } from "@prisma/client";
+import { AhsListing, Listing, Image } from "../prisma/generated/sqlite-client";
 import { useCart } from "components/cart";
 import { siteConfig } from "siteConfig";
 import slugify from "slugify";
@@ -24,25 +24,25 @@ import {
 } from "@packages/design-system";
 import { useRouter } from "next/router";
 
-const traitLabels: Partial<Record<keyof ahs_data, string>> = {
+const traitLabels: Partial<Record<keyof AhsListing, string>> = {
   hybridizer: "Hybridizer",
   year: "Year",
   parentage: "Parentage",
   ploidy: "Ploidy",
-  scape_height: "Scape height",
+  scapeHeight: "Scape height",
   color: "Color",
-  bloom_habit: "Bloom habit",
-  bloom_season: "Bloom season",
-  bloom_size: "Bloom size",
+  bloomHabit: "Bloom habit",
+  bloomSeason: "Bloom season",
+  bloomSize: "Bloom size",
   branches: "Branches",
   budcount: "Bud count",
   flower: "Flower",
   foliage: "Foliage",
-  foliage_type: "Foliage type",
+  foliageType: "Foliage type",
   form: "Form",
   fragrance: "Fragrance",
   sculpting: "Sculpting",
-  seedling_num: "Seedling #",
+  seedlingNum: "Seedling #",
 };
 
 const getKeyValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
@@ -50,6 +50,14 @@ const getKeyValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
 function objectKeys<T extends {}>(obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>;
 }
+
+type DisplayListing = Listing & {
+  ahsListing: AhsListing | null;
+  images: Image[];
+  lists?: {
+    title: string;
+  } | null;
+};
 
 const LilyTemplate = ({
   listing,
@@ -61,13 +69,13 @@ const LilyTemplate = ({
   next: string;
 }) => {
   const description = `${
-    (listing.public_note ? `Description: ${listing.public_note.trim()}` : "") +
+    (listing.description ? `Description: ${listing.description.trim()}` : "") +
     (listing.price ? `, Price: ${listing.price}` : ", Price: Display only") +
     objectKeys(traitLabels)
       .map((trait) => {
-        if (listing.ahs_data && getKeyValue(listing.ahs_data, trait)) {
+        if (listing.ahsListing && getKeyValue(listing.ahsListing, trait)) {
           return `${getKeyValue(traitLabels, trait)}: ${getKeyValue(
-            listing.ahs_data,
+            listing.ahsListing,
             trait
           )}`;
         }
@@ -75,29 +83,30 @@ const LilyTemplate = ({
       })
       .filter(Boolean)
       .join(", ")
-  }, Updated: ${formatDistanceToNow(new Date(listing.updated_at), {
+  }, Updated: ${formatDistanceToNow(new Date(listing.updatedAt), {
     addSuffix: true,
   })}`.substring(0, 160);
   const { asPath } = useRouter();
-  const title = `${listing.name} Daylily`;
+  const title = `${listing.title} Daylily`;
   const {
-    name,
+    title: name,
     price,
-    public_note: publicNote,
-    updated_at: updatedAt,
-    ahs_data: ahsData,
-    img_url: images,
+    description: publicNote,
+    updatedAt,
+    ahsListing: ahsData,
+    images,
     lists,
   } = listing;
-  const listName = lists?.name;
+  const listName = lists?.title;
   const cartItem = listing.price && {
     id: listing.id,
-    name: listing.name,
-    price: listing.price as unknown as number,
+    name: listing.title,
+    price: listing.price,
   };
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
-  const image = images.length > 0 ? images[0] : "";
+  const image = images.length > 0 ? images[0].url : "";
+  const imageUrls = images.map((img) => img.url);
 
   return (
     <Layout>
@@ -134,7 +143,7 @@ const LilyTemplate = ({
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
       <Space center responsive gap="medium">
-        <ImageDisplay imageUrls={images} />
+        <ImageDisplay imageUrls={imageUrls} />
         <Space
           direction="column"
           style={{ overflowX: "hidden", width: "100%" }}
@@ -171,7 +180,7 @@ const LilyTemplate = ({
                 aria-label="add to cart"
                 onClick={() => {
                   addOrUpdateProduct(cartItem);
-                  addAlert(`Added ${listing.name} to cart!`);
+                  addAlert(`Added ${listing.title} to cart!`);
                 }}
               >
                 <Space>
@@ -203,98 +212,74 @@ const LilyTemplate = ({
 
 export default LilyTemplate;
 
-function getTraits(ahsData: ahs_data) {
-  const traitLabels: Partial<Record<keyof ahs_data, string>> = {
-    hybridizer: "Hybridizer",
-    year: "Year",
-    parentage: "Parentage",
-    ploidy: "Ploidy",
-    scape_height: "Scape height",
-    color: "Color",
-    bloom_habit: "Bloom habit",
-    bloom_season: "Bloom season",
-    bloom_size: "Bloom size",
-    branches: "Branches",
-    budcount: "Bud count",
-    flower: "Flower",
-    foliage: "Foliage",
-    foliage_type: "Foliage type",
-    form: "Form",
-    fragrance: "Fragrance",
-    sculpting: "Sculpting",
-    seedling_num: "Seedling #",
-  };
+function getTraits(ahsData: AhsListing) {
   return objectKeys(traitLabels)
     .map((key) => (ahsData[key] ? [traitLabels[key], ahsData[key]] : null))
     .filter(Boolean) as [string, string][];
 }
 
 export async function getStaticPaths() {
-  const listings = await prisma.lilies.findMany({
-    where: { user_id: siteConfig.userId },
-    orderBy: { name: "desc" },
-    select: { name: true },
-  });
-  const listingNames = listings
-    .map((listing) => listing.name)
-    .reduce((result, element) => {
-      if (
-        result.every(
-          (otherElement) => otherElement.toLowerCase() !== element.toLowerCase()
-        )
-      ) {
-        result.push(element);
-      }
-      return result;
-    }, [] as string[]);
-
-  const paths = listingNames.map((listingName) => ({
-    params: {
-      listing: slugify(listingName, { lower: true }),
+  const listings = await prisma.listing.findMany({
+    where: {
+      userId: siteConfig.userId,
     },
-  }));
+    select: { title: true, slug: true },
+  });
+
   return {
-    paths: paths,
+    paths: listings.map((listing) => ({
+      params: { listing: listing.slug },
+    })),
     fallback: false,
   };
 }
 
-type DisplayListing = lilies & {
-  ahs_data: ahs_data | null;
-  lists: {
-    name: string;
-  } | null;
-};
-
 export async function getStaticProps(context: any) {
-  const listingSlug = context.params.listing;
-  const listingIdsAndNames = await prisma.lilies.findMany({
-    where: { user_id: siteConfig.userId },
-    orderBy: { name: "desc" },
-    select: { id: true, name: true },
+  const slug = context.params.listing;
+
+  const listing = await prisma.listing.findFirst({
+    where: {
+      userId: siteConfig.userId,
+      slug,
+    },
+    include: {
+      ahsListing: true,
+      images: {
+        orderBy: { order: "asc" },
+      },
+      lists: {
+        select: { title: true },
+      },
+    },
   });
-  const listingId = listingIdsAndNames.find(
-    (node) => slugify(node.name, { lower: true }) === listingSlug
-  )?.id;
-  const listing = await prisma.lilies.findFirstOrThrow({
-    where: { id: listingId },
-    include: { ahs_data: true, lists: { select: { name: true } } },
+
+  if (!listing) {
+    return {
+      notFound: true,
+    };
+  }
+
+  // Find previous and next listing for navigation
+  const allListings = await prisma.listing.findMany({
+    where: { userId: siteConfig.userId },
+    orderBy: { title: "asc" },
+    select: { slug: true, title: true },
   });
-  const listingIndex = listingIdsAndNames.findIndex(
-    (l) => l.name === listing.name
-  );
-  const previous = listingIdsAndNames[listingIndex - 1]?.name;
-  const next = listingIdsAndNames[listingIndex + 1]?.name;
-  const listingImages = [...listing.img_url, listing.ahs_data?.image].filter(
-    Boolean
-  ) as string[];
+
+  const currentIndex = allListings.findIndex((l) => l.slug === slug);
+  const prevListing =
+    currentIndex > 0 ? allListings[currentIndex - 1].slug : null;
+  const nextListing =
+    currentIndex < allListings.length - 1
+      ? allListings[currentIndex + 1].slug
+      : null;
+
   return {
-    props: JSON.parse(
-      JSON.stringify({
-        listing: { ...listing, img_url: listingImages },
-        previous,
-        next,
-      })
-    ),
+    props: {
+      listing: JSON.parse(JSON.stringify(listing)),
+      previous: prevListing || "",
+      next: nextListing || "",
+    },
+    revalidate: 60,
   };
 }
