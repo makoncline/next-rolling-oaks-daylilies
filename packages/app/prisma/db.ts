@@ -16,6 +16,7 @@ const libsql = createClient({
 });
 
 // Create adapter
+// @ts-ignore - Type mismatch between @libsql/client versions
 const adapter = new PrismaLibSQL(libsql);
 
 // Create Prisma client with adapter

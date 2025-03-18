@@ -171,82 +171,79 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     });
   };
 
-  const filterByHybridizer = (lilyArr: Listing[]) => {
+  const filterByHybridizer = (lilyArr: DisplayListing[]) => {
     if (!filters.hybridizer) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.hybridizer &&
-        node.ahs_data.hybridizer
+        node.ahsListing?.hybridizer &&
+        node.ahsListing.hybridizer
           .toLowerCase()
           .includes(filters.hybridizer.toLowerCase())
       );
     });
   };
 
-  const filterByYear = (lilyArr: Listing[]) => {
+  const filterByYear = (lilyArr: DisplayListing[]) => {
     if (!filters.year) return lilyArr;
     return lilyArr
-      .filter((node: Listing) => node.ahs_data?.year)
-      .filter((node: Listing) => {
-        return (
-          node.ahs_data?.year &&
-          node.ahs_data.year.toLowerCase().includes(filters.year.toLowerCase())
-        );
+      .filter((node: DisplayListing) => node.ahsListing?.year)
+      .filter((node: DisplayListing) => {
+        return node.ahsListing?.year?.includes(filters.year);
       });
   };
-  const filterByPloidy = (lilyArr: Listing[]) => {
+  const filterByPloidy = (lilyArr: DisplayListing[]) => {
     if (!filters.ploidy) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.ploidy &&
-        node.ahs_data.ploidy
+        node.ahsListing?.ploidy &&
+        node.ahsListing.ploidy
           .toLowerCase()
           .includes(filters.ploidy.toLowerCase())
       );
     });
   };
-  const filterByForm = (lilyArr: Listing[]) => {
+  const filterByForm = (lilyArr: DisplayListing[]) => {
     if (!filters.form) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.form &&
-        node.ahs_data.form.toLowerCase().includes(filters.form.toLowerCase())
+        node.ahsListing?.form &&
+        node.ahsListing.form.toLowerCase().includes(filters.form.toLowerCase())
       );
     });
   };
-  const filterByFoliageType = (lilyArr: Listing[]) => {
+  const filterByFoliageType = (lilyArr: DisplayListing[]) => {
     if (!filters.foliageType) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.foliage_type &&
-        node.ahs_data.foliage_type
+        node.ahsListing?.foliageType &&
+        node.ahsListing.foliageType
           .toLowerCase()
           .includes(filters.foliageType.toLowerCase())
       );
     });
   };
-  const filterByFragrance = (lilyArr: Listing[]) => {
+  const filterByFragrance = (lilyArr: DisplayListing[]) => {
     if (!filters.fragrance) return lilyArr;
-    return lilyArr.filter((node) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.fragrance &&
-        node.ahs_data.fragrance
+        node.ahsListing?.fragrance &&
+        node.ahsListing.fragrance
           .toLowerCase()
           .includes(filters.fragrance.toLowerCase())
       );
     });
   };
-  const filterByBloomSeason = (lilyArr: Listing[]) => {
+  const filterByBloomSeason = (lilyArr: DisplayListing[]) => {
     if (!filters.bloomSeason) return lilyArr;
-    return lilyArr.filter((node) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.bloom_season &&
-        node.ahs_data.bloom_season.toLowerCase() ===
+        node.ahsListing?.bloomSeason &&
+        node.ahsListing.bloomSeason.toLowerCase() ===
           filters.bloomSeason.toLowerCase()
       );
     });
   };
-  const filterByBloomSize = (lilyArr: Listing[]) => {
+  const filterByBloomSize = (lilyArr: DisplayListing[]) => {
     if (!filters.bloomSize) return lilyArr;
     let low = 0;
     let high = 1000;
@@ -272,13 +269,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
     return lilyArr.filter((node) => {
       const size =
-        node.ahs_data?.bloom_size &&
-        parseInt(node.ahs_data.bloom_size.toLowerCase().split(/[^\d.]/)[0]);
+        node.ahsListing?.bloomSize &&
+        parseInt(node.ahsListing.bloomSize.toLowerCase().split(/[^\d.]/)[0]);
       return size && size > low && size <= high;
     });
   };
 
-  const filterByScapeHeight = (lilyArr: Listing[]) => {
+  const filterByScapeHeight = (lilyArr: DisplayListing[]) => {
     if (!filters.scapeHeight) return lilyArr;
     let low = 0;
     let high = 1000;
@@ -308,13 +305,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
     return lilyArr.filter((node) => {
       const size =
-        node.ahs_data?.scape_height &&
-        parseInt(node.ahs_data.scape_height.toLowerCase().split(/[^\d.]/)[0]);
+        node.ahsListing?.scapeHeight &&
+        parseInt(node.ahsListing.scapeHeight.toLowerCase().split(/[^\d.]/)[0]);
       return size && size > low && size <= high;
     });
   };
 
-  const filterByPrice = (lilyArr: Listing[]) => {
+  const filterByPrice = (lilyArr: DisplayListing[]) => {
     if (!filters.price) return lilyArr;
     let low = 0;
     let high = 1000;
@@ -374,7 +371,9 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (filters.price) filtered = filtered && filterByPrice(filtered);
     const sorted =
       filtered &&
-      filtered.sort((a: Listing, b: Listing) => sortAlphaNum(a.name, b.name));
+      filtered.sort((a: DisplayListing, b: DisplayListing) =>
+        sortAlphaNum(a.title, b.title)
+      );
     return sorted;
   };
 
@@ -496,8 +495,8 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                       filteredLilies &&
                       Array.from(
                         new Set(
-                          listings.map(({ name }) =>
-                            name.substring(0, 1).toUpperCase()
+                          listings.map(({ title }) =>
+                            title.substring(0, 1).toUpperCase()
                           )
                         )
                       )
@@ -536,7 +535,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         Array.from(
                           new Set(
                             listings.map(({ lists }) =>
-                              lists ? lists.name : "No List"
+                              lists ? lists.title : "No List"
                             )
                           )
                         )
@@ -575,9 +574,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) => lily.ahs_data?.hybridizer
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.hybridizer
                             )
-                            .map((lily: Listing) => lily.ahs_data?.hybridizer)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.hybridizer
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -608,12 +611,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.year
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.year
                             )
                             .map(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.year
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.year
                             )
                         )
                       )
@@ -643,12 +646,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.ploidy
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.ploidy
                             )
                             .map(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.ploidy
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.ploidy
                             )
                         )
                       )
@@ -676,8 +679,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                       Array.from(
                         new Set(
                           listings
-                            .filter((lily: Listing) => lily.ahs_data?.form)
-                            .map((lily: Listing) => lily.ahs_data?.form)
+                            .filter(
+                              (lily: DisplayListing) => lily.ahsListing?.form
+                            )
+                            .map(
+                              (lily: DisplayListing) => lily.ahsListing?.form
+                            )
                             .map((form) => form && form.split(" ")[0])
                         )
                       )
@@ -706,9 +713,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) => lily.ahs_data?.foliage_type
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.foliageType
                             )
-                            .map((lily: Listing) => lily.ahs_data?.foliage_type)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.foliageType
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -739,9 +750,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily) => lily.ahs_data && lily.ahs_data.fragrance
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.fragrance
                             )
-                            .map((lily) => lily.ahs_data?.fragrance)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.fragrance
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -803,9 +818,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) => lily.ahs_data?.bloom_season
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.bloomSeason
                             )
-                            .map((lily: Listing) => lily.ahs_data?.bloom_season)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.bloomSeason
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -883,7 +902,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           )}
         </Space>
         <LilyWrapper>
-          {displayLilies.map((node: Listing) => {
+          {displayLilies.map((node: DisplayListing) => {
             if (!node) return;
             return (
               <React.Fragment key={node.id}>
@@ -986,7 +1005,8 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
         userId: siteConfig.userId,
         title: {
           contains: catalog.replace(/-/g, " "),
-          mode: "insensitive",
+          // SQLite doesn't support insensitive mode like PostgreSQL
+          // We'll handle case insensitivity differently
         },
       },
     });
