@@ -132,13 +132,16 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (!filters.list) return lilyArr;
     if (filters.list.toLowerCase() === "no list") {
       return lilyArr.filter((node: DisplayListing) => {
-        return node.lists === null;
+        return !node.lists || node.lists.length === 0;
       });
     }
     return lilyArr.filter((node: DisplayListing) => {
-      return node.lists?.title
-        ?.toLowerCase()
-        .includes(filters.list.toLowerCase());
+      return (
+        node.lists &&
+        node.lists.some((list: List) =>
+          list.title.toLowerCase().includes(filters.list.toLowerCase())
+        )
+      );
     });
   };
 
@@ -531,11 +534,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         Any
                       </option>
                       {listings &&
-                        filteredLilies &&
                         Array.from(
                           new Set(
-                            listings.map(({ lists }) =>
-                              lists ? lists.title : "No List"
+                            listings.flatMap((listing: DisplayListing) =>
+                              listing.lists && listing.lists.length > 0
+                                ? listing.lists.map((list: List) => list.title)
+                                : ["No List"]
                             )
                           )
                         )
@@ -974,9 +978,10 @@ export async function getStaticPaths() {
   };
 }
 
+// Make sure we're using the correct type definition
 type DisplayListing = Listing & {
   ahsListing: AhsListing | null;
-  lists: List | null;
+  lists: List[]; // Ensure this is defined as an array
   images: Image[];
 };
 
