@@ -17,6 +17,7 @@ import { useSnackBar } from "../../components/snackBarProvider";
 import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
 import { prisma } from "../../prisma/db";
+import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
 import {
   Button,
   FancyHeading,
@@ -372,11 +373,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (filters.bloomSeason)
       filtered = filtered && filterByBloomSeason(filtered);
     if (filters.price) filtered = filtered && filterByPrice(filtered);
-    const sorted =
-      filtered &&
-      filtered.sort((a: DisplayListing, b: DisplayListing) =>
-        sortAlphaNum(a.title, b.title)
-      );
+    const sorted = filtered && sortTitlesLettersBeforeNumbers(filtered);
     return sorted;
   };
 
@@ -1029,7 +1026,6 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   }
 
   const listings = await prisma.listing.findMany({
-    orderBy: { title: "desc" },
     include: {
       ahsListing: true,
       lists: true,

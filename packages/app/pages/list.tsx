@@ -4,6 +4,7 @@ import { GetStaticProps } from "next";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
 import { Heading, Thumbnail } from "@packages/design-system";
+import { sortTitlesLettersBeforeNumbers } from "../lib/sort";
 import type { InferGetStaticPropsType } from "next";
 import { getImageUrls } from "components/Image";
 import Image from "next/image";
@@ -90,7 +91,6 @@ export const getStaticProps: GetStaticProps<{
 }> = async () => {
   const listings = await prisma.listing.findMany({
     where: { userId: siteConfig.userId },
-    orderBy: { title: "asc" },
     include: {
       ahsListing: { select: { hybridizer: true } },
       images: { take: 1, orderBy: { order: "asc" } },
@@ -111,10 +111,12 @@ export const getStaticProps: GetStaticProps<{
     };
   });
 
+  const sortedListings = sortTitlesLettersBeforeNumbers(improvedListings);
+
   return {
     props: JSON.parse(
       JSON.stringify({
-        listings: improvedListings,
+        listings: sortedListings,
       })
     ),
     revalidate: 60,
