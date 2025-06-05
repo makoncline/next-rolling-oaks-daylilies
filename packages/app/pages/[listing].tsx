@@ -59,15 +59,7 @@ type DisplayListing = Listing & {
   } | null;
 };
 
-const LilyTemplate = ({
-  listing,
-  previous,
-  next,
-}: {
-  listing: DisplayListing;
-  previous: string;
-  next: string;
-}) => {
+const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
   const description = `${
     (listing.description ? `Description: ${listing.description.trim()}` : "") +
     (listing.price ? `, Price: ${listing.price}` : ", Price: Display only") +
@@ -259,26 +251,9 @@ export async function getStaticProps(context: any) {
     };
   }
 
-  // Find previous and next listing for navigation
-  const allListings = await prisma.listing.findMany({
-    where: { userId: siteConfig.userId },
-    orderBy: { title: "asc" },
-    select: { slug: true, title: true },
-  });
-
-  const currentIndex = allListings.findIndex((l) => l.slug === slug);
-  const prevListing =
-    currentIndex > 0 ? allListings[currentIndex - 1].slug : null;
-  const nextListing =
-    currentIndex < allListings.length - 1
-      ? allListings[currentIndex + 1].slug
-      : null;
-
   return {
     props: {
       listing: JSON.parse(JSON.stringify(listing)),
-      previous: prevListing || "",
-      next: nextListing || "",
     },
     revalidate: 60,
   };
