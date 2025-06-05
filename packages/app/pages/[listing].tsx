@@ -97,8 +97,16 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
   };
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
-  const image = images.length > 0 ? images[0].url : "";
-  const imageUrls = images.map((img) => img.url);
+
+  // Include AHS listing image as fallback if no images exist
+  const allImageUrls =
+    images.length > 0
+      ? images.map((img) => img.url)
+      : ahsData?.ahsImageUrl
+      ? [ahsData.ahsImageUrl]
+      : [];
+
+  const image = allImageUrls.length > 0 ? allImageUrls[0] : "";
 
   return (
     <Layout>
@@ -135,7 +143,7 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
       <Space center responsive gap="medium">
-        <ImageDisplay imageUrls={imageUrls} />
+        <ImageDisplay imageUrls={allImageUrls} />
         <Space
           direction="column"
           style={{ overflowX: "hidden", width: "100%" }}
