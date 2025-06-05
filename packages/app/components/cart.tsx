@@ -3,22 +3,22 @@ import React from "react";
 import { siteConfig } from "../siteConfig";
 
 export type Product = {
-  id: number;
+  id: string;
   name: string;
   price: number;
 };
 type CartItem = {
-  productId: number;
+  productId: string;
   quantity: number;
 };
 type CartValue = {
-  products: Record<number, Product>;
+  products: Record<string, Product>;
   cart: (Product & { quantity: number })[];
   addOrUpdateProduct: (product: Product) => void;
-  removeProduct: (productId: number) => void;
-  changeQty: (productId: number, qty: number) => void;
-  addOne: (productId: number) => void;
-  removeOne: (productId: number) => void;
+  removeProduct: (productId: string) => void;
+  changeQty: (productId: string, qty: number) => void;
+  addOne: (productId: string) => void;
+  removeOne: (productId: string) => void;
   clear: () => void;
   shipping: number;
   subTotal: number;
@@ -28,11 +28,11 @@ type CartValue = {
 const Cart = React.createContext<CartValue | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [products, setProducts] = useLocalStorage<Record<number, Product>>(
+  const [products, setProducts] = useLocalStorage<Record<string, Product>>(
     "cartProducts",
     {}
   );
-  const [cart, setCart] = useLocalStorage<Record<number, CartItem>>(
+  const [cart, setCart] = useLocalStorage<Record<string, CartItem>>(
     "cartItems",
     {}
   );
@@ -51,116 +51,126 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       setCart((prevCart) => ({
         ...prevCart,
-        [product.id]: {
-          productId: product.id,
-          quantity: 1,
-        },
+        [product.id]: { productId: product.id, quantity: 1 },
       }));
     }
   };
 
-  const existsOrThrow = (productId: number) => {
+  const existsOrThrow = (productId: string) => {
     if (!products[productId]) {
-      throw new Error(
-        `Product with id ${productId} does not exist. use addOrUpdateProduct to add it.`
-      );
+      throw new Error(`Product with id ${productId} does not exist`);
     }
   };
 
-  const removeProduct = (productId: number) => {
-    if (products[productId]) {
-      const newProducts = { ...products };
-      delete newProducts[productId];
-      setProducts(newProducts);
-    }
-    if (cart[productId]) {
-      const newCart = { ...cart };
-      delete newCart[productId];
-      setCart(newCart);
-    }
-  };
-
-  const changeQty = (productId: number, qty: number) => {
+  const removeProduct = (productId: string) => {
     existsOrThrow(productId);
-    if (qty < 1) {
+    setProducts((prevProducts) => {
+      const newProducts = { ...prevProducts };
+      // Remove the product with the specified ID
+      delete newProducts[productId];
+      return newProducts;
+    });
+    setCart((prevCart) => {
+      const newCart = { ...prevCart };
+      // Remove the cart item with the specified productId
+      delete newCart[productId];
+      return newCart;
+    });
+  };
+
+  const changeQty = (productId: string, qty: number) => {
+    existsInCartOrThrow(productId);
+    if (qty <= 0) {
       removeProduct(productId);
-    } else {
-      setCart((prevCart) => ({
-        ...prevCart,
-        [productId]: { ...prevCart[productId], quantity: qty },
-      }));
+      return;
     }
+    setCart((prevCart) => ({
+      ...prevCart,
+      [productId]: { ...prevCart[productId], quantity: qty },
+    }));
   };
 
-  const existsInCartOrThrow = (productId: number) => {
+  const existsInCartOrThrow = (productId: string) => {
+    existsOrThrow(productId);
     if (!cart[productId]) {
-      throw new Error(
-        `Product with id ${productId} does not exist in cart. use addOrUpdateProduct to add it.`
-      );
+      throw new Error(`Product with id ${productId} does not exist in cart`);
     }
   };
 
-  const addOne = (productId: number) => {
+  const addOne = (productId: string) => {
     existsInCartOrThrow(productId);
     changeQty(productId, cart[productId].quantity + 1);
   };
 
-  const removeOne = (productId: number) => {
+  const removeOne = (productId: string) => {
     existsInCartOrThrow(productId);
-    changeQty(productId, cart[productId].quantity - 1);
+    const newQty = cart[productId].quantity - 1;
+    if (newQty <= 0) {
+      removeProduct(productId);
+      return;
+    }
+    changeQty(productId, newQty);
   };
 
+  const getShipping = () => {
+    if (!mounted) return 0;
+    const baseRate = siteConfig.shipping.baseRate;
+    const baseItems = siteConfig.shipping.baseItems;
+    const ratePerAdd = siteConfig.shipping.ratePerAdd;
+    const numItems = Object.values(cart).reduce(
+      (acc, item) => acc + item.quantity,
+      0
+    );
+    if (numItems === 0) return 0;
+    if (numItems <= baseItems) return baseRate;
+    // Add extraItems * ratePerAdd
+    const extraItems = numItems - baseItems;
+    return baseRate + extraItems * ratePerAdd;
+  };
+
+  const getSubTotal = () => {
+    if (!mounted) return 0;
+    return Object.values(cart).reduce((acc, item) => {
+      const product = products[item.productId];
+      if (!product) return acc;
+      return acc + product.price * item.quantity;
+    }, 0);
+  };
+
+  const shipping = getShipping();
+  const subTotal = getSubTotal();
+  const total = subTotal + shipping;
   const numItems = Object.values(cart).reduce(
     (acc, item) => acc + item.quantity,
     0
   );
 
-  const getShipping = () => {
-    const {
-      shipping: { baseItems, baseRate, ratePerAdd },
-    } = siteConfig;
-    if (numItems < 1) {
-      return 0;
-    }
-    if (numItems < baseItems) {
-      return baseRate;
-    }
-    return baseRate + (numItems - baseItems) * ratePerAdd;
+  const clear = () => {
+    setProducts({});
+    setCart({});
   };
-  const shipping = getShipping();
-  const subTotal = Object.values(cart).reduce(
-    (acc, item) => acc + item.quantity * products[item.productId].price,
-    0
-  );
-  const total = subTotal + shipping;
 
-  const displayCart = Object.values(cart).map((cartItem) => {
-    const { productId, quantity } = cartItem;
-    const product = products[productId];
+  const cartList = Object.values(cart).map((item) => {
+    const product = products[item.productId];
     return {
       ...product,
-      quantity,
+      quantity: item.quantity,
     };
   });
 
-  const clear = () => {
-    setCart({});
-    setProducts({});
-  };
   const value = {
     products,
-    cart: displayCart,
+    cart: cartList,
     addOrUpdateProduct,
     removeProduct,
     changeQty,
     addOne,
     removeOne,
     clear,
-    // hack for nextjs hydration-error
-    shipping: mounted ? shipping : 0,
-    subTotal: mounted ? subTotal : 0,
-    total: mounted ? total : 0,
-    numItems: mounted ? numItems : 0,
+    shipping,
+    subTotal,
+    total,
+    numItems,
   };
   return <Cart.Provider value={value}>{children}</Cart.Provider>;
 };
@@ -168,7 +178,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 export const useCart = () => {
   const context = React.useContext(Cart);
   if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider");
+    throw new Error(`useCart must be used within a CartProvider`);
   }
   return context;
 };

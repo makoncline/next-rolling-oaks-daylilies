@@ -7,11 +7,17 @@ import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import { GetStaticProps, NextPage } from "next";
-import { ahs_data, lilies, lists, Prisma } from "@prisma/client";
+import {
+  AhsListing,
+  Listing,
+  List,
+  Image,
+} from "../../prisma/generated/sqlite-client";
 import { useSnackBar } from "../../components/snackBarProvider";
 import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
 import { prisma } from "../../prisma/db";
+import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
 import {
   Button,
   FancyHeading,
@@ -21,6 +27,13 @@ import {
 } from "@packages/design-system";
 import { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
+
+// Add this type declaration before the getStaticProps declaration
+type Props = {
+  title: string;
+  description: string;
+  listings: DisplayListing[];
+};
 
 const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   title,
@@ -109,132 +122,132 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const sortAlphaNum = (a: string | number, b: string | number) =>
     `${a}`.localeCompare(`${b}`, "en", { numeric: true }) < 0 ? -1 : 1;
 
-  const filterByName = (lilyArr: Listing[]) => {
+  const filterByName = (lilyArr: DisplayListing[]) => {
     if (!filters.name) return listings;
-    return lilyArr.filter((node: Listing) => {
-      return node.name.toLowerCase().includes(filters.name.toLowerCase());
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.title.toLowerCase().includes(filters.name.toLowerCase());
     });
   };
 
-  const filterByList = (lilyArr: Listing[]) => {
+  const filterByList = (lilyArr: DisplayListing[]) => {
     if (!filters.list) return lilyArr;
     if (filters.list.toLowerCase() === "no list") {
-      return lilyArr.filter((node: Listing) => {
-        return node.lists === null;
+      return lilyArr.filter((node: DisplayListing) => {
+        return !node.lists || node.lists.length === 0;
       });
     }
-    return lilyArr.filter((node: Listing) => {
-      return node.lists?.name
-        .toLowerCase()
-        .includes(filters.list.toLowerCase());
+    return lilyArr.filter((node: DisplayListing) => {
+      return (
+        node.lists &&
+        node.lists.some((list: List) =>
+          list.title.toLowerCase().includes(filters.list.toLowerCase())
+        )
+      );
     });
   };
 
-  const filterByColor = (lilyArr: Listing[]) => {
+  const filterByColor = (lilyArr: DisplayListing[]) => {
     if (!filters.color) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
-      return node.ahs_data?.color
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.ahsListing?.color
         ?.toLowerCase()
         .includes(filters.color.toLowerCase());
     });
   };
 
-  const filterByNote = (lilyArr: Listing[]) => {
+  const filterByNote = (lilyArr: DisplayListing[]) => {
     if (!filters.note) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.public_note &&
-        node.public_note.toLowerCase().includes(filters.note.toLowerCase())
+        node.description &&
+        node.description.toLowerCase().includes(filters.note.toLowerCase())
       );
     });
   };
 
-  const filterByFirstChar = (lilyArr: Listing[]) => {
+  const filterByFirstChar = (lilyArr: DisplayListing[]) => {
     if (!filters.char) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
-      return node.name
+    return lilyArr.filter((node: DisplayListing) => {
+      return node.title
         .substring(0, 1)
         .toLowerCase()
         .includes(filters.char.toLowerCase());
     });
   };
 
-  const filterByHybridizer = (lilyArr: Listing[]) => {
+  const filterByHybridizer = (lilyArr: DisplayListing[]) => {
     if (!filters.hybridizer) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.hybridizer &&
-        node.ahs_data.hybridizer
+        node.ahsListing?.hybridizer &&
+        node.ahsListing.hybridizer
           .toLowerCase()
           .includes(filters.hybridizer.toLowerCase())
       );
     });
   };
 
-  const filterByYear = (lilyArr: Listing[]) => {
+  const filterByYear = (lilyArr: DisplayListing[]) => {
     if (!filters.year) return lilyArr;
     return lilyArr
-      .filter((node: Listing) => node.ahs_data?.year)
-      .filter((node: Listing) => {
-        return (
-          node.ahs_data?.year &&
-          node.ahs_data.year.toLowerCase().includes(filters.year.toLowerCase())
-        );
+      .filter((node: DisplayListing) => node.ahsListing?.year)
+      .filter((node: DisplayListing) => {
+        return node.ahsListing?.year?.includes(filters.year);
       });
   };
-  const filterByPloidy = (lilyArr: Listing[]) => {
+  const filterByPloidy = (lilyArr: DisplayListing[]) => {
     if (!filters.ploidy) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.ploidy &&
-        node.ahs_data.ploidy
+        node.ahsListing?.ploidy &&
+        node.ahsListing.ploidy
           .toLowerCase()
           .includes(filters.ploidy.toLowerCase())
       );
     });
   };
-  const filterByForm = (lilyArr: Listing[]) => {
+  const filterByForm = (lilyArr: DisplayListing[]) => {
     if (!filters.form) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.form &&
-        node.ahs_data.form.toLowerCase().includes(filters.form.toLowerCase())
+        node.ahsListing?.form &&
+        node.ahsListing.form.toLowerCase().includes(filters.form.toLowerCase())
       );
     });
   };
-  const filterByFoliageType = (lilyArr: Listing[]) => {
+  const filterByFoliageType = (lilyArr: DisplayListing[]) => {
     if (!filters.foliageType) return lilyArr;
-    return lilyArr.filter((node: Listing) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.foliage_type &&
-        node.ahs_data.foliage_type
+        node.ahsListing?.foliageType &&
+        node.ahsListing.foliageType
           .toLowerCase()
           .includes(filters.foliageType.toLowerCase())
       );
     });
   };
-  const filterByFragrance = (lilyArr: Listing[]) => {
+  const filterByFragrance = (lilyArr: DisplayListing[]) => {
     if (!filters.fragrance) return lilyArr;
-    return lilyArr.filter((node) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.fragrance &&
-        node.ahs_data.fragrance
+        node.ahsListing?.fragrance &&
+        node.ahsListing.fragrance
           .toLowerCase()
           .includes(filters.fragrance.toLowerCase())
       );
     });
   };
-  const filterByBloomSeason = (lilyArr: Listing[]) => {
+  const filterByBloomSeason = (lilyArr: DisplayListing[]) => {
     if (!filters.bloomSeason) return lilyArr;
-    return lilyArr.filter((node) => {
+    return lilyArr.filter((node: DisplayListing) => {
       return (
-        node.ahs_data?.bloom_season &&
-        node.ahs_data.bloom_season.toLowerCase() ===
+        node.ahsListing?.bloomSeason &&
+        node.ahsListing.bloomSeason.toLowerCase() ===
           filters.bloomSeason.toLowerCase()
       );
     });
   };
-  const filterByBloomSize = (lilyArr: Listing[]) => {
+  const filterByBloomSize = (lilyArr: DisplayListing[]) => {
     if (!filters.bloomSize) return lilyArr;
     let low = 0;
     let high = 1000;
@@ -260,13 +273,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
     return lilyArr.filter((node) => {
       const size =
-        node.ahs_data?.bloom_size &&
-        parseInt(node.ahs_data.bloom_size.toLowerCase().split(/[^\d.]/)[0]);
+        node.ahsListing?.bloomSize &&
+        parseInt(node.ahsListing.bloomSize.toLowerCase().split(/[^\d.]/)[0]);
       return size && size > low && size <= high;
     });
   };
 
-  const filterByScapeHeight = (lilyArr: Listing[]) => {
+  const filterByScapeHeight = (lilyArr: DisplayListing[]) => {
     if (!filters.scapeHeight) return lilyArr;
     let low = 0;
     let high = 1000;
@@ -296,13 +309,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
     return lilyArr.filter((node) => {
       const size =
-        node.ahs_data?.scape_height &&
-        parseInt(node.ahs_data.scape_height.toLowerCase().split(/[^\d.]/)[0]);
+        node.ahsListing?.scapeHeight &&
+        parseInt(node.ahsListing.scapeHeight.toLowerCase().split(/[^\d.]/)[0]);
       return size && size > low && size <= high;
     });
   };
 
-  const filterByPrice = (lilyArr: Listing[]) => {
+  const filterByPrice = (lilyArr: DisplayListing[]) => {
     if (!filters.price) return lilyArr;
     let low = 0;
     let high = 1000;
@@ -345,9 +358,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (filters.name) filtered = filtered && filterByName(filtered);
     if (filters.char) filtered = filtered && filterByFirstChar(filtered);
     if (filters.list) filtered = filtered && filterByList(filtered);
-    if (filters.list) filtered = filtered && filterByList(filtered);
     if (filters.color) filtered = filtered && filterByColor(filtered);
-    if (filters.char) filtered = filtered && filterByFirstChar(filtered);
     if (filters.note) filtered = filtered && filterByNote(filtered);
     if (filters.hybridizer) filtered = filtered && filterByHybridizer(filtered);
     if (filters.year) filtered = filtered && filterByYear(filtered);
@@ -362,9 +373,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (filters.bloomSeason)
       filtered = filtered && filterByBloomSeason(filtered);
     if (filters.price) filtered = filtered && filterByPrice(filtered);
-    const sorted =
-      filtered &&
-      filtered.sort((a: Listing, b: Listing) => sortAlphaNum(a.name, b.name));
+    const sorted = filtered && sortTitlesLettersBeforeNumbers(filtered);
     return sorted;
   };
 
@@ -486,8 +495,8 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                       filteredLilies &&
                       Array.from(
                         new Set(
-                          listings.map(({ name }) =>
-                            name.substring(0, 1).toUpperCase()
+                          listings.map(({ title }) =>
+                            title.substring(0, 1).toUpperCase()
                           )
                         )
                       )
@@ -522,11 +531,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         Any
                       </option>
                       {listings &&
-                        filteredLilies &&
                         Array.from(
                           new Set(
-                            listings.map(({ lists }) =>
-                              lists ? lists.name : "No List"
+                            listings.flatMap((listing: DisplayListing) =>
+                              listing.lists && listing.lists.length > 0
+                                ? listing.lists.map((list: List) => list.title)
+                                : ["No List"]
                             )
                           )
                         )
@@ -565,9 +575,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) => lily.ahs_data?.hybridizer
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.hybridizer
                             )
-                            .map((lily: Listing) => lily.ahs_data?.hybridizer)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.hybridizer
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -598,12 +612,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.year
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.year
                             )
                             .map(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.year
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.year
                             )
                         )
                       )
@@ -633,12 +647,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.ploidy
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.ploidy
                             )
                             .map(
-                              (lily: Listing) =>
-                                lily.ahs_data && lily.ahs_data.ploidy
+                              (lily: DisplayListing) =>
+                                lily.ahsListing && lily.ahsListing.ploidy
                             )
                         )
                       )
@@ -666,8 +680,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                       Array.from(
                         new Set(
                           listings
-                            .filter((lily: Listing) => lily.ahs_data?.form)
-                            .map((lily: Listing) => lily.ahs_data?.form)
+                            .filter(
+                              (lily: DisplayListing) => lily.ahsListing?.form
+                            )
+                            .map(
+                              (lily: DisplayListing) => lily.ahsListing?.form
+                            )
                             .map((form) => form && form.split(" ")[0])
                         )
                       )
@@ -696,9 +714,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) => lily.ahs_data?.foliage_type
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.foliageType
                             )
-                            .map((lily: Listing) => lily.ahs_data?.foliage_type)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.foliageType
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -729,9 +751,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily) => lily.ahs_data && lily.ahs_data.fragrance
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.fragrance
                             )
-                            .map((lily) => lily.ahs_data?.fragrance)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.fragrance
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -793,9 +819,13 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         new Set(
                           listings
                             .filter(
-                              (lily: Listing) => lily.ahs_data?.bloom_season
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.bloomSeason
                             )
-                            .map((lily: Listing) => lily.ahs_data?.bloom_season)
+                            .map(
+                              (lily: DisplayListing) =>
+                                lily.ahsListing?.bloomSeason
+                            )
                         )
                       )
                         .sort((a, b) => sortAlphaNum(a + "", b + ""))
@@ -873,7 +903,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           )}
         </Space>
         <LilyWrapper>
-          {displayLilies.map((node: Listing) => {
+          {displayLilies.map((node: DisplayListing) => {
             if (!node) return;
             return (
               <React.Fragment key={node.id}>
@@ -923,78 +953,91 @@ const useSearchChange = (numResults: number, filters: any) => {
 };
 
 export async function getStaticPaths() {
-  const lists = await prisma.lists.findMany({
-    where: { user_id: siteConfig.userId },
-    select: { id: true, name: true },
+  const lists = await prisma.list.findMany({
+    where: { userId: siteConfig.userId },
+    select: { title: true },
   });
+
   const paths = lists.map((list) => ({
     params: {
-      catalog: slugify(list.name, { lower: true }),
+      catalog: list.title.toLowerCase().replace(/\s+/g, "-"),
     },
   }));
+
+  // Add paths for special catalogs
   paths.push({ params: { catalog: "all" } });
-  paths.push({ params: { catalog: "search" } });
   paths.push({ params: { catalog: "for-sale" } });
+  paths.push({ params: { catalog: "search" } });
+
   return {
-    paths: paths,
+    paths,
     fallback: false,
   };
 }
 
-const defaultList: lists = {
-  id: 0,
-  user_id: siteConfig.userId,
-  name: "All",
-  intro: "",
-  bio: "",
-  created_at: new Date(),
-  updated_at: new Date(),
+// Make sure we're using the correct type definition
+type DisplayListing = Listing & {
+  ahsListing: AhsListing | null;
+  lists: List[]; // Ensure this is defined as an array
+  images: Image[];
 };
 
-type Props = {
-  title: string;
-  description: string;
-  listings: (lilies & {
-    ahs_data: ahs_data | null;
-    lists: lists | null;
-  })[];
-};
-export type Listing = Props["listings"][number];
+export type ListingType = DisplayListing;
 
 export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   const catalog = context.params.catalog;
-  let listingsWhere: Prisma.liliesWhereInput | undefined = {
-    user_id: siteConfig.userId,
+  let listingsWhere: any = {
+    userId: siteConfig.userId,
+    OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
   };
-  let list: lists | undefined = undefined;
+  let list: any = undefined;
+
+  const defaultList = { id: "", title: "", description: "" };
+
   if (catalog === "for-sale") {
     listingsWhere = { ...listingsWhere, price: { gt: 0 } };
-    list = { ...defaultList, name: "For Sale", intro: "" };
+    list = { ...defaultList, title: "For Sale", description: "" };
   } else if (catalog === "all") {
-    list = { ...defaultList, name: "All", intro: "" };
+    list = { ...defaultList, title: "All", description: "" };
   } else if (catalog === "search") {
-    list = { ...defaultList, name: "Search", intro: "" };
+    list = { ...defaultList, title: "Search", description: "" };
   } else {
-    const listIds = await prisma.lists.findMany({
-      where: { user_id: siteConfig.userId },
-      select: { id: true, name: true },
+    // Look up list by slug
+    list = await prisma.list.findFirst({
+      where: {
+        userId: siteConfig.userId,
+        title: {
+          contains: catalog.replace(/-/g, " "),
+          // SQLite doesn't support insensitive mode like PostgreSQL
+          // We'll handle case insensitivity differently
+        },
+      },
     });
-    const listId = listIds.find(
-      (node) => slugify(node.name, { lower: true }) === catalog
-    )?.id;
-    listingsWhere = { ...listingsWhere, list_id: listId };
-    list = await prisma.lists.findFirstOrThrow({ where: { id: listId } });
+
+    if (list) {
+      listingsWhere = {
+        ...listingsWhere,
+        lists: { some: { id: list.id } },
+      };
+    }
   }
+
   if (!list) {
     throw new Error("List not found");
   }
-  const listings = await prisma.lilies.findMany({
-    orderBy: { name: "desc" },
-    include: { ahs_data: true, lists: true },
+
+  const listings = await prisma.listing.findMany({
+    include: {
+      ahsListing: true,
+      lists: true,
+      images: true,
+    },
     where: listingsWhere,
   });
-  const title = list.name;
-  const description = list.intro;
+
+  const title = list.title;
+  const description = list.description;
+
   return {
     props: JSON.parse(
       JSON.stringify({
@@ -1003,6 +1046,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
         listings: listings,
       })
     ),
+    revalidate: 60,
   };
 };
 

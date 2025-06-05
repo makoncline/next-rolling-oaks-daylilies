@@ -1,5 +1,4 @@
 import { siteConfig } from "siteConfig";
-import slugify from "slugify";
 import { prisma } from "../prisma/db";
 
 export const getSitemapEntry = (path: string, lastmod: Date) => {
@@ -26,44 +25,51 @@ export const getSitemapUrls = async () => {
     getSitemapEntry("/blog/dorothy-and-toto", new Date()),
   ];
 
-  const catalogs = await prisma.lists.findMany({
+  const catalogs = await prisma.list.findMany({
     select: {
-      name: true,
-      updated_at: true,
-      lilies: {
+      title: true,
+      updatedAt: true,
+      listings: {
         select: {
-          updated_at: true,
+          updatedAt: true,
+        },
+        where: {
+          OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
         },
         orderBy: {
-          updated_at: "asc",
+          updatedAt: "asc",
         },
         take: 1,
       },
     },
-    where: { user_id: siteConfig.userId },
+    where: { userId: siteConfig.userId },
   });
+
   const filteredCatalogs = catalogs.filter(
-    (catalog) => catalog.lilies.length > 0
+    (catalog) => catalog.listings.length > 0
   );
+
   const catalogUrls = filteredCatalogs.map((catalog) => {
     return getSitemapEntry(
-      `/catalog/${slugify(catalog.name.toLowerCase(), { lower: true })}`,
-      catalog.lilies[0].updated_at
+      `/catalog/${catalog.title.toLowerCase().replace(/\s+/g, "-")}`,
+      catalog.listings[0].updatedAt
     );
   });
 
-  const listings = await prisma.lilies.findMany({
+  const listings = await prisma.listing.findMany({
     select: {
-      name: true,
-      updated_at: true,
+      slug: true,
+      updatedAt: true,
     },
-    where: { user_id: siteConfig.userId },
+    where: {
+      userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+    },
   });
+
   const listingUrls = listings.map((listing) =>
-    getSitemapEntry(
-      `/${slugify(listing.name, { lower: true })}`,
-      listing.updated_at
-    )
+    getSitemapEntry(`/${listing.slug}`, listing.updatedAt)
   );
+
   return [...staticUrls, ...catalogUrls, ...listingUrls];
 };

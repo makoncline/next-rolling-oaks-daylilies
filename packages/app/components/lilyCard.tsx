@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import cart from "@iconify/icons-ic/round-shopping-cart";
 import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
-import { Listing } from "../pages/catalog/[catalog]";
+import { ListingType } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
 import { Button, Heading, Space } from "@packages/design-system";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
@@ -12,24 +12,26 @@ import Image from "next/image";
 import { getImageUrls } from "./Image";
 import styled from "styled-components";
 
-const LilyCard = ({ lily }: { lily: Listing }) => {
+const LilyCard = ({ lily }: { lily: ListingType }) => {
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
-  let image =
-    lily?.img_url?.reverse()[0] ||
-    lily.ahs_data?.image ||
-    getPlaceholderImageUrl(lily.name);
-  const images = getImageUrls(image);
+
+  let imageUrl =
+    lily.images?.length > 0
+      ? lily.images[0].url
+      : lily.ahsListing?.ahsImageUrl || getPlaceholderImageUrl(lily.title);
+
+  const images = getImageUrls(imageUrl);
 
   const cartItem = lily.price && {
     id: lily.id,
-    name: lily.name,
-    price: lily.price as unknown as number,
+    name: lily.title,
+    price: lily.price,
   };
 
   return (
     <LilyCardWrapper direction="column">
-      {image ? (
+      {imageUrl ? (
         <div
           css={`
             height: var(--size-image-card);
@@ -39,7 +41,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
         >
           <Image
             src={images.full}
-            alt={lily.name + "image"}
+            alt={lily.title + " image"}
             fill
             sizes="600px"
             style={{
@@ -52,13 +54,11 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
         <div style={{ height: "100%" }} />
       )}
       <Space direction="column">
-        <Heading level={4}>{lily.name}</Heading>
+        <Heading level={4}>{lily.title}</Heading>
         <p>{lily.price ? `$${lily.price}` : "display only"}</p>
         <Space block>
           <Space block>
-            <Link href={`/${slugify(lily.name, { lower: true })}`}>
-              View listing
-            </Link>
+            <Link href={`/${lily.slug}`}>View listing</Link>
           </Space>
           {cartItem && (
             <Button
@@ -66,7 +66,7 @@ const LilyCard = ({ lily }: { lily: Listing }) => {
               aria-label="add to cart"
               onClick={() => {
                 addOrUpdateProduct(cartItem);
-                addAlert && addAlert(`Added ${lily.name} to cart!`);
+                addAlert && addAlert(`Added ${lily.title} to cart!`);
               }}
               style={{ alignItems: "center" }}
             >

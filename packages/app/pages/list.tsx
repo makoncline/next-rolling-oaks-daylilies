@@ -1,10 +1,10 @@
 import React from "react";
-import slugify from "slugify";
 import Layout from "../components/layout";
 import { GetStaticProps } from "next";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
 import { Heading, Thumbnail } from "@packages/design-system";
+import { sortTitlesLettersBeforeNumbers } from "../lib/sort";
 import type { InferGetStaticPropsType } from "next";
 import { getImageUrls } from "components/Image";
 import Image from "next/image";
@@ -41,15 +41,14 @@ const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
         </thead>
         <tbody>
           {listings.map((listing) => {
-            const images = listing.image ? getImageUrls(listing.image) : null;
             return (
               <tr key={listing.id}>
                 {/* <td>
-                  {images && (
+                  {listing.image && (
                     <Thumbnail>
                       <Image
-                        src={images.thumb}
-                        alt={`${listing.name}`}
+                        src={listing.image}
+                        alt={`${listing.title}`}
                         fill
                         sizes="200px"
                         style={{
@@ -59,10 +58,10 @@ const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                     </Thumbnail>
                   )}
                 </td> */}
-                <td>{listing.name}</td>
+                <td>{listing.title}</td>
                 <td>{listing.hybridizer}</td>
                 <td>{listing.price ? `$${listing.price}` : "display only"}</td>
-                <td>{listing.public_note}</td>
+                <td>{listing.description}</td>
                 <td>
                   <Link href={`/${listing.slug}`}>View</Link>
                 </td>
@@ -80,47 +79,49 @@ export default Listings;
 type Listing = {
   image: string | null;
   slug: string;
-  id: number;
-  name: string;
+  id: string;
+  title: string;
   price: number | null;
-  public_note: string | null;
+  description: string | null;
   hybridizer: string | null;
 };
 
 export const getStaticProps: GetStaticProps<{
   listings: Listing[];
 }> = async () => {
-  const listings = await prisma.lilies.findMany({
-    where: { user_id: siteConfig.userId },
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      public_note: true,
-      img_url: true,
-      ahs_data: { select: { image: true, hybridizer: true } },
+  const listings = await prisma.listing.findMany({
+    where: {
+      userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+    },
+    include: {
+      ahsListing: { select: { hybridizer: true } },
+      images: { take: 1, orderBy: { order: "asc" } },
     },
   });
+
   const improvedListings = listings.map((listing) => {
-    const { img_url, ahs_data, ...rest } = listing;
-    const listingImages = [...img_url, ahs_data?.image].filter(
-      Boolean
-    ) as string[];
-    const firstImage = listingImages.length > 0 ? listingImages[0] : null;
-    const slug = slugify(listing.name, { lower: true });
+    const firstImage = listing.images.length > 0 ? listing.images[0].url : null;
+
     return {
-      ...rest,
+      id: listing.id,
+      title: listing.title,
+      price: listing.price,
+      description: listing.description,
       image: firstImage,
-      slug,
-      hybridizer: ahs_data?.hybridizer,
+      slug: listing.slug,
+      hybridizer: listing.ahsListing?.hybridizer || null,
     };
   });
+
+  const sortedListings = sortTitlesLettersBeforeNumbers(improvedListings);
+
   return {
     props: JSON.parse(
       JSON.stringify({
-        listings: improvedListings,
+        listings: sortedListings,
       })
     ),
+    revalidate: 60,
   };
 };
