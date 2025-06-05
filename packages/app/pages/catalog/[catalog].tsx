@@ -988,6 +988,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   const catalog = context.params.catalog;
   let listingsWhere: any = {
     userId: siteConfig.userId,
+    OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
   };
   let list: any = undefined;
 

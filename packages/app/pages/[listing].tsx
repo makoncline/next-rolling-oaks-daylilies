@@ -222,6 +222,7 @@ export async function getStaticPaths() {
   const listings = await prisma.listing.findMany({
     where: {
       userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
     },
     select: { title: true, slug: true },
   });
@@ -241,6 +242,7 @@ export async function getStaticProps(context: any) {
     where: {
       userId: siteConfig.userId,
       slug,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
     },
     include: {
       ahsListing: true,

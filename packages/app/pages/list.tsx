@@ -90,7 +90,10 @@ export const getStaticProps: GetStaticProps<{
   listings: Listing[];
 }> = async () => {
   const listings = await prisma.listing.findMany({
-    where: { userId: siteConfig.userId },
+    where: {
+      userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+    },
     include: {
       ahsListing: { select: { hybridizer: true } },
       images: { take: 1, orderBy: { order: "asc" } },

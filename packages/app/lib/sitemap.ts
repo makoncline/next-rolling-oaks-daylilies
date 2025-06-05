@@ -33,6 +33,9 @@ export const getSitemapUrls = async () => {
         select: {
           updatedAt: true,
         },
+        where: {
+          OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+        },
         orderBy: {
           updatedAt: "asc",
         },
@@ -58,7 +61,10 @@ export const getSitemapUrls = async () => {
       slug: true,
       updatedAt: true,
     },
-    where: { userId: siteConfig.userId },
+    where: {
+      userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+    },
   });
 
   const listingUrls = listings.map((listing) =>

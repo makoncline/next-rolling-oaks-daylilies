@@ -49,6 +49,7 @@ export async function getStaticProps() {
     const listCountQuery = await prisma.listing.count({
       where: {
         lists: { some: { id: list.id } },
+        OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
       },
     });
 
@@ -57,6 +58,7 @@ export async function getStaticProps() {
       where: {
         listing: {
           lists: { some: { id: list.id } },
+          OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
         },
       },
       orderBy: { updatedAt: "desc" },
@@ -77,7 +79,10 @@ export async function getStaticProps() {
 
   // All listings catalog
   const allListingCountQuery = await prisma.listing.count({
-    where: { userId: siteConfig.userId },
+    where: {
+      userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+    },
   });
 
   const allListingImages = Object.values(listsImages).flat();
@@ -94,6 +99,7 @@ export async function getStaticProps() {
     where: {
       price: { gt: 0 },
       userId: siteConfig.userId,
+      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
     },
   });
 
@@ -102,6 +108,7 @@ export async function getStaticProps() {
       listing: {
         price: { gt: 0 },
         userId: siteConfig.userId,
+        OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
       },
     },
     select: { url: true },
