@@ -133,7 +133,7 @@ const Home: NextPage = () => {
       <Space direction="column" block as="section">
         <Heading level={2}>Contact me?</Heading>
         <div ref={contactFormRef}>
-          <ContactForm cta="Send me a message" action="/thanks" />
+          <ContactForm cta="Send me a message" successPath="/thanks" />
         </div>
       </Space>
       <br />
