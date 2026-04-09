@@ -2,27 +2,46 @@ import {
   Button,
   Field,
   Form,
+  FormError,
   FormWrapper,
-  SubmitButton,
 } from "@packages/design-system";
 import React from "react";
-import styled from "styled-components";
+import { useRouter } from "next/router";
+import {
+  NETLIFY_FORMS_PATH,
+  submitNetlifyForm,
+} from "../lib/netlifyForms";
 
 type ContactFormProps = {
-  action: string;
   cta: string;
+  successPath: string;
 };
 
-const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
+const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
+  const router = useRouter();
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitError(null);
+
+    try {
+      await submitNetlifyForm(event.currentTarget);
+      await router.push(successPath);
+    } catch (error) {
+      console.error(error);
+      setSubmitError("Could not send your message. Please try again.");
+    }
+  };
+
   return (
     <FormWrapper>
       <Form
         formId="contact-form"
         name="contact"
         method="post"
-        data-netlify="true"
-        data-netlify-honeypot="bot-field"
-        action={action}
+        action={NETLIFY_FORMS_PATH}
+        onSubmitCapture={handleSubmit}
         autocomplete="off"
       >
         <input
@@ -46,39 +65,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ action, cta }) => {
         <Field name="message" required textarea>
           Your message
         </Field>
-        <SubmitButton>
-          <Button styleType="primary" block>
-            {cta}
-          </Button>
-        </SubmitButton>
+        <Button type="submit" styleType="primary" block>
+          {cta}
+        </Button>
+        {submitError ? <FormError>{submitError}</FormError> : null}
       </Form>
     </FormWrapper>
   );
 };
 export default ContactForm;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
-  label {
-    display: inline-block;
-    margin-bottom: 0.5rem;
-  }
-  input,
-  textarea {
-    width: 100%;
-    margin: 0;
-    margin-bottom: 15px;
-    display: block;
-    padding: 0.375rem 0.75rem;
-    font-size: 1.3rem;
-    line-height: 1.5;
-    color: #55595c;
-    background-color: #fff;
-    background-image: none;
-    border: 0.0625rem solid #ccc;
-    border-radius: 7px;
-  }
-`;

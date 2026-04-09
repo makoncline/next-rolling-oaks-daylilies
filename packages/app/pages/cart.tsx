@@ -6,12 +6,17 @@ import {
   FancyHeading,
   Field,
   Form,
+  FormError,
   FormWrapper,
   Heading,
   Hr,
   Space,
-  SubmitButton,
 } from "@packages/design-system";
+import { useRouter } from "next/router";
+import {
+  NETLIFY_FORMS_PATH,
+  submitNetlifyForm,
+} from "../lib/netlifyForms";
 
 const CartTable = () => {
   const { addOne, removeOne, numItems, shipping, cart, total } = useCart();
@@ -85,6 +90,8 @@ const CartTable = () => {
 
 const CartForm = () => {
   const { numItems, shipping, cart, total } = useCart();
+  const router = useRouter();
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const cartText = () => {
     if (!numItems) return null;
@@ -99,15 +106,29 @@ const CartForm = () => {
     return items;
   };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitError(null);
+
+    try {
+      await submitNetlifyForm(event.currentTarget);
+      await router.push("/thanks");
+    } catch (error) {
+      console.error(error);
+      setSubmitError(
+        "Could not submit your availability request. Please try again."
+      );
+    }
+  };
+
   return (
     <FormWrapper>
       <Form
         formId={"cart"}
         name="cart"
         method="post"
-        data-netlify="true"
-        data-netlify-honeypot="bot-field"
-        action="/thanks"
+        action={NETLIFY_FORMS_PATH}
+        onSubmitCapture={handleSubmit}
         hidden={numItems < 1}
         autocomplete="off"
       >
@@ -138,11 +159,10 @@ const CartForm = () => {
         <Field name="message" textarea>
           Your message
         </Field>
-        <SubmitButton>
-          <Button type="submit" styleType="primary" block>
-            Check availability
-          </Button>
-        </SubmitButton>
+        <Button type="submit" styleType="primary" block>
+          Check availability
+        </Button>
+        {submitError ? <FormError>{submitError}</FormError> : null}
       </Form>
     </FormWrapper>
   );
