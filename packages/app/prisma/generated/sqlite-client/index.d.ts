@@ -19,6 +19,16 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type AhsListing = $Result.DefaultSelection<Prisma.$AhsListingPayload>
 /**
+ * Model CultivarReference
+ * 
+ */
+export type CultivarReference = $Result.DefaultSelection<Prisma.$CultivarReferencePayload>
+/**
+ * Model V2AhsCultivar
+ * 
+ */
+export type V2AhsCultivar = $Result.DefaultSelection<Prisma.$V2AhsCultivarPayload>
+/**
  * Model Listing
  * 
  */
@@ -183,6 +193,26 @@ export class PrismaClient<
     * ```
     */
   get ahsListing(): Prisma.AhsListingDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.cultivarReference`: Exposes CRUD operations for the **CultivarReference** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CultivarReferences
+    * const cultivarReferences = await prisma.cultivarReference.findMany()
+    * ```
+    */
+  get cultivarReference(): Prisma.CultivarReferenceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.v2AhsCultivar`: Exposes CRUD operations for the **V2AhsCultivar** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more V2AhsCultivars
+    * const v2AhsCultivars = await prisma.v2AhsCultivar.findMany()
+    * ```
+    */
+  get v2AhsCultivar(): Prisma.V2AhsCultivarDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.listing`: Exposes CRUD operations for the **Listing** model.
@@ -684,6 +714,8 @@ export namespace Prisma {
 
   export const ModelName: {
     AhsListing: 'AhsListing',
+    CultivarReference: 'CultivarReference',
+    V2AhsCultivar: 'V2AhsCultivar',
     Listing: 'Listing',
     List: 'List',
     UserProfile: 'UserProfile',
@@ -708,7 +740,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "ahsListing" | "listing" | "list" | "userProfile" | "image" | "user" | "keyValue"
+      modelProps: "ahsListing" | "cultivarReference" | "v2AhsCultivar" | "listing" | "list" | "userProfile" | "image" | "user" | "keyValue"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -783,6 +815,154 @@ export namespace Prisma {
           count: {
             args: Prisma.AhsListingCountArgs<ExtArgs>
             result: $Utils.Optional<AhsListingCountAggregateOutputType> | number
+          }
+        }
+      }
+      CultivarReference: {
+        payload: Prisma.$CultivarReferencePayload<ExtArgs>
+        fields: Prisma.CultivarReferenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CultivarReferenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CultivarReferenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>
+          }
+          findFirst: {
+            args: Prisma.CultivarReferenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CultivarReferenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>
+          }
+          findMany: {
+            args: Prisma.CultivarReferenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>[]
+          }
+          create: {
+            args: Prisma.CultivarReferenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>
+          }
+          createMany: {
+            args: Prisma.CultivarReferenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CultivarReferenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>[]
+          }
+          delete: {
+            args: Prisma.CultivarReferenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>
+          }
+          update: {
+            args: Prisma.CultivarReferenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>
+          }
+          deleteMany: {
+            args: Prisma.CultivarReferenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CultivarReferenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CultivarReferenceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>[]
+          }
+          upsert: {
+            args: Prisma.CultivarReferenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CultivarReferencePayload>
+          }
+          aggregate: {
+            args: Prisma.CultivarReferenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCultivarReference>
+          }
+          groupBy: {
+            args: Prisma.CultivarReferenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CultivarReferenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CultivarReferenceCountArgs<ExtArgs>
+            result: $Utils.Optional<CultivarReferenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      V2AhsCultivar: {
+        payload: Prisma.$V2AhsCultivarPayload<ExtArgs>
+        fields: Prisma.V2AhsCultivarFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.V2AhsCultivarFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.V2AhsCultivarFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>
+          }
+          findFirst: {
+            args: Prisma.V2AhsCultivarFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.V2AhsCultivarFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>
+          }
+          findMany: {
+            args: Prisma.V2AhsCultivarFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>[]
+          }
+          create: {
+            args: Prisma.V2AhsCultivarCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>
+          }
+          createMany: {
+            args: Prisma.V2AhsCultivarCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.V2AhsCultivarCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>[]
+          }
+          delete: {
+            args: Prisma.V2AhsCultivarDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>
+          }
+          update: {
+            args: Prisma.V2AhsCultivarUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>
+          }
+          deleteMany: {
+            args: Prisma.V2AhsCultivarDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.V2AhsCultivarUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.V2AhsCultivarUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>[]
+          }
+          upsert: {
+            args: Prisma.V2AhsCultivarUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$V2AhsCultivarPayload>
+          }
+          aggregate: {
+            args: Prisma.V2AhsCultivarAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateV2AhsCultivar>
+          }
+          groupBy: {
+            args: Prisma.V2AhsCultivarGroupByArgs<ExtArgs>
+            result: $Utils.Optional<V2AhsCultivarGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.V2AhsCultivarCountArgs<ExtArgs>
+            result: $Utils.Optional<V2AhsCultivarCountAggregateOutputType> | number
           }
         }
       }
@@ -1319,6 +1499,8 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     ahsListing?: AhsListingOmit
+    cultivarReference?: CultivarReferenceOmit
+    v2AhsCultivar?: V2AhsCultivarOmit
     listing?: ListingOmit
     list?: ListOmit
     userProfile?: UserProfileOmit
@@ -1441,6 +1623,37 @@ export namespace Prisma {
    * AhsListingCountOutputType without action
    */
   export type AhsListingCountOutputTypeCountLiliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ListingWhereInput
+  }
+
+
+  /**
+   * Count Type CultivarReferenceCountOutputType
+   */
+
+  export type CultivarReferenceCountOutputType = {
+    listings: number
+  }
+
+  export type CultivarReferenceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    listings?: boolean | CultivarReferenceCountOutputTypeCountListingsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CultivarReferenceCountOutputType without action
+   */
+  export type CultivarReferenceCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReferenceCountOutputType
+     */
+    select?: CultivarReferenceCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CultivarReferenceCountOutputType without action
+   */
+  export type CultivarReferenceCountOutputTypeCountListingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ListingWhereInput
   }
 
@@ -1899,6 +2112,7 @@ export namespace Prisma {
     flower?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    cultivarReference?: boolean | AhsListing$cultivarReferenceArgs<ExtArgs>
     lilies?: boolean | AhsListing$liliesArgs<ExtArgs>
     _count?: boolean | AhsListingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ahsListing"]>
@@ -1983,6 +2197,7 @@ export namespace Prisma {
 
   export type AhsListingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "hybridizer" | "year" | "scapeHeight" | "bloomSize" | "bloomSeason" | "ploidy" | "foliageType" | "bloomHabit" | "seedlingNum" | "color" | "form" | "parentage" | "ahsImageUrl" | "fragrance" | "budcount" | "branches" | "sculpting" | "foliage" | "flower" | "createdAt" | "updatedAt", ExtArgs["result"]["ahsListing"]>
   export type AhsListingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    cultivarReference?: boolean | AhsListing$cultivarReferenceArgs<ExtArgs>
     lilies?: boolean | AhsListing$liliesArgs<ExtArgs>
     _count?: boolean | AhsListingCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -1992,6 +2207,7 @@ export namespace Prisma {
   export type $AhsListingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AhsListing"
     objects: {
+      cultivarReference: Prisma.$CultivarReferencePayload<ExtArgs> | null
       lilies: Prisma.$ListingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2412,6 +2628,7 @@ export namespace Prisma {
    */
   export interface Prisma__AhsListingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    cultivarReference<T extends AhsListing$cultivarReferenceArgs<ExtArgs> = {}>(args?: Subset<T, AhsListing$cultivarReferenceArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lilies<T extends AhsListing$liliesArgs<ExtArgs> = {}>(args?: Subset<T, AhsListing$liliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2851,6 +3068,25 @@ export namespace Prisma {
   }
 
   /**
+   * AhsListing.cultivarReference
+   */
+  export type AhsListing$cultivarReferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    where?: CultivarReferenceWhereInput
+  }
+
+  /**
    * AhsListing.lilies
    */
   export type AhsListing$liliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2894,6 +3130,2793 @@ export namespace Prisma {
 
 
   /**
+   * Model CultivarReference
+   */
+
+  export type AggregateCultivarReference = {
+    _count: CultivarReferenceCountAggregateOutputType | null
+    _min: CultivarReferenceMinAggregateOutputType | null
+    _max: CultivarReferenceMaxAggregateOutputType | null
+  }
+
+  export type CultivarReferenceMinAggregateOutputType = {
+    id: string | null
+    ahsId: string | null
+    v2AhsCultivarId: string | null
+    normalizedName: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CultivarReferenceMaxAggregateOutputType = {
+    id: string | null
+    ahsId: string | null
+    v2AhsCultivarId: string | null
+    normalizedName: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CultivarReferenceCountAggregateOutputType = {
+    id: number
+    ahsId: number
+    v2AhsCultivarId: number
+    normalizedName: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CultivarReferenceMinAggregateInputType = {
+    id?: true
+    ahsId?: true
+    v2AhsCultivarId?: true
+    normalizedName?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CultivarReferenceMaxAggregateInputType = {
+    id?: true
+    ahsId?: true
+    v2AhsCultivarId?: true
+    normalizedName?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CultivarReferenceCountAggregateInputType = {
+    id?: true
+    ahsId?: true
+    v2AhsCultivarId?: true
+    normalizedName?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CultivarReferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CultivarReference to aggregate.
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CultivarReferences to fetch.
+     */
+    orderBy?: CultivarReferenceOrderByWithRelationInput | CultivarReferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CultivarReferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CultivarReferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CultivarReferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CultivarReferences
+    **/
+    _count?: true | CultivarReferenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CultivarReferenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CultivarReferenceMaxAggregateInputType
+  }
+
+  export type GetCultivarReferenceAggregateType<T extends CultivarReferenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateCultivarReference]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCultivarReference[P]>
+      : GetScalarType<T[P], AggregateCultivarReference[P]>
+  }
+
+
+
+
+  export type CultivarReferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CultivarReferenceWhereInput
+    orderBy?: CultivarReferenceOrderByWithAggregationInput | CultivarReferenceOrderByWithAggregationInput[]
+    by: CultivarReferenceScalarFieldEnum[] | CultivarReferenceScalarFieldEnum
+    having?: CultivarReferenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CultivarReferenceCountAggregateInputType | true
+    _min?: CultivarReferenceMinAggregateInputType
+    _max?: CultivarReferenceMaxAggregateInputType
+  }
+
+  export type CultivarReferenceGroupByOutputType = {
+    id: string
+    ahsId: string | null
+    v2AhsCultivarId: string | null
+    normalizedName: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: CultivarReferenceCountAggregateOutputType | null
+    _min: CultivarReferenceMinAggregateOutputType | null
+    _max: CultivarReferenceMaxAggregateOutputType | null
+  }
+
+  type GetCultivarReferenceGroupByPayload<T extends CultivarReferenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CultivarReferenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CultivarReferenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CultivarReferenceGroupByOutputType[P]>
+            : GetScalarType<T[P], CultivarReferenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CultivarReferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ahsId?: boolean
+    v2AhsCultivarId?: boolean
+    normalizedName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    ahsListing?: boolean | CultivarReference$ahsListingArgs<ExtArgs>
+    listings?: boolean | CultivarReference$listingsArgs<ExtArgs>
+    v2AhsCultivar?: boolean | CultivarReference$v2AhsCultivarArgs<ExtArgs>
+    _count?: boolean | CultivarReferenceCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cultivarReference"]>
+
+  export type CultivarReferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ahsId?: boolean
+    v2AhsCultivarId?: boolean
+    normalizedName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    ahsListing?: boolean | CultivarReference$ahsListingArgs<ExtArgs>
+    v2AhsCultivar?: boolean | CultivarReference$v2AhsCultivarArgs<ExtArgs>
+  }, ExtArgs["result"]["cultivarReference"]>
+
+  export type CultivarReferenceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ahsId?: boolean
+    v2AhsCultivarId?: boolean
+    normalizedName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    ahsListing?: boolean | CultivarReference$ahsListingArgs<ExtArgs>
+    v2AhsCultivar?: boolean | CultivarReference$v2AhsCultivarArgs<ExtArgs>
+  }, ExtArgs["result"]["cultivarReference"]>
+
+  export type CultivarReferenceSelectScalar = {
+    id?: boolean
+    ahsId?: boolean
+    v2AhsCultivarId?: boolean
+    normalizedName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CultivarReferenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ahsId" | "v2AhsCultivarId" | "normalizedName" | "createdAt" | "updatedAt", ExtArgs["result"]["cultivarReference"]>
+  export type CultivarReferenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ahsListing?: boolean | CultivarReference$ahsListingArgs<ExtArgs>
+    listings?: boolean | CultivarReference$listingsArgs<ExtArgs>
+    v2AhsCultivar?: boolean | CultivarReference$v2AhsCultivarArgs<ExtArgs>
+    _count?: boolean | CultivarReferenceCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CultivarReferenceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ahsListing?: boolean | CultivarReference$ahsListingArgs<ExtArgs>
+    v2AhsCultivar?: boolean | CultivarReference$v2AhsCultivarArgs<ExtArgs>
+  }
+  export type CultivarReferenceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ahsListing?: boolean | CultivarReference$ahsListingArgs<ExtArgs>
+    v2AhsCultivar?: boolean | CultivarReference$v2AhsCultivarArgs<ExtArgs>
+  }
+
+  export type $CultivarReferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CultivarReference"
+    objects: {
+      ahsListing: Prisma.$AhsListingPayload<ExtArgs> | null
+      listings: Prisma.$ListingPayload<ExtArgs>[]
+      v2AhsCultivar: Prisma.$V2AhsCultivarPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      ahsId: string | null
+      v2AhsCultivarId: string | null
+      normalizedName: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["cultivarReference"]>
+    composites: {}
+  }
+
+  type CultivarReferenceGetPayload<S extends boolean | null | undefined | CultivarReferenceDefaultArgs> = $Result.GetResult<Prisma.$CultivarReferencePayload, S>
+
+  type CultivarReferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CultivarReferenceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CultivarReferenceCountAggregateInputType | true
+    }
+
+  export interface CultivarReferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CultivarReference'], meta: { name: 'CultivarReference' } }
+    /**
+     * Find zero or one CultivarReference that matches the filter.
+     * @param {CultivarReferenceFindUniqueArgs} args - Arguments to find a CultivarReference
+     * @example
+     * // Get one CultivarReference
+     * const cultivarReference = await prisma.cultivarReference.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CultivarReferenceFindUniqueArgs>(args: SelectSubset<T, CultivarReferenceFindUniqueArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CultivarReference that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CultivarReferenceFindUniqueOrThrowArgs} args - Arguments to find a CultivarReference
+     * @example
+     * // Get one CultivarReference
+     * const cultivarReference = await prisma.cultivarReference.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CultivarReferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, CultivarReferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CultivarReference that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceFindFirstArgs} args - Arguments to find a CultivarReference
+     * @example
+     * // Get one CultivarReference
+     * const cultivarReference = await prisma.cultivarReference.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CultivarReferenceFindFirstArgs>(args?: SelectSubset<T, CultivarReferenceFindFirstArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CultivarReference that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceFindFirstOrThrowArgs} args - Arguments to find a CultivarReference
+     * @example
+     * // Get one CultivarReference
+     * const cultivarReference = await prisma.cultivarReference.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CultivarReferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, CultivarReferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CultivarReferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CultivarReferences
+     * const cultivarReferences = await prisma.cultivarReference.findMany()
+     * 
+     * // Get first 10 CultivarReferences
+     * const cultivarReferences = await prisma.cultivarReference.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cultivarReferenceWithIdOnly = await prisma.cultivarReference.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CultivarReferenceFindManyArgs>(args?: SelectSubset<T, CultivarReferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CultivarReference.
+     * @param {CultivarReferenceCreateArgs} args - Arguments to create a CultivarReference.
+     * @example
+     * // Create one CultivarReference
+     * const CultivarReference = await prisma.cultivarReference.create({
+     *   data: {
+     *     // ... data to create a CultivarReference
+     *   }
+     * })
+     * 
+     */
+    create<T extends CultivarReferenceCreateArgs>(args: SelectSubset<T, CultivarReferenceCreateArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CultivarReferences.
+     * @param {CultivarReferenceCreateManyArgs} args - Arguments to create many CultivarReferences.
+     * @example
+     * // Create many CultivarReferences
+     * const cultivarReference = await prisma.cultivarReference.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CultivarReferenceCreateManyArgs>(args?: SelectSubset<T, CultivarReferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CultivarReferences and returns the data saved in the database.
+     * @param {CultivarReferenceCreateManyAndReturnArgs} args - Arguments to create many CultivarReferences.
+     * @example
+     * // Create many CultivarReferences
+     * const cultivarReference = await prisma.cultivarReference.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CultivarReferences and only return the `id`
+     * const cultivarReferenceWithIdOnly = await prisma.cultivarReference.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CultivarReferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, CultivarReferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CultivarReference.
+     * @param {CultivarReferenceDeleteArgs} args - Arguments to delete one CultivarReference.
+     * @example
+     * // Delete one CultivarReference
+     * const CultivarReference = await prisma.cultivarReference.delete({
+     *   where: {
+     *     // ... filter to delete one CultivarReference
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CultivarReferenceDeleteArgs>(args: SelectSubset<T, CultivarReferenceDeleteArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CultivarReference.
+     * @param {CultivarReferenceUpdateArgs} args - Arguments to update one CultivarReference.
+     * @example
+     * // Update one CultivarReference
+     * const cultivarReference = await prisma.cultivarReference.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CultivarReferenceUpdateArgs>(args: SelectSubset<T, CultivarReferenceUpdateArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CultivarReferences.
+     * @param {CultivarReferenceDeleteManyArgs} args - Arguments to filter CultivarReferences to delete.
+     * @example
+     * // Delete a few CultivarReferences
+     * const { count } = await prisma.cultivarReference.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CultivarReferenceDeleteManyArgs>(args?: SelectSubset<T, CultivarReferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CultivarReferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CultivarReferences
+     * const cultivarReference = await prisma.cultivarReference.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CultivarReferenceUpdateManyArgs>(args: SelectSubset<T, CultivarReferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CultivarReferences and returns the data updated in the database.
+     * @param {CultivarReferenceUpdateManyAndReturnArgs} args - Arguments to update many CultivarReferences.
+     * @example
+     * // Update many CultivarReferences
+     * const cultivarReference = await prisma.cultivarReference.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CultivarReferences and only return the `id`
+     * const cultivarReferenceWithIdOnly = await prisma.cultivarReference.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CultivarReferenceUpdateManyAndReturnArgs>(args: SelectSubset<T, CultivarReferenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CultivarReference.
+     * @param {CultivarReferenceUpsertArgs} args - Arguments to update or create a CultivarReference.
+     * @example
+     * // Update or create a CultivarReference
+     * const cultivarReference = await prisma.cultivarReference.upsert({
+     *   create: {
+     *     // ... data to create a CultivarReference
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CultivarReference we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CultivarReferenceUpsertArgs>(args: SelectSubset<T, CultivarReferenceUpsertArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CultivarReferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceCountArgs} args - Arguments to filter CultivarReferences to count.
+     * @example
+     * // Count the number of CultivarReferences
+     * const count = await prisma.cultivarReference.count({
+     *   where: {
+     *     // ... the filter for the CultivarReferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends CultivarReferenceCountArgs>(
+      args?: Subset<T, CultivarReferenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CultivarReferenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CultivarReference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CultivarReferenceAggregateArgs>(args: Subset<T, CultivarReferenceAggregateArgs>): Prisma.PrismaPromise<GetCultivarReferenceAggregateType<T>>
+
+    /**
+     * Group by CultivarReference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CultivarReferenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CultivarReferenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CultivarReferenceGroupByArgs['orderBy'] }
+        : { orderBy?: CultivarReferenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CultivarReferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCultivarReferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CultivarReference model
+   */
+  readonly fields: CultivarReferenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CultivarReference.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CultivarReferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    ahsListing<T extends CultivarReference$ahsListingArgs<ExtArgs> = {}>(args?: Subset<T, CultivarReference$ahsListingArgs<ExtArgs>>): Prisma__AhsListingClient<$Result.GetResult<Prisma.$AhsListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    listings<T extends CultivarReference$listingsArgs<ExtArgs> = {}>(args?: Subset<T, CultivarReference$listingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    v2AhsCultivar<T extends CultivarReference$v2AhsCultivarArgs<ExtArgs> = {}>(args?: Subset<T, CultivarReference$v2AhsCultivarArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CultivarReference model
+   */ 
+  interface CultivarReferenceFieldRefs {
+    readonly id: FieldRef<"CultivarReference", 'String'>
+    readonly ahsId: FieldRef<"CultivarReference", 'String'>
+    readonly v2AhsCultivarId: FieldRef<"CultivarReference", 'String'>
+    readonly normalizedName: FieldRef<"CultivarReference", 'String'>
+    readonly createdAt: FieldRef<"CultivarReference", 'DateTime'>
+    readonly updatedAt: FieldRef<"CultivarReference", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CultivarReference findUnique
+   */
+  export type CultivarReferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which CultivarReference to fetch.
+     */
+    where: CultivarReferenceWhereUniqueInput
+  }
+
+  /**
+   * CultivarReference findUniqueOrThrow
+   */
+  export type CultivarReferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which CultivarReference to fetch.
+     */
+    where: CultivarReferenceWhereUniqueInput
+  }
+
+  /**
+   * CultivarReference findFirst
+   */
+  export type CultivarReferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which CultivarReference to fetch.
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CultivarReferences to fetch.
+     */
+    orderBy?: CultivarReferenceOrderByWithRelationInput | CultivarReferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CultivarReferences.
+     */
+    cursor?: CultivarReferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CultivarReferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CultivarReferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CultivarReferences.
+     */
+    distinct?: CultivarReferenceScalarFieldEnum | CultivarReferenceScalarFieldEnum[]
+  }
+
+  /**
+   * CultivarReference findFirstOrThrow
+   */
+  export type CultivarReferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which CultivarReference to fetch.
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CultivarReferences to fetch.
+     */
+    orderBy?: CultivarReferenceOrderByWithRelationInput | CultivarReferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CultivarReferences.
+     */
+    cursor?: CultivarReferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CultivarReferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CultivarReferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CultivarReferences.
+     */
+    distinct?: CultivarReferenceScalarFieldEnum | CultivarReferenceScalarFieldEnum[]
+  }
+
+  /**
+   * CultivarReference findMany
+   */
+  export type CultivarReferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which CultivarReferences to fetch.
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CultivarReferences to fetch.
+     */
+    orderBy?: CultivarReferenceOrderByWithRelationInput | CultivarReferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CultivarReferences.
+     */
+    cursor?: CultivarReferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CultivarReferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CultivarReferences.
+     */
+    skip?: number
+    distinct?: CultivarReferenceScalarFieldEnum | CultivarReferenceScalarFieldEnum[]
+  }
+
+  /**
+   * CultivarReference create
+   */
+  export type CultivarReferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CultivarReference.
+     */
+    data: XOR<CultivarReferenceCreateInput, CultivarReferenceUncheckedCreateInput>
+  }
+
+  /**
+   * CultivarReference createMany
+   */
+  export type CultivarReferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CultivarReferences.
+     */
+    data: CultivarReferenceCreateManyInput | CultivarReferenceCreateManyInput[]
+  }
+
+  /**
+   * CultivarReference createManyAndReturn
+   */
+  export type CultivarReferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * The data used to create many CultivarReferences.
+     */
+    data: CultivarReferenceCreateManyInput | CultivarReferenceCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CultivarReference update
+   */
+  export type CultivarReferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CultivarReference.
+     */
+    data: XOR<CultivarReferenceUpdateInput, CultivarReferenceUncheckedUpdateInput>
+    /**
+     * Choose, which CultivarReference to update.
+     */
+    where: CultivarReferenceWhereUniqueInput
+  }
+
+  /**
+   * CultivarReference updateMany
+   */
+  export type CultivarReferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CultivarReferences.
+     */
+    data: XOR<CultivarReferenceUpdateManyMutationInput, CultivarReferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which CultivarReferences to update
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * Limit how many CultivarReferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CultivarReference updateManyAndReturn
+   */
+  export type CultivarReferenceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * The data used to update CultivarReferences.
+     */
+    data: XOR<CultivarReferenceUpdateManyMutationInput, CultivarReferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which CultivarReferences to update
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * Limit how many CultivarReferences to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CultivarReference upsert
+   */
+  export type CultivarReferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CultivarReference to update in case it exists.
+     */
+    where: CultivarReferenceWhereUniqueInput
+    /**
+     * In case the CultivarReference found by the `where` argument doesn't exist, create a new CultivarReference with this data.
+     */
+    create: XOR<CultivarReferenceCreateInput, CultivarReferenceUncheckedCreateInput>
+    /**
+     * In case the CultivarReference was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CultivarReferenceUpdateInput, CultivarReferenceUncheckedUpdateInput>
+  }
+
+  /**
+   * CultivarReference delete
+   */
+  export type CultivarReferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    /**
+     * Filter which CultivarReference to delete.
+     */
+    where: CultivarReferenceWhereUniqueInput
+  }
+
+  /**
+   * CultivarReference deleteMany
+   */
+  export type CultivarReferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CultivarReferences to delete
+     */
+    where?: CultivarReferenceWhereInput
+    /**
+     * Limit how many CultivarReferences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CultivarReference.ahsListing
+   */
+  export type CultivarReference$ahsListingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AhsListing
+     */
+    select?: AhsListingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AhsListing
+     */
+    omit?: AhsListingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AhsListingInclude<ExtArgs> | null
+    where?: AhsListingWhereInput
+  }
+
+  /**
+   * CultivarReference.listings
+   */
+  export type CultivarReference$listingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Listing
+     */
+    select?: ListingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Listing
+     */
+    omit?: ListingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ListingInclude<ExtArgs> | null
+    where?: ListingWhereInput
+    orderBy?: ListingOrderByWithRelationInput | ListingOrderByWithRelationInput[]
+    cursor?: ListingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ListingScalarFieldEnum | ListingScalarFieldEnum[]
+  }
+
+  /**
+   * CultivarReference.v2AhsCultivar
+   */
+  export type CultivarReference$v2AhsCultivarArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    where?: V2AhsCultivarWhereInput
+  }
+
+  /**
+   * CultivarReference without action
+   */
+  export type CultivarReferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model V2AhsCultivar
+   */
+
+  export type AggregateV2AhsCultivar = {
+    _count: V2AhsCultivarCountAggregateOutputType | null
+    _avg: V2AhsCultivarAvgAggregateOutputType | null
+    _sum: V2AhsCultivarSumAggregateOutputType | null
+    _min: V2AhsCultivarMinAggregateOutputType | null
+    _max: V2AhsCultivarMaxAggregateOutputType | null
+  }
+
+  export type V2AhsCultivarAvgAggregateOutputType = {
+    scape_height_in: number | null
+    bloom_size_in: number | null
+    bud_count: number | null
+    branches: number | null
+    rebloom: number | null
+    double_percentage: number | null
+    polymerous_percentage: number | null
+    spider_ratio: number | null
+    petal_length_in: number | null
+    petal_width_in: number | null
+    images_count: number | null
+  }
+
+  export type V2AhsCultivarSumAggregateOutputType = {
+    scape_height_in: number | null
+    bloom_size_in: number | null
+    bud_count: number | null
+    branches: number | null
+    rebloom: number | null
+    double_percentage: number | null
+    polymerous_percentage: number | null
+    spider_ratio: number | null
+    petal_length_in: number | null
+    petal_width_in: number | null
+    images_count: number | null
+  }
+
+  export type V2AhsCultivarMinAggregateOutputType = {
+    id: string | null
+    post_id: string | null
+    link_normalized_name: string | null
+    post_title: string | null
+    post_status: string | null
+    introduction_date: string | null
+    primary_hybridizer_id: string | null
+    primary_hybridizer_name: string | null
+    additional_hybridizers_ids: string | null
+    additional_hybridizers_names: string | null
+    hybridizer_code_legacy: string | null
+    seedling_number: string | null
+    bloom_season_ids: string | null
+    bloom_season_names: string | null
+    fragrance_ids: string | null
+    fragrance_names: string | null
+    bloom_habit_ids: string | null
+    bloom_habit_names: string | null
+    foliage_ids: string | null
+    foliage_names: string | null
+    ploidy_ids: string | null
+    ploidy_names: string | null
+    scape_height_in: number | null
+    bloom_size_in: number | null
+    bud_count: number | null
+    branches: number | null
+    color: string | null
+    rebloom: number | null
+    flower_form_ids: string | null
+    flower_form_names: string | null
+    double_percentage: number | null
+    polymerous_percentage: number | null
+    spider_ratio: number | null
+    petal_length_in: number | null
+    petal_width_in: number | null
+    unusual_forms_ids: string | null
+    unusual_forms_names: string | null
+    parentage: string | null
+    images_count: number | null
+    last_updated: string | null
+    image_url: string | null
+    awards_json: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V2AhsCultivarMaxAggregateOutputType = {
+    id: string | null
+    post_id: string | null
+    link_normalized_name: string | null
+    post_title: string | null
+    post_status: string | null
+    introduction_date: string | null
+    primary_hybridizer_id: string | null
+    primary_hybridizer_name: string | null
+    additional_hybridizers_ids: string | null
+    additional_hybridizers_names: string | null
+    hybridizer_code_legacy: string | null
+    seedling_number: string | null
+    bloom_season_ids: string | null
+    bloom_season_names: string | null
+    fragrance_ids: string | null
+    fragrance_names: string | null
+    bloom_habit_ids: string | null
+    bloom_habit_names: string | null
+    foliage_ids: string | null
+    foliage_names: string | null
+    ploidy_ids: string | null
+    ploidy_names: string | null
+    scape_height_in: number | null
+    bloom_size_in: number | null
+    bud_count: number | null
+    branches: number | null
+    color: string | null
+    rebloom: number | null
+    flower_form_ids: string | null
+    flower_form_names: string | null
+    double_percentage: number | null
+    polymerous_percentage: number | null
+    spider_ratio: number | null
+    petal_length_in: number | null
+    petal_width_in: number | null
+    unusual_forms_ids: string | null
+    unusual_forms_names: string | null
+    parentage: string | null
+    images_count: number | null
+    last_updated: string | null
+    image_url: string | null
+    awards_json: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type V2AhsCultivarCountAggregateOutputType = {
+    id: number
+    post_id: number
+    link_normalized_name: number
+    post_title: number
+    post_status: number
+    introduction_date: number
+    primary_hybridizer_id: number
+    primary_hybridizer_name: number
+    additional_hybridizers_ids: number
+    additional_hybridizers_names: number
+    hybridizer_code_legacy: number
+    seedling_number: number
+    bloom_season_ids: number
+    bloom_season_names: number
+    fragrance_ids: number
+    fragrance_names: number
+    bloom_habit_ids: number
+    bloom_habit_names: number
+    foliage_ids: number
+    foliage_names: number
+    ploidy_ids: number
+    ploidy_names: number
+    scape_height_in: number
+    bloom_size_in: number
+    bud_count: number
+    branches: number
+    color: number
+    rebloom: number
+    flower_form_ids: number
+    flower_form_names: number
+    double_percentage: number
+    polymerous_percentage: number
+    spider_ratio: number
+    petal_length_in: number
+    petal_width_in: number
+    unusual_forms_ids: number
+    unusual_forms_names: number
+    parentage: number
+    images_count: number
+    last_updated: number
+    image_url: number
+    awards_json: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type V2AhsCultivarAvgAggregateInputType = {
+    scape_height_in?: true
+    bloom_size_in?: true
+    bud_count?: true
+    branches?: true
+    rebloom?: true
+    double_percentage?: true
+    polymerous_percentage?: true
+    spider_ratio?: true
+    petal_length_in?: true
+    petal_width_in?: true
+    images_count?: true
+  }
+
+  export type V2AhsCultivarSumAggregateInputType = {
+    scape_height_in?: true
+    bloom_size_in?: true
+    bud_count?: true
+    branches?: true
+    rebloom?: true
+    double_percentage?: true
+    polymerous_percentage?: true
+    spider_ratio?: true
+    petal_length_in?: true
+    petal_width_in?: true
+    images_count?: true
+  }
+
+  export type V2AhsCultivarMinAggregateInputType = {
+    id?: true
+    post_id?: true
+    link_normalized_name?: true
+    post_title?: true
+    post_status?: true
+    introduction_date?: true
+    primary_hybridizer_id?: true
+    primary_hybridizer_name?: true
+    additional_hybridizers_ids?: true
+    additional_hybridizers_names?: true
+    hybridizer_code_legacy?: true
+    seedling_number?: true
+    bloom_season_ids?: true
+    bloom_season_names?: true
+    fragrance_ids?: true
+    fragrance_names?: true
+    bloom_habit_ids?: true
+    bloom_habit_names?: true
+    foliage_ids?: true
+    foliage_names?: true
+    ploidy_ids?: true
+    ploidy_names?: true
+    scape_height_in?: true
+    bloom_size_in?: true
+    bud_count?: true
+    branches?: true
+    color?: true
+    rebloom?: true
+    flower_form_ids?: true
+    flower_form_names?: true
+    double_percentage?: true
+    polymerous_percentage?: true
+    spider_ratio?: true
+    petal_length_in?: true
+    petal_width_in?: true
+    unusual_forms_ids?: true
+    unusual_forms_names?: true
+    parentage?: true
+    images_count?: true
+    last_updated?: true
+    image_url?: true
+    awards_json?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V2AhsCultivarMaxAggregateInputType = {
+    id?: true
+    post_id?: true
+    link_normalized_name?: true
+    post_title?: true
+    post_status?: true
+    introduction_date?: true
+    primary_hybridizer_id?: true
+    primary_hybridizer_name?: true
+    additional_hybridizers_ids?: true
+    additional_hybridizers_names?: true
+    hybridizer_code_legacy?: true
+    seedling_number?: true
+    bloom_season_ids?: true
+    bloom_season_names?: true
+    fragrance_ids?: true
+    fragrance_names?: true
+    bloom_habit_ids?: true
+    bloom_habit_names?: true
+    foliage_ids?: true
+    foliage_names?: true
+    ploidy_ids?: true
+    ploidy_names?: true
+    scape_height_in?: true
+    bloom_size_in?: true
+    bud_count?: true
+    branches?: true
+    color?: true
+    rebloom?: true
+    flower_form_ids?: true
+    flower_form_names?: true
+    double_percentage?: true
+    polymerous_percentage?: true
+    spider_ratio?: true
+    petal_length_in?: true
+    petal_width_in?: true
+    unusual_forms_ids?: true
+    unusual_forms_names?: true
+    parentage?: true
+    images_count?: true
+    last_updated?: true
+    image_url?: true
+    awards_json?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type V2AhsCultivarCountAggregateInputType = {
+    id?: true
+    post_id?: true
+    link_normalized_name?: true
+    post_title?: true
+    post_status?: true
+    introduction_date?: true
+    primary_hybridizer_id?: true
+    primary_hybridizer_name?: true
+    additional_hybridizers_ids?: true
+    additional_hybridizers_names?: true
+    hybridizer_code_legacy?: true
+    seedling_number?: true
+    bloom_season_ids?: true
+    bloom_season_names?: true
+    fragrance_ids?: true
+    fragrance_names?: true
+    bloom_habit_ids?: true
+    bloom_habit_names?: true
+    foliage_ids?: true
+    foliage_names?: true
+    ploidy_ids?: true
+    ploidy_names?: true
+    scape_height_in?: true
+    bloom_size_in?: true
+    bud_count?: true
+    branches?: true
+    color?: true
+    rebloom?: true
+    flower_form_ids?: true
+    flower_form_names?: true
+    double_percentage?: true
+    polymerous_percentage?: true
+    spider_ratio?: true
+    petal_length_in?: true
+    petal_width_in?: true
+    unusual_forms_ids?: true
+    unusual_forms_names?: true
+    parentage?: true
+    images_count?: true
+    last_updated?: true
+    image_url?: true
+    awards_json?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type V2AhsCultivarAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V2AhsCultivar to aggregate.
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V2AhsCultivars to fetch.
+     */
+    orderBy?: V2AhsCultivarOrderByWithRelationInput | V2AhsCultivarOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: V2AhsCultivarWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V2AhsCultivars from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V2AhsCultivars.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned V2AhsCultivars
+    **/
+    _count?: true | V2AhsCultivarCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: V2AhsCultivarAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: V2AhsCultivarSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: V2AhsCultivarMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: V2AhsCultivarMaxAggregateInputType
+  }
+
+  export type GetV2AhsCultivarAggregateType<T extends V2AhsCultivarAggregateArgs> = {
+        [P in keyof T & keyof AggregateV2AhsCultivar]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateV2AhsCultivar[P]>
+      : GetScalarType<T[P], AggregateV2AhsCultivar[P]>
+  }
+
+
+
+
+  export type V2AhsCultivarGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: V2AhsCultivarWhereInput
+    orderBy?: V2AhsCultivarOrderByWithAggregationInput | V2AhsCultivarOrderByWithAggregationInput[]
+    by: V2AhsCultivarScalarFieldEnum[] | V2AhsCultivarScalarFieldEnum
+    having?: V2AhsCultivarScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: V2AhsCultivarCountAggregateInputType | true
+    _avg?: V2AhsCultivarAvgAggregateInputType
+    _sum?: V2AhsCultivarSumAggregateInputType
+    _min?: V2AhsCultivarMinAggregateInputType
+    _max?: V2AhsCultivarMaxAggregateInputType
+  }
+
+  export type V2AhsCultivarGroupByOutputType = {
+    id: string
+    post_id: string | null
+    link_normalized_name: string | null
+    post_title: string | null
+    post_status: string | null
+    introduction_date: string | null
+    primary_hybridizer_id: string | null
+    primary_hybridizer_name: string | null
+    additional_hybridizers_ids: string | null
+    additional_hybridizers_names: string | null
+    hybridizer_code_legacy: string | null
+    seedling_number: string | null
+    bloom_season_ids: string | null
+    bloom_season_names: string | null
+    fragrance_ids: string | null
+    fragrance_names: string | null
+    bloom_habit_ids: string | null
+    bloom_habit_names: string | null
+    foliage_ids: string | null
+    foliage_names: string | null
+    ploidy_ids: string | null
+    ploidy_names: string | null
+    scape_height_in: number | null
+    bloom_size_in: number | null
+    bud_count: number | null
+    branches: number | null
+    color: string | null
+    rebloom: number | null
+    flower_form_ids: string | null
+    flower_form_names: string | null
+    double_percentage: number | null
+    polymerous_percentage: number | null
+    spider_ratio: number | null
+    petal_length_in: number | null
+    petal_width_in: number | null
+    unusual_forms_ids: string | null
+    unusual_forms_names: string | null
+    parentage: string | null
+    images_count: number | null
+    last_updated: string | null
+    image_url: string | null
+    awards_json: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: V2AhsCultivarCountAggregateOutputType | null
+    _avg: V2AhsCultivarAvgAggregateOutputType | null
+    _sum: V2AhsCultivarSumAggregateOutputType | null
+    _min: V2AhsCultivarMinAggregateOutputType | null
+    _max: V2AhsCultivarMaxAggregateOutputType | null
+  }
+
+  type GetV2AhsCultivarGroupByPayload<T extends V2AhsCultivarGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<V2AhsCultivarGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof V2AhsCultivarGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], V2AhsCultivarGroupByOutputType[P]>
+            : GetScalarType<T[P], V2AhsCultivarGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type V2AhsCultivarSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    post_id?: boolean
+    link_normalized_name?: boolean
+    post_title?: boolean
+    post_status?: boolean
+    introduction_date?: boolean
+    primary_hybridizer_id?: boolean
+    primary_hybridizer_name?: boolean
+    additional_hybridizers_ids?: boolean
+    additional_hybridizers_names?: boolean
+    hybridizer_code_legacy?: boolean
+    seedling_number?: boolean
+    bloom_season_ids?: boolean
+    bloom_season_names?: boolean
+    fragrance_ids?: boolean
+    fragrance_names?: boolean
+    bloom_habit_ids?: boolean
+    bloom_habit_names?: boolean
+    foliage_ids?: boolean
+    foliage_names?: boolean
+    ploidy_ids?: boolean
+    ploidy_names?: boolean
+    scape_height_in?: boolean
+    bloom_size_in?: boolean
+    bud_count?: boolean
+    branches?: boolean
+    color?: boolean
+    rebloom?: boolean
+    flower_form_ids?: boolean
+    flower_form_names?: boolean
+    double_percentage?: boolean
+    polymerous_percentage?: boolean
+    spider_ratio?: boolean
+    petal_length_in?: boolean
+    petal_width_in?: boolean
+    unusual_forms_ids?: boolean
+    unusual_forms_names?: boolean
+    parentage?: boolean
+    images_count?: boolean
+    last_updated?: boolean
+    image_url?: boolean
+    awards_json?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    cultivarReference?: boolean | V2AhsCultivar$cultivarReferenceArgs<ExtArgs>
+  }, ExtArgs["result"]["v2AhsCultivar"]>
+
+  export type V2AhsCultivarSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    post_id?: boolean
+    link_normalized_name?: boolean
+    post_title?: boolean
+    post_status?: boolean
+    introduction_date?: boolean
+    primary_hybridizer_id?: boolean
+    primary_hybridizer_name?: boolean
+    additional_hybridizers_ids?: boolean
+    additional_hybridizers_names?: boolean
+    hybridizer_code_legacy?: boolean
+    seedling_number?: boolean
+    bloom_season_ids?: boolean
+    bloom_season_names?: boolean
+    fragrance_ids?: boolean
+    fragrance_names?: boolean
+    bloom_habit_ids?: boolean
+    bloom_habit_names?: boolean
+    foliage_ids?: boolean
+    foliage_names?: boolean
+    ploidy_ids?: boolean
+    ploidy_names?: boolean
+    scape_height_in?: boolean
+    bloom_size_in?: boolean
+    bud_count?: boolean
+    branches?: boolean
+    color?: boolean
+    rebloom?: boolean
+    flower_form_ids?: boolean
+    flower_form_names?: boolean
+    double_percentage?: boolean
+    polymerous_percentage?: boolean
+    spider_ratio?: boolean
+    petal_length_in?: boolean
+    petal_width_in?: boolean
+    unusual_forms_ids?: boolean
+    unusual_forms_names?: boolean
+    parentage?: boolean
+    images_count?: boolean
+    last_updated?: boolean
+    image_url?: boolean
+    awards_json?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["v2AhsCultivar"]>
+
+  export type V2AhsCultivarSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    post_id?: boolean
+    link_normalized_name?: boolean
+    post_title?: boolean
+    post_status?: boolean
+    introduction_date?: boolean
+    primary_hybridizer_id?: boolean
+    primary_hybridizer_name?: boolean
+    additional_hybridizers_ids?: boolean
+    additional_hybridizers_names?: boolean
+    hybridizer_code_legacy?: boolean
+    seedling_number?: boolean
+    bloom_season_ids?: boolean
+    bloom_season_names?: boolean
+    fragrance_ids?: boolean
+    fragrance_names?: boolean
+    bloom_habit_ids?: boolean
+    bloom_habit_names?: boolean
+    foliage_ids?: boolean
+    foliage_names?: boolean
+    ploidy_ids?: boolean
+    ploidy_names?: boolean
+    scape_height_in?: boolean
+    bloom_size_in?: boolean
+    bud_count?: boolean
+    branches?: boolean
+    color?: boolean
+    rebloom?: boolean
+    flower_form_ids?: boolean
+    flower_form_names?: boolean
+    double_percentage?: boolean
+    polymerous_percentage?: boolean
+    spider_ratio?: boolean
+    petal_length_in?: boolean
+    petal_width_in?: boolean
+    unusual_forms_ids?: boolean
+    unusual_forms_names?: boolean
+    parentage?: boolean
+    images_count?: boolean
+    last_updated?: boolean
+    image_url?: boolean
+    awards_json?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["v2AhsCultivar"]>
+
+  export type V2AhsCultivarSelectScalar = {
+    id?: boolean
+    post_id?: boolean
+    link_normalized_name?: boolean
+    post_title?: boolean
+    post_status?: boolean
+    introduction_date?: boolean
+    primary_hybridizer_id?: boolean
+    primary_hybridizer_name?: boolean
+    additional_hybridizers_ids?: boolean
+    additional_hybridizers_names?: boolean
+    hybridizer_code_legacy?: boolean
+    seedling_number?: boolean
+    bloom_season_ids?: boolean
+    bloom_season_names?: boolean
+    fragrance_ids?: boolean
+    fragrance_names?: boolean
+    bloom_habit_ids?: boolean
+    bloom_habit_names?: boolean
+    foliage_ids?: boolean
+    foliage_names?: boolean
+    ploidy_ids?: boolean
+    ploidy_names?: boolean
+    scape_height_in?: boolean
+    bloom_size_in?: boolean
+    bud_count?: boolean
+    branches?: boolean
+    color?: boolean
+    rebloom?: boolean
+    flower_form_ids?: boolean
+    flower_form_names?: boolean
+    double_percentage?: boolean
+    polymerous_percentage?: boolean
+    spider_ratio?: boolean
+    petal_length_in?: boolean
+    petal_width_in?: boolean
+    unusual_forms_ids?: boolean
+    unusual_forms_names?: boolean
+    parentage?: boolean
+    images_count?: boolean
+    last_updated?: boolean
+    image_url?: boolean
+    awards_json?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type V2AhsCultivarOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "post_id" | "link_normalized_name" | "post_title" | "post_status" | "introduction_date" | "primary_hybridizer_id" | "primary_hybridizer_name" | "additional_hybridizers_ids" | "additional_hybridizers_names" | "hybridizer_code_legacy" | "seedling_number" | "bloom_season_ids" | "bloom_season_names" | "fragrance_ids" | "fragrance_names" | "bloom_habit_ids" | "bloom_habit_names" | "foliage_ids" | "foliage_names" | "ploidy_ids" | "ploidy_names" | "scape_height_in" | "bloom_size_in" | "bud_count" | "branches" | "color" | "rebloom" | "flower_form_ids" | "flower_form_names" | "double_percentage" | "polymerous_percentage" | "spider_ratio" | "petal_length_in" | "petal_width_in" | "unusual_forms_ids" | "unusual_forms_names" | "parentage" | "images_count" | "last_updated" | "image_url" | "awards_json" | "createdAt" | "updatedAt", ExtArgs["result"]["v2AhsCultivar"]>
+  export type V2AhsCultivarInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    cultivarReference?: boolean | V2AhsCultivar$cultivarReferenceArgs<ExtArgs>
+  }
+  export type V2AhsCultivarIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type V2AhsCultivarIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $V2AhsCultivarPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "V2AhsCultivar"
+    objects: {
+      cultivarReference: Prisma.$CultivarReferencePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      post_id: string | null
+      link_normalized_name: string | null
+      post_title: string | null
+      post_status: string | null
+      introduction_date: string | null
+      primary_hybridizer_id: string | null
+      primary_hybridizer_name: string | null
+      additional_hybridizers_ids: string | null
+      additional_hybridizers_names: string | null
+      hybridizer_code_legacy: string | null
+      seedling_number: string | null
+      bloom_season_ids: string | null
+      bloom_season_names: string | null
+      fragrance_ids: string | null
+      fragrance_names: string | null
+      bloom_habit_ids: string | null
+      bloom_habit_names: string | null
+      foliage_ids: string | null
+      foliage_names: string | null
+      ploidy_ids: string | null
+      ploidy_names: string | null
+      scape_height_in: number | null
+      bloom_size_in: number | null
+      bud_count: number | null
+      branches: number | null
+      color: string | null
+      rebloom: number | null
+      flower_form_ids: string | null
+      flower_form_names: string | null
+      double_percentage: number | null
+      polymerous_percentage: number | null
+      spider_ratio: number | null
+      petal_length_in: number | null
+      petal_width_in: number | null
+      unusual_forms_ids: string | null
+      unusual_forms_names: string | null
+      parentage: string | null
+      images_count: number | null
+      last_updated: string | null
+      image_url: string | null
+      awards_json: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["v2AhsCultivar"]>
+    composites: {}
+  }
+
+  type V2AhsCultivarGetPayload<S extends boolean | null | undefined | V2AhsCultivarDefaultArgs> = $Result.GetResult<Prisma.$V2AhsCultivarPayload, S>
+
+  type V2AhsCultivarCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<V2AhsCultivarFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: V2AhsCultivarCountAggregateInputType | true
+    }
+
+  export interface V2AhsCultivarDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['V2AhsCultivar'], meta: { name: 'V2AhsCultivar' } }
+    /**
+     * Find zero or one V2AhsCultivar that matches the filter.
+     * @param {V2AhsCultivarFindUniqueArgs} args - Arguments to find a V2AhsCultivar
+     * @example
+     * // Get one V2AhsCultivar
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends V2AhsCultivarFindUniqueArgs>(args: SelectSubset<T, V2AhsCultivarFindUniqueArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one V2AhsCultivar that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {V2AhsCultivarFindUniqueOrThrowArgs} args - Arguments to find a V2AhsCultivar
+     * @example
+     * // Get one V2AhsCultivar
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends V2AhsCultivarFindUniqueOrThrowArgs>(args: SelectSubset<T, V2AhsCultivarFindUniqueOrThrowArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first V2AhsCultivar that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarFindFirstArgs} args - Arguments to find a V2AhsCultivar
+     * @example
+     * // Get one V2AhsCultivar
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends V2AhsCultivarFindFirstArgs>(args?: SelectSubset<T, V2AhsCultivarFindFirstArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first V2AhsCultivar that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarFindFirstOrThrowArgs} args - Arguments to find a V2AhsCultivar
+     * @example
+     * // Get one V2AhsCultivar
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends V2AhsCultivarFindFirstOrThrowArgs>(args?: SelectSubset<T, V2AhsCultivarFindFirstOrThrowArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more V2AhsCultivars that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all V2AhsCultivars
+     * const v2AhsCultivars = await prisma.v2AhsCultivar.findMany()
+     * 
+     * // Get first 10 V2AhsCultivars
+     * const v2AhsCultivars = await prisma.v2AhsCultivar.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const v2AhsCultivarWithIdOnly = await prisma.v2AhsCultivar.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends V2AhsCultivarFindManyArgs>(args?: SelectSubset<T, V2AhsCultivarFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a V2AhsCultivar.
+     * @param {V2AhsCultivarCreateArgs} args - Arguments to create a V2AhsCultivar.
+     * @example
+     * // Create one V2AhsCultivar
+     * const V2AhsCultivar = await prisma.v2AhsCultivar.create({
+     *   data: {
+     *     // ... data to create a V2AhsCultivar
+     *   }
+     * })
+     * 
+     */
+    create<T extends V2AhsCultivarCreateArgs>(args: SelectSubset<T, V2AhsCultivarCreateArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many V2AhsCultivars.
+     * @param {V2AhsCultivarCreateManyArgs} args - Arguments to create many V2AhsCultivars.
+     * @example
+     * // Create many V2AhsCultivars
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends V2AhsCultivarCreateManyArgs>(args?: SelectSubset<T, V2AhsCultivarCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many V2AhsCultivars and returns the data saved in the database.
+     * @param {V2AhsCultivarCreateManyAndReturnArgs} args - Arguments to create many V2AhsCultivars.
+     * @example
+     * // Create many V2AhsCultivars
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many V2AhsCultivars and only return the `id`
+     * const v2AhsCultivarWithIdOnly = await prisma.v2AhsCultivar.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends V2AhsCultivarCreateManyAndReturnArgs>(args?: SelectSubset<T, V2AhsCultivarCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a V2AhsCultivar.
+     * @param {V2AhsCultivarDeleteArgs} args - Arguments to delete one V2AhsCultivar.
+     * @example
+     * // Delete one V2AhsCultivar
+     * const V2AhsCultivar = await prisma.v2AhsCultivar.delete({
+     *   where: {
+     *     // ... filter to delete one V2AhsCultivar
+     *   }
+     * })
+     * 
+     */
+    delete<T extends V2AhsCultivarDeleteArgs>(args: SelectSubset<T, V2AhsCultivarDeleteArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one V2AhsCultivar.
+     * @param {V2AhsCultivarUpdateArgs} args - Arguments to update one V2AhsCultivar.
+     * @example
+     * // Update one V2AhsCultivar
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends V2AhsCultivarUpdateArgs>(args: SelectSubset<T, V2AhsCultivarUpdateArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more V2AhsCultivars.
+     * @param {V2AhsCultivarDeleteManyArgs} args - Arguments to filter V2AhsCultivars to delete.
+     * @example
+     * // Delete a few V2AhsCultivars
+     * const { count } = await prisma.v2AhsCultivar.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends V2AhsCultivarDeleteManyArgs>(args?: SelectSubset<T, V2AhsCultivarDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V2AhsCultivars.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many V2AhsCultivars
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends V2AhsCultivarUpdateManyArgs>(args: SelectSubset<T, V2AhsCultivarUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more V2AhsCultivars and returns the data updated in the database.
+     * @param {V2AhsCultivarUpdateManyAndReturnArgs} args - Arguments to update many V2AhsCultivars.
+     * @example
+     * // Update many V2AhsCultivars
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more V2AhsCultivars and only return the `id`
+     * const v2AhsCultivarWithIdOnly = await prisma.v2AhsCultivar.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends V2AhsCultivarUpdateManyAndReturnArgs>(args: SelectSubset<T, V2AhsCultivarUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one V2AhsCultivar.
+     * @param {V2AhsCultivarUpsertArgs} args - Arguments to update or create a V2AhsCultivar.
+     * @example
+     * // Update or create a V2AhsCultivar
+     * const v2AhsCultivar = await prisma.v2AhsCultivar.upsert({
+     *   create: {
+     *     // ... data to create a V2AhsCultivar
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the V2AhsCultivar we want to update
+     *   }
+     * })
+     */
+    upsert<T extends V2AhsCultivarUpsertArgs>(args: SelectSubset<T, V2AhsCultivarUpsertArgs<ExtArgs>>): Prisma__V2AhsCultivarClient<$Result.GetResult<Prisma.$V2AhsCultivarPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of V2AhsCultivars.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarCountArgs} args - Arguments to filter V2AhsCultivars to count.
+     * @example
+     * // Count the number of V2AhsCultivars
+     * const count = await prisma.v2AhsCultivar.count({
+     *   where: {
+     *     // ... the filter for the V2AhsCultivars we want to count
+     *   }
+     * })
+    **/
+    count<T extends V2AhsCultivarCountArgs>(
+      args?: Subset<T, V2AhsCultivarCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], V2AhsCultivarCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a V2AhsCultivar.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends V2AhsCultivarAggregateArgs>(args: Subset<T, V2AhsCultivarAggregateArgs>): Prisma.PrismaPromise<GetV2AhsCultivarAggregateType<T>>
+
+    /**
+     * Group by V2AhsCultivar.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {V2AhsCultivarGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends V2AhsCultivarGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: V2AhsCultivarGroupByArgs['orderBy'] }
+        : { orderBy?: V2AhsCultivarGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, V2AhsCultivarGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetV2AhsCultivarGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the V2AhsCultivar model
+   */
+  readonly fields: V2AhsCultivarFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for V2AhsCultivar.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__V2AhsCultivarClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    cultivarReference<T extends V2AhsCultivar$cultivarReferenceArgs<ExtArgs> = {}>(args?: Subset<T, V2AhsCultivar$cultivarReferenceArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the V2AhsCultivar model
+   */ 
+  interface V2AhsCultivarFieldRefs {
+    readonly id: FieldRef<"V2AhsCultivar", 'String'>
+    readonly post_id: FieldRef<"V2AhsCultivar", 'String'>
+    readonly link_normalized_name: FieldRef<"V2AhsCultivar", 'String'>
+    readonly post_title: FieldRef<"V2AhsCultivar", 'String'>
+    readonly post_status: FieldRef<"V2AhsCultivar", 'String'>
+    readonly introduction_date: FieldRef<"V2AhsCultivar", 'String'>
+    readonly primary_hybridizer_id: FieldRef<"V2AhsCultivar", 'String'>
+    readonly primary_hybridizer_name: FieldRef<"V2AhsCultivar", 'String'>
+    readonly additional_hybridizers_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly additional_hybridizers_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly hybridizer_code_legacy: FieldRef<"V2AhsCultivar", 'String'>
+    readonly seedling_number: FieldRef<"V2AhsCultivar", 'String'>
+    readonly bloom_season_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly bloom_season_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly fragrance_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly fragrance_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly bloom_habit_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly bloom_habit_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly foliage_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly foliage_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly ploidy_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly ploidy_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly scape_height_in: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly bloom_size_in: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly bud_count: FieldRef<"V2AhsCultivar", 'Int'>
+    readonly branches: FieldRef<"V2AhsCultivar", 'Int'>
+    readonly color: FieldRef<"V2AhsCultivar", 'String'>
+    readonly rebloom: FieldRef<"V2AhsCultivar", 'Int'>
+    readonly flower_form_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly flower_form_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly double_percentage: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly polymerous_percentage: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly spider_ratio: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly petal_length_in: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly petal_width_in: FieldRef<"V2AhsCultivar", 'Float'>
+    readonly unusual_forms_ids: FieldRef<"V2AhsCultivar", 'String'>
+    readonly unusual_forms_names: FieldRef<"V2AhsCultivar", 'String'>
+    readonly parentage: FieldRef<"V2AhsCultivar", 'String'>
+    readonly images_count: FieldRef<"V2AhsCultivar", 'Int'>
+    readonly last_updated: FieldRef<"V2AhsCultivar", 'String'>
+    readonly image_url: FieldRef<"V2AhsCultivar", 'String'>
+    readonly awards_json: FieldRef<"V2AhsCultivar", 'String'>
+    readonly createdAt: FieldRef<"V2AhsCultivar", 'DateTime'>
+    readonly updatedAt: FieldRef<"V2AhsCultivar", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * V2AhsCultivar findUnique
+   */
+  export type V2AhsCultivarFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * Filter, which V2AhsCultivar to fetch.
+     */
+    where: V2AhsCultivarWhereUniqueInput
+  }
+
+  /**
+   * V2AhsCultivar findUniqueOrThrow
+   */
+  export type V2AhsCultivarFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * Filter, which V2AhsCultivar to fetch.
+     */
+    where: V2AhsCultivarWhereUniqueInput
+  }
+
+  /**
+   * V2AhsCultivar findFirst
+   */
+  export type V2AhsCultivarFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * Filter, which V2AhsCultivar to fetch.
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V2AhsCultivars to fetch.
+     */
+    orderBy?: V2AhsCultivarOrderByWithRelationInput | V2AhsCultivarOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V2AhsCultivars.
+     */
+    cursor?: V2AhsCultivarWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V2AhsCultivars from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V2AhsCultivars.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V2AhsCultivars.
+     */
+    distinct?: V2AhsCultivarScalarFieldEnum | V2AhsCultivarScalarFieldEnum[]
+  }
+
+  /**
+   * V2AhsCultivar findFirstOrThrow
+   */
+  export type V2AhsCultivarFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * Filter, which V2AhsCultivar to fetch.
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V2AhsCultivars to fetch.
+     */
+    orderBy?: V2AhsCultivarOrderByWithRelationInput | V2AhsCultivarOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for V2AhsCultivars.
+     */
+    cursor?: V2AhsCultivarWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V2AhsCultivars from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V2AhsCultivars.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of V2AhsCultivars.
+     */
+    distinct?: V2AhsCultivarScalarFieldEnum | V2AhsCultivarScalarFieldEnum[]
+  }
+
+  /**
+   * V2AhsCultivar findMany
+   */
+  export type V2AhsCultivarFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * Filter, which V2AhsCultivars to fetch.
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of V2AhsCultivars to fetch.
+     */
+    orderBy?: V2AhsCultivarOrderByWithRelationInput | V2AhsCultivarOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing V2AhsCultivars.
+     */
+    cursor?: V2AhsCultivarWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` V2AhsCultivars from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` V2AhsCultivars.
+     */
+    skip?: number
+    distinct?: V2AhsCultivarScalarFieldEnum | V2AhsCultivarScalarFieldEnum[]
+  }
+
+  /**
+   * V2AhsCultivar create
+   */
+  export type V2AhsCultivarCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * The data needed to create a V2AhsCultivar.
+     */
+    data: XOR<V2AhsCultivarCreateInput, V2AhsCultivarUncheckedCreateInput>
+  }
+
+  /**
+   * V2AhsCultivar createMany
+   */
+  export type V2AhsCultivarCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many V2AhsCultivars.
+     */
+    data: V2AhsCultivarCreateManyInput | V2AhsCultivarCreateManyInput[]
+  }
+
+  /**
+   * V2AhsCultivar createManyAndReturn
+   */
+  export type V2AhsCultivarCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * The data used to create many V2AhsCultivars.
+     */
+    data: V2AhsCultivarCreateManyInput | V2AhsCultivarCreateManyInput[]
+  }
+
+  /**
+   * V2AhsCultivar update
+   */
+  export type V2AhsCultivarUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * The data needed to update a V2AhsCultivar.
+     */
+    data: XOR<V2AhsCultivarUpdateInput, V2AhsCultivarUncheckedUpdateInput>
+    /**
+     * Choose, which V2AhsCultivar to update.
+     */
+    where: V2AhsCultivarWhereUniqueInput
+  }
+
+  /**
+   * V2AhsCultivar updateMany
+   */
+  export type V2AhsCultivarUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update V2AhsCultivars.
+     */
+    data: XOR<V2AhsCultivarUpdateManyMutationInput, V2AhsCultivarUncheckedUpdateManyInput>
+    /**
+     * Filter which V2AhsCultivars to update
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * Limit how many V2AhsCultivars to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * V2AhsCultivar updateManyAndReturn
+   */
+  export type V2AhsCultivarUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * The data used to update V2AhsCultivars.
+     */
+    data: XOR<V2AhsCultivarUpdateManyMutationInput, V2AhsCultivarUncheckedUpdateManyInput>
+    /**
+     * Filter which V2AhsCultivars to update
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * Limit how many V2AhsCultivars to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * V2AhsCultivar upsert
+   */
+  export type V2AhsCultivarUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * The filter to search for the V2AhsCultivar to update in case it exists.
+     */
+    where: V2AhsCultivarWhereUniqueInput
+    /**
+     * In case the V2AhsCultivar found by the `where` argument doesn't exist, create a new V2AhsCultivar with this data.
+     */
+    create: XOR<V2AhsCultivarCreateInput, V2AhsCultivarUncheckedCreateInput>
+    /**
+     * In case the V2AhsCultivar was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<V2AhsCultivarUpdateInput, V2AhsCultivarUncheckedUpdateInput>
+  }
+
+  /**
+   * V2AhsCultivar delete
+   */
+  export type V2AhsCultivarDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+    /**
+     * Filter which V2AhsCultivar to delete.
+     */
+    where: V2AhsCultivarWhereUniqueInput
+  }
+
+  /**
+   * V2AhsCultivar deleteMany
+   */
+  export type V2AhsCultivarDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which V2AhsCultivars to delete
+     */
+    where?: V2AhsCultivarWhereInput
+    /**
+     * Limit how many V2AhsCultivars to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * V2AhsCultivar.cultivarReference
+   */
+  export type V2AhsCultivar$cultivarReferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    where?: CultivarReferenceWhereInput
+  }
+
+  /**
+   * V2AhsCultivar without action
+   */
+  export type V2AhsCultivarDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the V2AhsCultivar
+     */
+    select?: V2AhsCultivarSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the V2AhsCultivar
+     */
+    omit?: V2AhsCultivarOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: V2AhsCultivarInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Listing
    */
 
@@ -2922,6 +5945,7 @@ export namespace Prisma {
     description: string | null
     privateNote: string | null
     ahsId: string | null
+    cultivarReferenceId: string | null
     status: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2936,6 +5960,7 @@ export namespace Prisma {
     description: string | null
     privateNote: string | null
     ahsId: string | null
+    cultivarReferenceId: string | null
     status: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2950,6 +5975,7 @@ export namespace Prisma {
     description: number
     privateNote: number
     ahsId: number
+    cultivarReferenceId: number
     status: number
     createdAt: number
     updatedAt: number
@@ -2974,6 +6000,7 @@ export namespace Prisma {
     description?: true
     privateNote?: true
     ahsId?: true
+    cultivarReferenceId?: true
     status?: true
     createdAt?: true
     updatedAt?: true
@@ -2988,6 +6015,7 @@ export namespace Prisma {
     description?: true
     privateNote?: true
     ahsId?: true
+    cultivarReferenceId?: true
     status?: true
     createdAt?: true
     updatedAt?: true
@@ -3002,6 +6030,7 @@ export namespace Prisma {
     description?: true
     privateNote?: true
     ahsId?: true
+    cultivarReferenceId?: true
     status?: true
     createdAt?: true
     updatedAt?: true
@@ -3103,6 +6132,7 @@ export namespace Prisma {
     description: string | null
     privateNote: string | null
     ahsId: string | null
+    cultivarReferenceId: string | null
     status: string | null
     createdAt: Date
     updatedAt: Date
@@ -3136,11 +6166,13 @@ export namespace Prisma {
     description?: boolean
     privateNote?: boolean
     ahsId?: boolean
+    cultivarReferenceId?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     images?: boolean | Listing$imagesArgs<ExtArgs>
     ahsListing?: boolean | Listing$ahsListingArgs<ExtArgs>
+    cultivarReference?: boolean | Listing$cultivarReferenceArgs<ExtArgs>
     lists?: boolean | Listing$listsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | ListingCountOutputTypeDefaultArgs<ExtArgs>
@@ -3155,10 +6187,12 @@ export namespace Prisma {
     description?: boolean
     privateNote?: boolean
     ahsId?: boolean
+    cultivarReferenceId?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ahsListing?: boolean | Listing$ahsListingArgs<ExtArgs>
+    cultivarReference?: boolean | Listing$cultivarReferenceArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["listing"]>
 
@@ -3171,10 +6205,12 @@ export namespace Prisma {
     description?: boolean
     privateNote?: boolean
     ahsId?: boolean
+    cultivarReferenceId?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ahsListing?: boolean | Listing$ahsListingArgs<ExtArgs>
+    cultivarReference?: boolean | Listing$cultivarReferenceArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["listing"]>
 
@@ -3187,25 +6223,29 @@ export namespace Prisma {
     description?: boolean
     privateNote?: boolean
     ahsId?: boolean
+    cultivarReferenceId?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ListingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "slug" | "price" | "description" | "privateNote" | "ahsId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["listing"]>
+  export type ListingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "slug" | "price" | "description" | "privateNote" | "ahsId" | "cultivarReferenceId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["listing"]>
   export type ListingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     images?: boolean | Listing$imagesArgs<ExtArgs>
     ahsListing?: boolean | Listing$ahsListingArgs<ExtArgs>
+    cultivarReference?: boolean | Listing$cultivarReferenceArgs<ExtArgs>
     lists?: boolean | Listing$listsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | ListingCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ListingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ahsListing?: boolean | Listing$ahsListingArgs<ExtArgs>
+    cultivarReference?: boolean | Listing$cultivarReferenceArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ListingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ahsListing?: boolean | Listing$ahsListingArgs<ExtArgs>
+    cultivarReference?: boolean | Listing$cultivarReferenceArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
@@ -3214,6 +6254,7 @@ export namespace Prisma {
     objects: {
       images: Prisma.$ImagePayload<ExtArgs>[]
       ahsListing: Prisma.$AhsListingPayload<ExtArgs> | null
+      cultivarReference: Prisma.$CultivarReferencePayload<ExtArgs> | null
       lists: Prisma.$ListPayload<ExtArgs>[]
       user: Prisma.$UserPayload<ExtArgs>
     }
@@ -3226,6 +6267,7 @@ export namespace Prisma {
       description: string | null
       privateNote: string | null
       ahsId: string | null
+      cultivarReferenceId: string | null
       status: string | null
       createdAt: Date
       updatedAt: Date
@@ -3625,6 +6667,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     images<T extends Listing$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Listing$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ahsListing<T extends Listing$ahsListingArgs<ExtArgs> = {}>(args?: Subset<T, Listing$ahsListingArgs<ExtArgs>>): Prisma__AhsListingClient<$Result.GetResult<Prisma.$AhsListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    cultivarReference<T extends Listing$cultivarReferenceArgs<ExtArgs> = {}>(args?: Subset<T, Listing$cultivarReferenceArgs<ExtArgs>>): Prisma__CultivarReferenceClient<$Result.GetResult<Prisma.$CultivarReferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lists<T extends Listing$listsArgs<ExtArgs> = {}>(args?: Subset<T, Listing$listsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -3664,6 +6707,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Listing", 'String'>
     readonly privateNote: FieldRef<"Listing", 'String'>
     readonly ahsId: FieldRef<"Listing", 'String'>
+    readonly cultivarReferenceId: FieldRef<"Listing", 'String'>
     readonly status: FieldRef<"Listing", 'String'>
     readonly createdAt: FieldRef<"Listing", 'DateTime'>
     readonly updatedAt: FieldRef<"Listing", 'DateTime'>
@@ -4101,6 +7145,25 @@ export namespace Prisma {
      */
     include?: AhsListingInclude<ExtArgs> | null
     where?: AhsListingWhereInput
+  }
+
+  /**
+   * Listing.cultivarReference
+   */
+  export type Listing$cultivarReferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CultivarReference
+     */
+    select?: CultivarReferenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CultivarReference
+     */
+    omit?: CultivarReferenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CultivarReferenceInclude<ExtArgs> | null
+    where?: CultivarReferenceWhereInput
   }
 
   /**
@@ -9736,6 +12799,68 @@ export namespace Prisma {
   export type AhsListingScalarFieldEnum = (typeof AhsListingScalarFieldEnum)[keyof typeof AhsListingScalarFieldEnum]
 
 
+  export const CultivarReferenceScalarFieldEnum: {
+    id: 'id',
+    ahsId: 'ahsId',
+    v2AhsCultivarId: 'v2AhsCultivarId',
+    normalizedName: 'normalizedName',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CultivarReferenceScalarFieldEnum = (typeof CultivarReferenceScalarFieldEnum)[keyof typeof CultivarReferenceScalarFieldEnum]
+
+
+  export const V2AhsCultivarScalarFieldEnum: {
+    id: 'id',
+    post_id: 'post_id',
+    link_normalized_name: 'link_normalized_name',
+    post_title: 'post_title',
+    post_status: 'post_status',
+    introduction_date: 'introduction_date',
+    primary_hybridizer_id: 'primary_hybridizer_id',
+    primary_hybridizer_name: 'primary_hybridizer_name',
+    additional_hybridizers_ids: 'additional_hybridizers_ids',
+    additional_hybridizers_names: 'additional_hybridizers_names',
+    hybridizer_code_legacy: 'hybridizer_code_legacy',
+    seedling_number: 'seedling_number',
+    bloom_season_ids: 'bloom_season_ids',
+    bloom_season_names: 'bloom_season_names',
+    fragrance_ids: 'fragrance_ids',
+    fragrance_names: 'fragrance_names',
+    bloom_habit_ids: 'bloom_habit_ids',
+    bloom_habit_names: 'bloom_habit_names',
+    foliage_ids: 'foliage_ids',
+    foliage_names: 'foliage_names',
+    ploidy_ids: 'ploidy_ids',
+    ploidy_names: 'ploidy_names',
+    scape_height_in: 'scape_height_in',
+    bloom_size_in: 'bloom_size_in',
+    bud_count: 'bud_count',
+    branches: 'branches',
+    color: 'color',
+    rebloom: 'rebloom',
+    flower_form_ids: 'flower_form_ids',
+    flower_form_names: 'flower_form_names',
+    double_percentage: 'double_percentage',
+    polymerous_percentage: 'polymerous_percentage',
+    spider_ratio: 'spider_ratio',
+    petal_length_in: 'petal_length_in',
+    petal_width_in: 'petal_width_in',
+    unusual_forms_ids: 'unusual_forms_ids',
+    unusual_forms_names: 'unusual_forms_names',
+    parentage: 'parentage',
+    images_count: 'images_count',
+    last_updated: 'last_updated',
+    image_url: 'image_url',
+    awards_json: 'awards_json',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type V2AhsCultivarScalarFieldEnum = (typeof V2AhsCultivarScalarFieldEnum)[keyof typeof V2AhsCultivarScalarFieldEnum]
+
+
   export const ListingScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -9745,6 +12870,7 @@ export namespace Prisma {
     description: 'description',
     privateNote: 'privateNote',
     ahsId: 'ahsId',
+    cultivarReferenceId: 'cultivarReferenceId',
     status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -9897,6 +13023,7 @@ export namespace Prisma {
     flower?: StringNullableFilter<"AhsListing"> | string | null
     createdAt?: DateTimeFilter<"AhsListing"> | Date | string
     updatedAt?: DateTimeFilter<"AhsListing"> | Date | string
+    cultivarReference?: XOR<CultivarReferenceNullableScalarRelationFilter, CultivarReferenceWhereInput> | null
     lilies?: ListingListRelationFilter
   }
 
@@ -9924,6 +13051,7 @@ export namespace Prisma {
     flower?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    cultivarReference?: CultivarReferenceOrderByWithRelationInput
     lilies?: ListingOrderByRelationAggregateInput
   }
 
@@ -9954,6 +13082,7 @@ export namespace Prisma {
     flower?: StringNullableFilter<"AhsListing"> | string | null
     createdAt?: DateTimeFilter<"AhsListing"> | Date | string
     updatedAt?: DateTimeFilter<"AhsListing"> | Date | string
+    cultivarReference?: XOR<CultivarReferenceNullableScalarRelationFilter, CultivarReferenceWhereInput> | null
     lilies?: ListingListRelationFilter
   }, "id">
 
@@ -10015,6 +13144,324 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"AhsListing"> | Date | string
   }
 
+  export type CultivarReferenceWhereInput = {
+    AND?: CultivarReferenceWhereInput | CultivarReferenceWhereInput[]
+    OR?: CultivarReferenceWhereInput[]
+    NOT?: CultivarReferenceWhereInput | CultivarReferenceWhereInput[]
+    id?: StringFilter<"CultivarReference"> | string
+    ahsId?: StringNullableFilter<"CultivarReference"> | string | null
+    v2AhsCultivarId?: StringNullableFilter<"CultivarReference"> | string | null
+    normalizedName?: StringNullableFilter<"CultivarReference"> | string | null
+    createdAt?: DateTimeFilter<"CultivarReference"> | Date | string
+    updatedAt?: DateTimeFilter<"CultivarReference"> | Date | string
+    ahsListing?: XOR<AhsListingNullableScalarRelationFilter, AhsListingWhereInput> | null
+    listings?: ListingListRelationFilter
+    v2AhsCultivar?: XOR<V2AhsCultivarNullableScalarRelationFilter, V2AhsCultivarWhereInput> | null
+  }
+
+  export type CultivarReferenceOrderByWithRelationInput = {
+    id?: SortOrder
+    ahsId?: SortOrderInput | SortOrder
+    v2AhsCultivarId?: SortOrderInput | SortOrder
+    normalizedName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    ahsListing?: AhsListingOrderByWithRelationInput
+    listings?: ListingOrderByRelationAggregateInput
+    v2AhsCultivar?: V2AhsCultivarOrderByWithRelationInput
+  }
+
+  export type CultivarReferenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    ahsId?: string
+    v2AhsCultivarId?: string
+    normalizedName?: string
+    AND?: CultivarReferenceWhereInput | CultivarReferenceWhereInput[]
+    OR?: CultivarReferenceWhereInput[]
+    NOT?: CultivarReferenceWhereInput | CultivarReferenceWhereInput[]
+    createdAt?: DateTimeFilter<"CultivarReference"> | Date | string
+    updatedAt?: DateTimeFilter<"CultivarReference"> | Date | string
+    ahsListing?: XOR<AhsListingNullableScalarRelationFilter, AhsListingWhereInput> | null
+    listings?: ListingListRelationFilter
+    v2AhsCultivar?: XOR<V2AhsCultivarNullableScalarRelationFilter, V2AhsCultivarWhereInput> | null
+  }, "id" | "ahsId" | "v2AhsCultivarId" | "normalizedName">
+
+  export type CultivarReferenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    ahsId?: SortOrderInput | SortOrder
+    v2AhsCultivarId?: SortOrderInput | SortOrder
+    normalizedName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CultivarReferenceCountOrderByAggregateInput
+    _max?: CultivarReferenceMaxOrderByAggregateInput
+    _min?: CultivarReferenceMinOrderByAggregateInput
+  }
+
+  export type CultivarReferenceScalarWhereWithAggregatesInput = {
+    AND?: CultivarReferenceScalarWhereWithAggregatesInput | CultivarReferenceScalarWhereWithAggregatesInput[]
+    OR?: CultivarReferenceScalarWhereWithAggregatesInput[]
+    NOT?: CultivarReferenceScalarWhereWithAggregatesInput | CultivarReferenceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CultivarReference"> | string
+    ahsId?: StringNullableWithAggregatesFilter<"CultivarReference"> | string | null
+    v2AhsCultivarId?: StringNullableWithAggregatesFilter<"CultivarReference"> | string | null
+    normalizedName?: StringNullableWithAggregatesFilter<"CultivarReference"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"CultivarReference"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CultivarReference"> | Date | string
+  }
+
+  export type V2AhsCultivarWhereInput = {
+    AND?: V2AhsCultivarWhereInput | V2AhsCultivarWhereInput[]
+    OR?: V2AhsCultivarWhereInput[]
+    NOT?: V2AhsCultivarWhereInput | V2AhsCultivarWhereInput[]
+    id?: StringFilter<"V2AhsCultivar"> | string
+    post_id?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    link_normalized_name?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    post_title?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    post_status?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    introduction_date?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    primary_hybridizer_id?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    primary_hybridizer_name?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    additional_hybridizers_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    additional_hybridizers_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    hybridizer_code_legacy?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    seedling_number?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_season_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_season_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    fragrance_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    fragrance_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_habit_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_habit_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    foliage_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    foliage_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    ploidy_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    ploidy_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    scape_height_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    bloom_size_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    bud_count?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    branches?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    color?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    rebloom?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    flower_form_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    flower_form_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    double_percentage?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    polymerous_percentage?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    spider_ratio?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    petal_length_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    petal_width_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    unusual_forms_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    unusual_forms_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    parentage?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    images_count?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    last_updated?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    image_url?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    awards_json?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    createdAt?: DateTimeFilter<"V2AhsCultivar"> | Date | string
+    updatedAt?: DateTimeFilter<"V2AhsCultivar"> | Date | string
+    cultivarReference?: XOR<CultivarReferenceNullableScalarRelationFilter, CultivarReferenceWhereInput> | null
+  }
+
+  export type V2AhsCultivarOrderByWithRelationInput = {
+    id?: SortOrder
+    post_id?: SortOrderInput | SortOrder
+    link_normalized_name?: SortOrderInput | SortOrder
+    post_title?: SortOrderInput | SortOrder
+    post_status?: SortOrderInput | SortOrder
+    introduction_date?: SortOrderInput | SortOrder
+    primary_hybridizer_id?: SortOrderInput | SortOrder
+    primary_hybridizer_name?: SortOrderInput | SortOrder
+    additional_hybridizers_ids?: SortOrderInput | SortOrder
+    additional_hybridizers_names?: SortOrderInput | SortOrder
+    hybridizer_code_legacy?: SortOrderInput | SortOrder
+    seedling_number?: SortOrderInput | SortOrder
+    bloom_season_ids?: SortOrderInput | SortOrder
+    bloom_season_names?: SortOrderInput | SortOrder
+    fragrance_ids?: SortOrderInput | SortOrder
+    fragrance_names?: SortOrderInput | SortOrder
+    bloom_habit_ids?: SortOrderInput | SortOrder
+    bloom_habit_names?: SortOrderInput | SortOrder
+    foliage_ids?: SortOrderInput | SortOrder
+    foliage_names?: SortOrderInput | SortOrder
+    ploidy_ids?: SortOrderInput | SortOrder
+    ploidy_names?: SortOrderInput | SortOrder
+    scape_height_in?: SortOrderInput | SortOrder
+    bloom_size_in?: SortOrderInput | SortOrder
+    bud_count?: SortOrderInput | SortOrder
+    branches?: SortOrderInput | SortOrder
+    color?: SortOrderInput | SortOrder
+    rebloom?: SortOrderInput | SortOrder
+    flower_form_ids?: SortOrderInput | SortOrder
+    flower_form_names?: SortOrderInput | SortOrder
+    double_percentage?: SortOrderInput | SortOrder
+    polymerous_percentage?: SortOrderInput | SortOrder
+    spider_ratio?: SortOrderInput | SortOrder
+    petal_length_in?: SortOrderInput | SortOrder
+    petal_width_in?: SortOrderInput | SortOrder
+    unusual_forms_ids?: SortOrderInput | SortOrder
+    unusual_forms_names?: SortOrderInput | SortOrder
+    parentage?: SortOrderInput | SortOrder
+    images_count?: SortOrderInput | SortOrder
+    last_updated?: SortOrderInput | SortOrder
+    image_url?: SortOrderInput | SortOrder
+    awards_json?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    cultivarReference?: CultivarReferenceOrderByWithRelationInput
+  }
+
+  export type V2AhsCultivarWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: V2AhsCultivarWhereInput | V2AhsCultivarWhereInput[]
+    OR?: V2AhsCultivarWhereInput[]
+    NOT?: V2AhsCultivarWhereInput | V2AhsCultivarWhereInput[]
+    post_id?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    link_normalized_name?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    post_title?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    post_status?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    introduction_date?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    primary_hybridizer_id?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    primary_hybridizer_name?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    additional_hybridizers_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    additional_hybridizers_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    hybridizer_code_legacy?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    seedling_number?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_season_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_season_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    fragrance_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    fragrance_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_habit_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    bloom_habit_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    foliage_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    foliage_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    ploidy_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    ploidy_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    scape_height_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    bloom_size_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    bud_count?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    branches?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    color?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    rebloom?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    flower_form_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    flower_form_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    double_percentage?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    polymerous_percentage?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    spider_ratio?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    petal_length_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    petal_width_in?: FloatNullableFilter<"V2AhsCultivar"> | number | null
+    unusual_forms_ids?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    unusual_forms_names?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    parentage?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    images_count?: IntNullableFilter<"V2AhsCultivar"> | number | null
+    last_updated?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    image_url?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    awards_json?: StringNullableFilter<"V2AhsCultivar"> | string | null
+    createdAt?: DateTimeFilter<"V2AhsCultivar"> | Date | string
+    updatedAt?: DateTimeFilter<"V2AhsCultivar"> | Date | string
+    cultivarReference?: XOR<CultivarReferenceNullableScalarRelationFilter, CultivarReferenceWhereInput> | null
+  }, "id">
+
+  export type V2AhsCultivarOrderByWithAggregationInput = {
+    id?: SortOrder
+    post_id?: SortOrderInput | SortOrder
+    link_normalized_name?: SortOrderInput | SortOrder
+    post_title?: SortOrderInput | SortOrder
+    post_status?: SortOrderInput | SortOrder
+    introduction_date?: SortOrderInput | SortOrder
+    primary_hybridizer_id?: SortOrderInput | SortOrder
+    primary_hybridizer_name?: SortOrderInput | SortOrder
+    additional_hybridizers_ids?: SortOrderInput | SortOrder
+    additional_hybridizers_names?: SortOrderInput | SortOrder
+    hybridizer_code_legacy?: SortOrderInput | SortOrder
+    seedling_number?: SortOrderInput | SortOrder
+    bloom_season_ids?: SortOrderInput | SortOrder
+    bloom_season_names?: SortOrderInput | SortOrder
+    fragrance_ids?: SortOrderInput | SortOrder
+    fragrance_names?: SortOrderInput | SortOrder
+    bloom_habit_ids?: SortOrderInput | SortOrder
+    bloom_habit_names?: SortOrderInput | SortOrder
+    foliage_ids?: SortOrderInput | SortOrder
+    foliage_names?: SortOrderInput | SortOrder
+    ploidy_ids?: SortOrderInput | SortOrder
+    ploidy_names?: SortOrderInput | SortOrder
+    scape_height_in?: SortOrderInput | SortOrder
+    bloom_size_in?: SortOrderInput | SortOrder
+    bud_count?: SortOrderInput | SortOrder
+    branches?: SortOrderInput | SortOrder
+    color?: SortOrderInput | SortOrder
+    rebloom?: SortOrderInput | SortOrder
+    flower_form_ids?: SortOrderInput | SortOrder
+    flower_form_names?: SortOrderInput | SortOrder
+    double_percentage?: SortOrderInput | SortOrder
+    polymerous_percentage?: SortOrderInput | SortOrder
+    spider_ratio?: SortOrderInput | SortOrder
+    petal_length_in?: SortOrderInput | SortOrder
+    petal_width_in?: SortOrderInput | SortOrder
+    unusual_forms_ids?: SortOrderInput | SortOrder
+    unusual_forms_names?: SortOrderInput | SortOrder
+    parentage?: SortOrderInput | SortOrder
+    images_count?: SortOrderInput | SortOrder
+    last_updated?: SortOrderInput | SortOrder
+    image_url?: SortOrderInput | SortOrder
+    awards_json?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: V2AhsCultivarCountOrderByAggregateInput
+    _avg?: V2AhsCultivarAvgOrderByAggregateInput
+    _max?: V2AhsCultivarMaxOrderByAggregateInput
+    _min?: V2AhsCultivarMinOrderByAggregateInput
+    _sum?: V2AhsCultivarSumOrderByAggregateInput
+  }
+
+  export type V2AhsCultivarScalarWhereWithAggregatesInput = {
+    AND?: V2AhsCultivarScalarWhereWithAggregatesInput | V2AhsCultivarScalarWhereWithAggregatesInput[]
+    OR?: V2AhsCultivarScalarWhereWithAggregatesInput[]
+    NOT?: V2AhsCultivarScalarWhereWithAggregatesInput | V2AhsCultivarScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"V2AhsCultivar"> | string
+    post_id?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    link_normalized_name?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    post_title?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    post_status?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    introduction_date?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    primary_hybridizer_id?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    primary_hybridizer_name?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    additional_hybridizers_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    additional_hybridizers_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    hybridizer_code_legacy?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    seedling_number?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    bloom_season_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    bloom_season_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    fragrance_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    fragrance_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    bloom_habit_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    bloom_habit_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    foliage_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    foliage_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    ploidy_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    ploidy_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    scape_height_in?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    bloom_size_in?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    bud_count?: IntNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    branches?: IntNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    color?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    rebloom?: IntNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    flower_form_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    flower_form_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    double_percentage?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    polymerous_percentage?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    spider_ratio?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    petal_length_in?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    petal_width_in?: FloatNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    unusual_forms_ids?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    unusual_forms_names?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    parentage?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    images_count?: IntNullableWithAggregatesFilter<"V2AhsCultivar"> | number | null
+    last_updated?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    image_url?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    awards_json?: StringNullableWithAggregatesFilter<"V2AhsCultivar"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"V2AhsCultivar"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"V2AhsCultivar"> | Date | string
+  }
+
   export type ListingWhereInput = {
     AND?: ListingWhereInput | ListingWhereInput[]
     OR?: ListingWhereInput[]
@@ -10027,11 +13474,13 @@ export namespace Prisma {
     description?: StringNullableFilter<"Listing"> | string | null
     privateNote?: StringNullableFilter<"Listing"> | string | null
     ahsId?: StringNullableFilter<"Listing"> | string | null
+    cultivarReferenceId?: StringNullableFilter<"Listing"> | string | null
     status?: StringNullableFilter<"Listing"> | string | null
     createdAt?: DateTimeFilter<"Listing"> | Date | string
     updatedAt?: DateTimeFilter<"Listing"> | Date | string
     images?: ImageListRelationFilter
     ahsListing?: XOR<AhsListingNullableScalarRelationFilter, AhsListingWhereInput> | null
+    cultivarReference?: XOR<CultivarReferenceNullableScalarRelationFilter, CultivarReferenceWhereInput> | null
     lists?: ListListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -10045,11 +13494,13 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     privateNote?: SortOrderInput | SortOrder
     ahsId?: SortOrderInput | SortOrder
+    cultivarReferenceId?: SortOrderInput | SortOrder
     status?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     images?: ImageOrderByRelationAggregateInput
     ahsListing?: AhsListingOrderByWithRelationInput
+    cultivarReference?: CultivarReferenceOrderByWithRelationInput
     lists?: ListOrderByRelationAggregateInput
     user?: UserOrderByWithRelationInput
   }
@@ -10067,11 +13518,13 @@ export namespace Prisma {
     description?: StringNullableFilter<"Listing"> | string | null
     privateNote?: StringNullableFilter<"Listing"> | string | null
     ahsId?: StringNullableFilter<"Listing"> | string | null
+    cultivarReferenceId?: StringNullableFilter<"Listing"> | string | null
     status?: StringNullableFilter<"Listing"> | string | null
     createdAt?: DateTimeFilter<"Listing"> | Date | string
     updatedAt?: DateTimeFilter<"Listing"> | Date | string
     images?: ImageListRelationFilter
     ahsListing?: XOR<AhsListingNullableScalarRelationFilter, AhsListingWhereInput> | null
+    cultivarReference?: XOR<CultivarReferenceNullableScalarRelationFilter, CultivarReferenceWhereInput> | null
     lists?: ListListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId_slug">
@@ -10085,6 +13538,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     privateNote?: SortOrderInput | SortOrder
     ahsId?: SortOrderInput | SortOrder
+    cultivarReferenceId?: SortOrderInput | SortOrder
     status?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10107,6 +13561,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Listing"> | string | null
     privateNote?: StringNullableWithAggregatesFilter<"Listing"> | string | null
     ahsId?: StringNullableWithAggregatesFilter<"Listing"> | string | null
+    cultivarReferenceId?: StringNullableWithAggregatesFilter<"Listing"> | string | null
     status?: StringNullableWithAggregatesFilter<"Listing"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Listing"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Listing"> | Date | string
@@ -10475,6 +13930,7 @@ export namespace Prisma {
     flower?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutAhsListingInput
     lilies?: ListingCreateNestedManyWithoutAhsListingInput
   }
 
@@ -10502,6 +13958,7 @@ export namespace Prisma {
     flower?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    cultivarReference?: CultivarReferenceUncheckedCreateNestedOneWithoutAhsListingInput
     lilies?: ListingUncheckedCreateNestedManyWithoutAhsListingInput
   }
 
@@ -10529,6 +13986,7 @@ export namespace Prisma {
     flower?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cultivarReference?: CultivarReferenceUpdateOneWithoutAhsListingNestedInput
     lilies?: ListingUpdateManyWithoutAhsListingNestedInput
   }
 
@@ -10556,6 +14014,7 @@ export namespace Prisma {
     flower?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cultivarReference?: CultivarReferenceUncheckedUpdateOneWithoutAhsListingNestedInput
     lilies?: ListingUncheckedUpdateManyWithoutAhsListingNestedInput
   }
 
@@ -10637,6 +14096,404 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CultivarReferenceCreateInput = {
+    id: string
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    ahsListing?: AhsListingCreateNestedOneWithoutCultivarReferenceInput
+    listings?: ListingCreateNestedManyWithoutCultivarReferenceInput
+    v2AhsCultivar?: V2AhsCultivarCreateNestedOneWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceUncheckedCreateInput = {
+    id: string
+    ahsId?: string | null
+    v2AhsCultivarId?: string | null
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    listings?: ListingUncheckedCreateNestedManyWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ahsListing?: AhsListingUpdateOneWithoutCultivarReferenceNestedInput
+    listings?: ListingUpdateManyWithoutCultivarReferenceNestedInput
+    v2AhsCultivar?: V2AhsCultivarUpdateOneWithoutCultivarReferenceNestedInput
+  }
+
+  export type CultivarReferenceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    v2AhsCultivarId?: NullableStringFieldUpdateOperationsInput | string | null
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    listings?: ListingUncheckedUpdateManyWithoutCultivarReferenceNestedInput
+  }
+
+  export type CultivarReferenceCreateManyInput = {
+    id: string
+    ahsId?: string | null
+    v2AhsCultivarId?: string | null
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CultivarReferenceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CultivarReferenceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    v2AhsCultivarId?: NullableStringFieldUpdateOperationsInput | string | null
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V2AhsCultivarCreateInput = {
+    id: string
+    post_id?: string | null
+    link_normalized_name?: string | null
+    post_title?: string | null
+    post_status?: string | null
+    introduction_date?: string | null
+    primary_hybridizer_id?: string | null
+    primary_hybridizer_name?: string | null
+    additional_hybridizers_ids?: string | null
+    additional_hybridizers_names?: string | null
+    hybridizer_code_legacy?: string | null
+    seedling_number?: string | null
+    bloom_season_ids?: string | null
+    bloom_season_names?: string | null
+    fragrance_ids?: string | null
+    fragrance_names?: string | null
+    bloom_habit_ids?: string | null
+    bloom_habit_names?: string | null
+    foliage_ids?: string | null
+    foliage_names?: string | null
+    ploidy_ids?: string | null
+    ploidy_names?: string | null
+    scape_height_in?: number | null
+    bloom_size_in?: number | null
+    bud_count?: number | null
+    branches?: number | null
+    color?: string | null
+    rebloom?: number | null
+    flower_form_ids?: string | null
+    flower_form_names?: string | null
+    double_percentage?: number | null
+    polymerous_percentage?: number | null
+    spider_ratio?: number | null
+    petal_length_in?: number | null
+    petal_width_in?: number | null
+    unusual_forms_ids?: string | null
+    unusual_forms_names?: string | null
+    parentage?: string | null
+    images_count?: number | null
+    last_updated?: string | null
+    image_url?: string | null
+    awards_json?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutV2AhsCultivarInput
+  }
+
+  export type V2AhsCultivarUncheckedCreateInput = {
+    id: string
+    post_id?: string | null
+    link_normalized_name?: string | null
+    post_title?: string | null
+    post_status?: string | null
+    introduction_date?: string | null
+    primary_hybridizer_id?: string | null
+    primary_hybridizer_name?: string | null
+    additional_hybridizers_ids?: string | null
+    additional_hybridizers_names?: string | null
+    hybridizer_code_legacy?: string | null
+    seedling_number?: string | null
+    bloom_season_ids?: string | null
+    bloom_season_names?: string | null
+    fragrance_ids?: string | null
+    fragrance_names?: string | null
+    bloom_habit_ids?: string | null
+    bloom_habit_names?: string | null
+    foliage_ids?: string | null
+    foliage_names?: string | null
+    ploidy_ids?: string | null
+    ploidy_names?: string | null
+    scape_height_in?: number | null
+    bloom_size_in?: number | null
+    bud_count?: number | null
+    branches?: number | null
+    color?: string | null
+    rebloom?: number | null
+    flower_form_ids?: string | null
+    flower_form_names?: string | null
+    double_percentage?: number | null
+    polymerous_percentage?: number | null
+    spider_ratio?: number | null
+    petal_length_in?: number | null
+    petal_width_in?: number | null
+    unusual_forms_ids?: string | null
+    unusual_forms_names?: string | null
+    parentage?: string | null
+    images_count?: number | null
+    last_updated?: string | null
+    image_url?: string | null
+    awards_json?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cultivarReference?: CultivarReferenceUncheckedCreateNestedOneWithoutV2AhsCultivarInput
+  }
+
+  export type V2AhsCultivarUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    post_id?: NullableStringFieldUpdateOperationsInput | string | null
+    link_normalized_name?: NullableStringFieldUpdateOperationsInput | string | null
+    post_title?: NullableStringFieldUpdateOperationsInput | string | null
+    post_status?: NullableStringFieldUpdateOperationsInput | string | null
+    introduction_date?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_names?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer_code_legacy?: NullableStringFieldUpdateOperationsInput | string | null
+    seedling_number?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_names?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_names?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_names?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_names?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_names?: NullableStringFieldUpdateOperationsInput | string | null
+    scape_height_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloom_size_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bud_count?: NullableIntFieldUpdateOperationsInput | number | null
+    branches?: NullableIntFieldUpdateOperationsInput | number | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    rebloom?: NullableIntFieldUpdateOperationsInput | number | null
+    flower_form_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    flower_form_names?: NullableStringFieldUpdateOperationsInput | string | null
+    double_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    polymerous_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    spider_ratio?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_length_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_width_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    unusual_forms_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    unusual_forms_names?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    images_count?: NullableIntFieldUpdateOperationsInput | number | null
+    last_updated?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    awards_json?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cultivarReference?: CultivarReferenceUpdateOneWithoutV2AhsCultivarNestedInput
+  }
+
+  export type V2AhsCultivarUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    post_id?: NullableStringFieldUpdateOperationsInput | string | null
+    link_normalized_name?: NullableStringFieldUpdateOperationsInput | string | null
+    post_title?: NullableStringFieldUpdateOperationsInput | string | null
+    post_status?: NullableStringFieldUpdateOperationsInput | string | null
+    introduction_date?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_names?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer_code_legacy?: NullableStringFieldUpdateOperationsInput | string | null
+    seedling_number?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_names?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_names?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_names?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_names?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_names?: NullableStringFieldUpdateOperationsInput | string | null
+    scape_height_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloom_size_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bud_count?: NullableIntFieldUpdateOperationsInput | number | null
+    branches?: NullableIntFieldUpdateOperationsInput | number | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    rebloom?: NullableIntFieldUpdateOperationsInput | number | null
+    flower_form_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    flower_form_names?: NullableStringFieldUpdateOperationsInput | string | null
+    double_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    polymerous_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    spider_ratio?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_length_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_width_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    unusual_forms_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    unusual_forms_names?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    images_count?: NullableIntFieldUpdateOperationsInput | number | null
+    last_updated?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    awards_json?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cultivarReference?: CultivarReferenceUncheckedUpdateOneWithoutV2AhsCultivarNestedInput
+  }
+
+  export type V2AhsCultivarCreateManyInput = {
+    id: string
+    post_id?: string | null
+    link_normalized_name?: string | null
+    post_title?: string | null
+    post_status?: string | null
+    introduction_date?: string | null
+    primary_hybridizer_id?: string | null
+    primary_hybridizer_name?: string | null
+    additional_hybridizers_ids?: string | null
+    additional_hybridizers_names?: string | null
+    hybridizer_code_legacy?: string | null
+    seedling_number?: string | null
+    bloom_season_ids?: string | null
+    bloom_season_names?: string | null
+    fragrance_ids?: string | null
+    fragrance_names?: string | null
+    bloom_habit_ids?: string | null
+    bloom_habit_names?: string | null
+    foliage_ids?: string | null
+    foliage_names?: string | null
+    ploidy_ids?: string | null
+    ploidy_names?: string | null
+    scape_height_in?: number | null
+    bloom_size_in?: number | null
+    bud_count?: number | null
+    branches?: number | null
+    color?: string | null
+    rebloom?: number | null
+    flower_form_ids?: string | null
+    flower_form_names?: string | null
+    double_percentage?: number | null
+    polymerous_percentage?: number | null
+    spider_ratio?: number | null
+    petal_length_in?: number | null
+    petal_width_in?: number | null
+    unusual_forms_ids?: string | null
+    unusual_forms_names?: string | null
+    parentage?: string | null
+    images_count?: number | null
+    last_updated?: string | null
+    image_url?: string | null
+    awards_json?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V2AhsCultivarUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    post_id?: NullableStringFieldUpdateOperationsInput | string | null
+    link_normalized_name?: NullableStringFieldUpdateOperationsInput | string | null
+    post_title?: NullableStringFieldUpdateOperationsInput | string | null
+    post_status?: NullableStringFieldUpdateOperationsInput | string | null
+    introduction_date?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_names?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer_code_legacy?: NullableStringFieldUpdateOperationsInput | string | null
+    seedling_number?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_names?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_names?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_names?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_names?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_names?: NullableStringFieldUpdateOperationsInput | string | null
+    scape_height_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloom_size_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bud_count?: NullableIntFieldUpdateOperationsInput | number | null
+    branches?: NullableIntFieldUpdateOperationsInput | number | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    rebloom?: NullableIntFieldUpdateOperationsInput | number | null
+    flower_form_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    flower_form_names?: NullableStringFieldUpdateOperationsInput | string | null
+    double_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    polymerous_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    spider_ratio?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_length_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_width_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    unusual_forms_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    unusual_forms_names?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    images_count?: NullableIntFieldUpdateOperationsInput | number | null
+    last_updated?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    awards_json?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V2AhsCultivarUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    post_id?: NullableStringFieldUpdateOperationsInput | string | null
+    link_normalized_name?: NullableStringFieldUpdateOperationsInput | string | null
+    post_title?: NullableStringFieldUpdateOperationsInput | string | null
+    post_status?: NullableStringFieldUpdateOperationsInput | string | null
+    introduction_date?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_names?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer_code_legacy?: NullableStringFieldUpdateOperationsInput | string | null
+    seedling_number?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_names?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_names?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_names?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_names?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_names?: NullableStringFieldUpdateOperationsInput | string | null
+    scape_height_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloom_size_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bud_count?: NullableIntFieldUpdateOperationsInput | number | null
+    branches?: NullableIntFieldUpdateOperationsInput | number | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    rebloom?: NullableIntFieldUpdateOperationsInput | number | null
+    flower_form_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    flower_form_names?: NullableStringFieldUpdateOperationsInput | string | null
+    double_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    polymerous_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    spider_ratio?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_length_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_width_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    unusual_forms_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    unusual_forms_names?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    images_count?: NullableIntFieldUpdateOperationsInput | number | null
+    last_updated?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    awards_json?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ListingCreateInput = {
     id?: string
     title: string
@@ -10649,6 +14506,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ImageCreateNestedManyWithoutListingInput
     ahsListing?: AhsListingCreateNestedOneWithoutLiliesInput
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutListingsInput
     lists?: ListCreateNestedManyWithoutListingsInput
     user: UserCreateNestedOneWithoutListingsInput
   }
@@ -10662,6 +14520,7 @@ export namespace Prisma {
     description?: string | null
     privateNote?: string | null
     ahsId?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10681,6 +14540,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ImageUpdateManyWithoutListingNestedInput
     ahsListing?: AhsListingUpdateOneWithoutLiliesNestedInput
+    cultivarReference?: CultivarReferenceUpdateOneWithoutListingsNestedInput
     lists?: ListUpdateManyWithoutListingsNestedInput
     user?: UserUpdateOneRequiredWithoutListingsNestedInput
   }
@@ -10694,6 +14554,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10710,6 +14571,7 @@ export namespace Prisma {
     description?: string | null
     privateNote?: string | null
     ahsId?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10736,6 +14598,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11146,6 +15009,11 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type CultivarReferenceNullableScalarRelationFilter = {
+    is?: CultivarReferenceWhereInput | null
+    isNot?: CultivarReferenceWhereInput | null
+  }
+
   export type ListingListRelationFilter = {
     every?: ListingWhereInput
     some?: ListingWhereInput
@@ -11287,6 +15155,43 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type AhsListingNullableScalarRelationFilter = {
+    is?: AhsListingWhereInput | null
+    isNot?: AhsListingWhereInput | null
+  }
+
+  export type V2AhsCultivarNullableScalarRelationFilter = {
+    is?: V2AhsCultivarWhereInput | null
+    isNot?: V2AhsCultivarWhereInput | null
+  }
+
+  export type CultivarReferenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    ahsId?: SortOrder
+    v2AhsCultivarId?: SortOrder
+    normalizedName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CultivarReferenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ahsId?: SortOrder
+    v2AhsCultivarId?: SortOrder
+    normalizedName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CultivarReferenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    ahsId?: SortOrder
+    v2AhsCultivarId?: SortOrder
+    normalizedName?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -11298,15 +15203,222 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type V2AhsCultivarCountOrderByAggregateInput = {
+    id?: SortOrder
+    post_id?: SortOrder
+    link_normalized_name?: SortOrder
+    post_title?: SortOrder
+    post_status?: SortOrder
+    introduction_date?: SortOrder
+    primary_hybridizer_id?: SortOrder
+    primary_hybridizer_name?: SortOrder
+    additional_hybridizers_ids?: SortOrder
+    additional_hybridizers_names?: SortOrder
+    hybridizer_code_legacy?: SortOrder
+    seedling_number?: SortOrder
+    bloom_season_ids?: SortOrder
+    bloom_season_names?: SortOrder
+    fragrance_ids?: SortOrder
+    fragrance_names?: SortOrder
+    bloom_habit_ids?: SortOrder
+    bloom_habit_names?: SortOrder
+    foliage_ids?: SortOrder
+    foliage_names?: SortOrder
+    ploidy_ids?: SortOrder
+    ploidy_names?: SortOrder
+    scape_height_in?: SortOrder
+    bloom_size_in?: SortOrder
+    bud_count?: SortOrder
+    branches?: SortOrder
+    color?: SortOrder
+    rebloom?: SortOrder
+    flower_form_ids?: SortOrder
+    flower_form_names?: SortOrder
+    double_percentage?: SortOrder
+    polymerous_percentage?: SortOrder
+    spider_ratio?: SortOrder
+    petal_length_in?: SortOrder
+    petal_width_in?: SortOrder
+    unusual_forms_ids?: SortOrder
+    unusual_forms_names?: SortOrder
+    parentage?: SortOrder
+    images_count?: SortOrder
+    last_updated?: SortOrder
+    image_url?: SortOrder
+    awards_json?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V2AhsCultivarAvgOrderByAggregateInput = {
+    scape_height_in?: SortOrder
+    bloom_size_in?: SortOrder
+    bud_count?: SortOrder
+    branches?: SortOrder
+    rebloom?: SortOrder
+    double_percentage?: SortOrder
+    polymerous_percentage?: SortOrder
+    spider_ratio?: SortOrder
+    petal_length_in?: SortOrder
+    petal_width_in?: SortOrder
+    images_count?: SortOrder
+  }
+
+  export type V2AhsCultivarMaxOrderByAggregateInput = {
+    id?: SortOrder
+    post_id?: SortOrder
+    link_normalized_name?: SortOrder
+    post_title?: SortOrder
+    post_status?: SortOrder
+    introduction_date?: SortOrder
+    primary_hybridizer_id?: SortOrder
+    primary_hybridizer_name?: SortOrder
+    additional_hybridizers_ids?: SortOrder
+    additional_hybridizers_names?: SortOrder
+    hybridizer_code_legacy?: SortOrder
+    seedling_number?: SortOrder
+    bloom_season_ids?: SortOrder
+    bloom_season_names?: SortOrder
+    fragrance_ids?: SortOrder
+    fragrance_names?: SortOrder
+    bloom_habit_ids?: SortOrder
+    bloom_habit_names?: SortOrder
+    foliage_ids?: SortOrder
+    foliage_names?: SortOrder
+    ploidy_ids?: SortOrder
+    ploidy_names?: SortOrder
+    scape_height_in?: SortOrder
+    bloom_size_in?: SortOrder
+    bud_count?: SortOrder
+    branches?: SortOrder
+    color?: SortOrder
+    rebloom?: SortOrder
+    flower_form_ids?: SortOrder
+    flower_form_names?: SortOrder
+    double_percentage?: SortOrder
+    polymerous_percentage?: SortOrder
+    spider_ratio?: SortOrder
+    petal_length_in?: SortOrder
+    petal_width_in?: SortOrder
+    unusual_forms_ids?: SortOrder
+    unusual_forms_names?: SortOrder
+    parentage?: SortOrder
+    images_count?: SortOrder
+    last_updated?: SortOrder
+    image_url?: SortOrder
+    awards_json?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V2AhsCultivarMinOrderByAggregateInput = {
+    id?: SortOrder
+    post_id?: SortOrder
+    link_normalized_name?: SortOrder
+    post_title?: SortOrder
+    post_status?: SortOrder
+    introduction_date?: SortOrder
+    primary_hybridizer_id?: SortOrder
+    primary_hybridizer_name?: SortOrder
+    additional_hybridizers_ids?: SortOrder
+    additional_hybridizers_names?: SortOrder
+    hybridizer_code_legacy?: SortOrder
+    seedling_number?: SortOrder
+    bloom_season_ids?: SortOrder
+    bloom_season_names?: SortOrder
+    fragrance_ids?: SortOrder
+    fragrance_names?: SortOrder
+    bloom_habit_ids?: SortOrder
+    bloom_habit_names?: SortOrder
+    foliage_ids?: SortOrder
+    foliage_names?: SortOrder
+    ploidy_ids?: SortOrder
+    ploidy_names?: SortOrder
+    scape_height_in?: SortOrder
+    bloom_size_in?: SortOrder
+    bud_count?: SortOrder
+    branches?: SortOrder
+    color?: SortOrder
+    rebloom?: SortOrder
+    flower_form_ids?: SortOrder
+    flower_form_names?: SortOrder
+    double_percentage?: SortOrder
+    polymerous_percentage?: SortOrder
+    spider_ratio?: SortOrder
+    petal_length_in?: SortOrder
+    petal_width_in?: SortOrder
+    unusual_forms_ids?: SortOrder
+    unusual_forms_names?: SortOrder
+    parentage?: SortOrder
+    images_count?: SortOrder
+    last_updated?: SortOrder
+    image_url?: SortOrder
+    awards_json?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type V2AhsCultivarSumOrderByAggregateInput = {
+    scape_height_in?: SortOrder
+    bloom_size_in?: SortOrder
+    bud_count?: SortOrder
+    branches?: SortOrder
+    rebloom?: SortOrder
+    double_percentage?: SortOrder
+    polymerous_percentage?: SortOrder
+    spider_ratio?: SortOrder
+    petal_length_in?: SortOrder
+    petal_width_in?: SortOrder
+    images_count?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type ImageListRelationFilter = {
     every?: ImageWhereInput
     some?: ImageWhereInput
     none?: ImageWhereInput
-  }
-
-  export type AhsListingNullableScalarRelationFilter = {
-    is?: AhsListingWhereInput | null
-    isNot?: AhsListingWhereInput | null
   }
 
   export type ListListRelationFilter = {
@@ -11342,6 +15454,7 @@ export namespace Prisma {
     description?: SortOrder
     privateNote?: SortOrder
     ahsId?: SortOrder
+    cultivarReferenceId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11360,6 +15473,7 @@ export namespace Prisma {
     description?: SortOrder
     privateNote?: SortOrder
     ahsId?: SortOrder
+    cultivarReferenceId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11374,6 +15488,7 @@ export namespace Prisma {
     description?: SortOrder
     privateNote?: SortOrder
     ahsId?: SortOrder
+    cultivarReferenceId?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11381,22 +15496,6 @@ export namespace Prisma {
 
   export type ListingSumOrderByAggregateInput = {
     price?: SortOrder
-  }
-
-  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type ListCountOrderByAggregateInput = {
@@ -11594,11 +15693,23 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type CultivarReferenceCreateNestedOneWithoutAhsListingInput = {
+    create?: XOR<CultivarReferenceCreateWithoutAhsListingInput, CultivarReferenceUncheckedCreateWithoutAhsListingInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutAhsListingInput
+    connect?: CultivarReferenceWhereUniqueInput
+  }
+
   export type ListingCreateNestedManyWithoutAhsListingInput = {
     create?: XOR<ListingCreateWithoutAhsListingInput, ListingUncheckedCreateWithoutAhsListingInput> | ListingCreateWithoutAhsListingInput[] | ListingUncheckedCreateWithoutAhsListingInput[]
     connectOrCreate?: ListingCreateOrConnectWithoutAhsListingInput | ListingCreateOrConnectWithoutAhsListingInput[]
     createMany?: ListingCreateManyAhsListingInputEnvelope
     connect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+  }
+
+  export type CultivarReferenceUncheckedCreateNestedOneWithoutAhsListingInput = {
+    create?: XOR<CultivarReferenceCreateWithoutAhsListingInput, CultivarReferenceUncheckedCreateWithoutAhsListingInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutAhsListingInput
+    connect?: CultivarReferenceWhereUniqueInput
   }
 
   export type ListingUncheckedCreateNestedManyWithoutAhsListingInput = {
@@ -11620,6 +15731,16 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type CultivarReferenceUpdateOneWithoutAhsListingNestedInput = {
+    create?: XOR<CultivarReferenceCreateWithoutAhsListingInput, CultivarReferenceUncheckedCreateWithoutAhsListingInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutAhsListingInput
+    upsert?: CultivarReferenceUpsertWithoutAhsListingInput
+    disconnect?: CultivarReferenceWhereInput | boolean
+    delete?: CultivarReferenceWhereInput | boolean
+    connect?: CultivarReferenceWhereUniqueInput
+    update?: XOR<XOR<CultivarReferenceUpdateToOneWithWhereWithoutAhsListingInput, CultivarReferenceUpdateWithoutAhsListingInput>, CultivarReferenceUncheckedUpdateWithoutAhsListingInput>
+  }
+
   export type ListingUpdateManyWithoutAhsListingNestedInput = {
     create?: XOR<ListingCreateWithoutAhsListingInput, ListingUncheckedCreateWithoutAhsListingInput> | ListingCreateWithoutAhsListingInput[] | ListingUncheckedCreateWithoutAhsListingInput[]
     connectOrCreate?: ListingCreateOrConnectWithoutAhsListingInput | ListingCreateOrConnectWithoutAhsListingInput[]
@@ -11632,6 +15753,16 @@ export namespace Prisma {
     update?: ListingUpdateWithWhereUniqueWithoutAhsListingInput | ListingUpdateWithWhereUniqueWithoutAhsListingInput[]
     updateMany?: ListingUpdateManyWithWhereWithoutAhsListingInput | ListingUpdateManyWithWhereWithoutAhsListingInput[]
     deleteMany?: ListingScalarWhereInput | ListingScalarWhereInput[]
+  }
+
+  export type CultivarReferenceUncheckedUpdateOneWithoutAhsListingNestedInput = {
+    create?: XOR<CultivarReferenceCreateWithoutAhsListingInput, CultivarReferenceUncheckedCreateWithoutAhsListingInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutAhsListingInput
+    upsert?: CultivarReferenceUpsertWithoutAhsListingInput
+    disconnect?: CultivarReferenceWhereInput | boolean
+    delete?: CultivarReferenceWhereInput | boolean
+    connect?: CultivarReferenceWhereUniqueInput
+    update?: XOR<XOR<CultivarReferenceUpdateToOneWithWhereWithoutAhsListingInput, CultivarReferenceUpdateWithoutAhsListingInput>, CultivarReferenceUncheckedUpdateWithoutAhsListingInput>
   }
 
   export type ListingUncheckedUpdateManyWithoutAhsListingNestedInput = {
@@ -11648,6 +15779,128 @@ export namespace Prisma {
     deleteMany?: ListingScalarWhereInput | ListingScalarWhereInput[]
   }
 
+  export type AhsListingCreateNestedOneWithoutCultivarReferenceInput = {
+    create?: XOR<AhsListingCreateWithoutCultivarReferenceInput, AhsListingUncheckedCreateWithoutCultivarReferenceInput>
+    connectOrCreate?: AhsListingCreateOrConnectWithoutCultivarReferenceInput
+    connect?: AhsListingWhereUniqueInput
+  }
+
+  export type ListingCreateNestedManyWithoutCultivarReferenceInput = {
+    create?: XOR<ListingCreateWithoutCultivarReferenceInput, ListingUncheckedCreateWithoutCultivarReferenceInput> | ListingCreateWithoutCultivarReferenceInput[] | ListingUncheckedCreateWithoutCultivarReferenceInput[]
+    connectOrCreate?: ListingCreateOrConnectWithoutCultivarReferenceInput | ListingCreateOrConnectWithoutCultivarReferenceInput[]
+    createMany?: ListingCreateManyCultivarReferenceInputEnvelope
+    connect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+  }
+
+  export type V2AhsCultivarCreateNestedOneWithoutCultivarReferenceInput = {
+    create?: XOR<V2AhsCultivarCreateWithoutCultivarReferenceInput, V2AhsCultivarUncheckedCreateWithoutCultivarReferenceInput>
+    connectOrCreate?: V2AhsCultivarCreateOrConnectWithoutCultivarReferenceInput
+    connect?: V2AhsCultivarWhereUniqueInput
+  }
+
+  export type ListingUncheckedCreateNestedManyWithoutCultivarReferenceInput = {
+    create?: XOR<ListingCreateWithoutCultivarReferenceInput, ListingUncheckedCreateWithoutCultivarReferenceInput> | ListingCreateWithoutCultivarReferenceInput[] | ListingUncheckedCreateWithoutCultivarReferenceInput[]
+    connectOrCreate?: ListingCreateOrConnectWithoutCultivarReferenceInput | ListingCreateOrConnectWithoutCultivarReferenceInput[]
+    createMany?: ListingCreateManyCultivarReferenceInputEnvelope
+    connect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+  }
+
+  export type AhsListingUpdateOneWithoutCultivarReferenceNestedInput = {
+    create?: XOR<AhsListingCreateWithoutCultivarReferenceInput, AhsListingUncheckedCreateWithoutCultivarReferenceInput>
+    connectOrCreate?: AhsListingCreateOrConnectWithoutCultivarReferenceInput
+    upsert?: AhsListingUpsertWithoutCultivarReferenceInput
+    disconnect?: AhsListingWhereInput | boolean
+    delete?: AhsListingWhereInput | boolean
+    connect?: AhsListingWhereUniqueInput
+    update?: XOR<XOR<AhsListingUpdateToOneWithWhereWithoutCultivarReferenceInput, AhsListingUpdateWithoutCultivarReferenceInput>, AhsListingUncheckedUpdateWithoutCultivarReferenceInput>
+  }
+
+  export type ListingUpdateManyWithoutCultivarReferenceNestedInput = {
+    create?: XOR<ListingCreateWithoutCultivarReferenceInput, ListingUncheckedCreateWithoutCultivarReferenceInput> | ListingCreateWithoutCultivarReferenceInput[] | ListingUncheckedCreateWithoutCultivarReferenceInput[]
+    connectOrCreate?: ListingCreateOrConnectWithoutCultivarReferenceInput | ListingCreateOrConnectWithoutCultivarReferenceInput[]
+    upsert?: ListingUpsertWithWhereUniqueWithoutCultivarReferenceInput | ListingUpsertWithWhereUniqueWithoutCultivarReferenceInput[]
+    createMany?: ListingCreateManyCultivarReferenceInputEnvelope
+    set?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    disconnect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    delete?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    connect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    update?: ListingUpdateWithWhereUniqueWithoutCultivarReferenceInput | ListingUpdateWithWhereUniqueWithoutCultivarReferenceInput[]
+    updateMany?: ListingUpdateManyWithWhereWithoutCultivarReferenceInput | ListingUpdateManyWithWhereWithoutCultivarReferenceInput[]
+    deleteMany?: ListingScalarWhereInput | ListingScalarWhereInput[]
+  }
+
+  export type V2AhsCultivarUpdateOneWithoutCultivarReferenceNestedInput = {
+    create?: XOR<V2AhsCultivarCreateWithoutCultivarReferenceInput, V2AhsCultivarUncheckedCreateWithoutCultivarReferenceInput>
+    connectOrCreate?: V2AhsCultivarCreateOrConnectWithoutCultivarReferenceInput
+    upsert?: V2AhsCultivarUpsertWithoutCultivarReferenceInput
+    disconnect?: V2AhsCultivarWhereInput | boolean
+    delete?: V2AhsCultivarWhereInput | boolean
+    connect?: V2AhsCultivarWhereUniqueInput
+    update?: XOR<XOR<V2AhsCultivarUpdateToOneWithWhereWithoutCultivarReferenceInput, V2AhsCultivarUpdateWithoutCultivarReferenceInput>, V2AhsCultivarUncheckedUpdateWithoutCultivarReferenceInput>
+  }
+
+  export type ListingUncheckedUpdateManyWithoutCultivarReferenceNestedInput = {
+    create?: XOR<ListingCreateWithoutCultivarReferenceInput, ListingUncheckedCreateWithoutCultivarReferenceInput> | ListingCreateWithoutCultivarReferenceInput[] | ListingUncheckedCreateWithoutCultivarReferenceInput[]
+    connectOrCreate?: ListingCreateOrConnectWithoutCultivarReferenceInput | ListingCreateOrConnectWithoutCultivarReferenceInput[]
+    upsert?: ListingUpsertWithWhereUniqueWithoutCultivarReferenceInput | ListingUpsertWithWhereUniqueWithoutCultivarReferenceInput[]
+    createMany?: ListingCreateManyCultivarReferenceInputEnvelope
+    set?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    disconnect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    delete?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    connect?: ListingWhereUniqueInput | ListingWhereUniqueInput[]
+    update?: ListingUpdateWithWhereUniqueWithoutCultivarReferenceInput | ListingUpdateWithWhereUniqueWithoutCultivarReferenceInput[]
+    updateMany?: ListingUpdateManyWithWhereWithoutCultivarReferenceInput | ListingUpdateManyWithWhereWithoutCultivarReferenceInput[]
+    deleteMany?: ListingScalarWhereInput | ListingScalarWhereInput[]
+  }
+
+  export type CultivarReferenceCreateNestedOneWithoutV2AhsCultivarInput = {
+    create?: XOR<CultivarReferenceCreateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutV2AhsCultivarInput
+    connect?: CultivarReferenceWhereUniqueInput
+  }
+
+  export type CultivarReferenceUncheckedCreateNestedOneWithoutV2AhsCultivarInput = {
+    create?: XOR<CultivarReferenceCreateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutV2AhsCultivarInput
+    connect?: CultivarReferenceWhereUniqueInput
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type CultivarReferenceUpdateOneWithoutV2AhsCultivarNestedInput = {
+    create?: XOR<CultivarReferenceCreateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutV2AhsCultivarInput
+    upsert?: CultivarReferenceUpsertWithoutV2AhsCultivarInput
+    disconnect?: CultivarReferenceWhereInput | boolean
+    delete?: CultivarReferenceWhereInput | boolean
+    connect?: CultivarReferenceWhereUniqueInput
+    update?: XOR<XOR<CultivarReferenceUpdateToOneWithWhereWithoutV2AhsCultivarInput, CultivarReferenceUpdateWithoutV2AhsCultivarInput>, CultivarReferenceUncheckedUpdateWithoutV2AhsCultivarInput>
+  }
+
+  export type CultivarReferenceUncheckedUpdateOneWithoutV2AhsCultivarNestedInput = {
+    create?: XOR<CultivarReferenceCreateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutV2AhsCultivarInput
+    upsert?: CultivarReferenceUpsertWithoutV2AhsCultivarInput
+    disconnect?: CultivarReferenceWhereInput | boolean
+    delete?: CultivarReferenceWhereInput | boolean
+    connect?: CultivarReferenceWhereUniqueInput
+    update?: XOR<XOR<CultivarReferenceUpdateToOneWithWhereWithoutV2AhsCultivarInput, CultivarReferenceUpdateWithoutV2AhsCultivarInput>, CultivarReferenceUncheckedUpdateWithoutV2AhsCultivarInput>
+  }
+
   export type ImageCreateNestedManyWithoutListingInput = {
     create?: XOR<ImageCreateWithoutListingInput, ImageUncheckedCreateWithoutListingInput> | ImageCreateWithoutListingInput[] | ImageUncheckedCreateWithoutListingInput[]
     connectOrCreate?: ImageCreateOrConnectWithoutListingInput | ImageCreateOrConnectWithoutListingInput[]
@@ -11659,6 +15912,12 @@ export namespace Prisma {
     create?: XOR<AhsListingCreateWithoutLiliesInput, AhsListingUncheckedCreateWithoutLiliesInput>
     connectOrCreate?: AhsListingCreateOrConnectWithoutLiliesInput
     connect?: AhsListingWhereUniqueInput
+  }
+
+  export type CultivarReferenceCreateNestedOneWithoutListingsInput = {
+    create?: XOR<CultivarReferenceCreateWithoutListingsInput, CultivarReferenceUncheckedCreateWithoutListingsInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutListingsInput
+    connect?: CultivarReferenceWhereUniqueInput
   }
 
   export type ListCreateNestedManyWithoutListingsInput = {
@@ -11686,14 +15945,6 @@ export namespace Prisma {
     connect?: ListWhereUniqueInput | ListWhereUniqueInput[]
   }
 
-  export type NullableFloatFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type ImageUpdateManyWithoutListingNestedInput = {
     create?: XOR<ImageCreateWithoutListingInput, ImageUncheckedCreateWithoutListingInput> | ImageCreateWithoutListingInput[] | ImageUncheckedCreateWithoutListingInput[]
     connectOrCreate?: ImageCreateOrConnectWithoutListingInput | ImageCreateOrConnectWithoutListingInput[]
@@ -11716,6 +15967,16 @@ export namespace Prisma {
     delete?: AhsListingWhereInput | boolean
     connect?: AhsListingWhereUniqueInput
     update?: XOR<XOR<AhsListingUpdateToOneWithWhereWithoutLiliesInput, AhsListingUpdateWithoutLiliesInput>, AhsListingUncheckedUpdateWithoutLiliesInput>
+  }
+
+  export type CultivarReferenceUpdateOneWithoutListingsNestedInput = {
+    create?: XOR<CultivarReferenceCreateWithoutListingsInput, CultivarReferenceUncheckedCreateWithoutListingsInput>
+    connectOrCreate?: CultivarReferenceCreateOrConnectWithoutListingsInput
+    upsert?: CultivarReferenceUpsertWithoutListingsInput
+    disconnect?: CultivarReferenceWhereInput | boolean
+    delete?: CultivarReferenceWhereInput | boolean
+    connect?: CultivarReferenceWhereUniqueInput
+    update?: XOR<XOR<CultivarReferenceUpdateToOneWithWhereWithoutListingsInput, CultivarReferenceUpdateWithoutListingsInput>, CultivarReferenceUncheckedUpdateWithoutListingsInput>
   }
 
   export type ListUpdateManyWithoutListingsNestedInput = {
@@ -12166,6 +16427,22 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -12193,6 +16470,29 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type CultivarReferenceCreateWithoutAhsListingInput = {
+    id: string
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    listings?: ListingCreateNestedManyWithoutCultivarReferenceInput
+    v2AhsCultivar?: V2AhsCultivarCreateNestedOneWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceUncheckedCreateWithoutAhsListingInput = {
+    id: string
+    v2AhsCultivarId?: string | null
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    listings?: ListingUncheckedCreateNestedManyWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceCreateOrConnectWithoutAhsListingInput = {
+    where: CultivarReferenceWhereUniqueInput
+    create: XOR<CultivarReferenceCreateWithoutAhsListingInput, CultivarReferenceUncheckedCreateWithoutAhsListingInput>
+  }
+
   export type ListingCreateWithoutAhsListingInput = {
     id?: string
     title: string
@@ -12204,6 +16504,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     images?: ImageCreateNestedManyWithoutListingInput
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutListingsInput
     lists?: ListCreateNestedManyWithoutListingsInput
     user: UserCreateNestedOneWithoutListingsInput
   }
@@ -12216,6 +16517,7 @@ export namespace Prisma {
     price?: number | null
     description?: string | null
     privateNote?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12230,6 +16532,35 @@ export namespace Prisma {
 
   export type ListingCreateManyAhsListingInputEnvelope = {
     data: ListingCreateManyAhsListingInput | ListingCreateManyAhsListingInput[]
+  }
+
+  export type CultivarReferenceUpsertWithoutAhsListingInput = {
+    update: XOR<CultivarReferenceUpdateWithoutAhsListingInput, CultivarReferenceUncheckedUpdateWithoutAhsListingInput>
+    create: XOR<CultivarReferenceCreateWithoutAhsListingInput, CultivarReferenceUncheckedCreateWithoutAhsListingInput>
+    where?: CultivarReferenceWhereInput
+  }
+
+  export type CultivarReferenceUpdateToOneWithWhereWithoutAhsListingInput = {
+    where?: CultivarReferenceWhereInput
+    data: XOR<CultivarReferenceUpdateWithoutAhsListingInput, CultivarReferenceUncheckedUpdateWithoutAhsListingInput>
+  }
+
+  export type CultivarReferenceUpdateWithoutAhsListingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    listings?: ListingUpdateManyWithoutCultivarReferenceNestedInput
+    v2AhsCultivar?: V2AhsCultivarUpdateOneWithoutCultivarReferenceNestedInput
+  }
+
+  export type CultivarReferenceUncheckedUpdateWithoutAhsListingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    v2AhsCultivarId?: NullableStringFieldUpdateOperationsInput | string | null
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    listings?: ListingUncheckedUpdateManyWithoutCultivarReferenceNestedInput
   }
 
   export type ListingUpsertWithWhereUniqueWithoutAhsListingInput = {
@@ -12260,9 +16591,447 @@ export namespace Prisma {
     description?: StringNullableFilter<"Listing"> | string | null
     privateNote?: StringNullableFilter<"Listing"> | string | null
     ahsId?: StringNullableFilter<"Listing"> | string | null
+    cultivarReferenceId?: StringNullableFilter<"Listing"> | string | null
     status?: StringNullableFilter<"Listing"> | string | null
     createdAt?: DateTimeFilter<"Listing"> | Date | string
     updatedAt?: DateTimeFilter<"Listing"> | Date | string
+  }
+
+  export type AhsListingCreateWithoutCultivarReferenceInput = {
+    id?: string
+    name?: string | null
+    hybridizer?: string | null
+    year?: string | null
+    scapeHeight?: string | null
+    bloomSize?: string | null
+    bloomSeason?: string | null
+    ploidy?: string | null
+    foliageType?: string | null
+    bloomHabit?: string | null
+    seedlingNum?: string | null
+    color?: string | null
+    form?: string | null
+    parentage?: string | null
+    ahsImageUrl?: string | null
+    fragrance?: string | null
+    budcount?: string | null
+    branches?: string | null
+    sculpting?: string | null
+    foliage?: string | null
+    flower?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lilies?: ListingCreateNestedManyWithoutAhsListingInput
+  }
+
+  export type AhsListingUncheckedCreateWithoutCultivarReferenceInput = {
+    id?: string
+    name?: string | null
+    hybridizer?: string | null
+    year?: string | null
+    scapeHeight?: string | null
+    bloomSize?: string | null
+    bloomSeason?: string | null
+    ploidy?: string | null
+    foliageType?: string | null
+    bloomHabit?: string | null
+    seedlingNum?: string | null
+    color?: string | null
+    form?: string | null
+    parentage?: string | null
+    ahsImageUrl?: string | null
+    fragrance?: string | null
+    budcount?: string | null
+    branches?: string | null
+    sculpting?: string | null
+    foliage?: string | null
+    flower?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lilies?: ListingUncheckedCreateNestedManyWithoutAhsListingInput
+  }
+
+  export type AhsListingCreateOrConnectWithoutCultivarReferenceInput = {
+    where: AhsListingWhereUniqueInput
+    create: XOR<AhsListingCreateWithoutCultivarReferenceInput, AhsListingUncheckedCreateWithoutCultivarReferenceInput>
+  }
+
+  export type ListingCreateWithoutCultivarReferenceInput = {
+    id?: string
+    title: string
+    slug: string
+    price?: number | null
+    description?: string | null
+    privateNote?: string | null
+    status?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    images?: ImageCreateNestedManyWithoutListingInput
+    ahsListing?: AhsListingCreateNestedOneWithoutLiliesInput
+    lists?: ListCreateNestedManyWithoutListingsInput
+    user: UserCreateNestedOneWithoutListingsInput
+  }
+
+  export type ListingUncheckedCreateWithoutCultivarReferenceInput = {
+    id?: string
+    userId: string
+    title: string
+    slug: string
+    price?: number | null
+    description?: string | null
+    privateNote?: string | null
+    ahsId?: string | null
+    status?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    images?: ImageUncheckedCreateNestedManyWithoutListingInput
+    lists?: ListUncheckedCreateNestedManyWithoutListingsInput
+  }
+
+  export type ListingCreateOrConnectWithoutCultivarReferenceInput = {
+    where: ListingWhereUniqueInput
+    create: XOR<ListingCreateWithoutCultivarReferenceInput, ListingUncheckedCreateWithoutCultivarReferenceInput>
+  }
+
+  export type ListingCreateManyCultivarReferenceInputEnvelope = {
+    data: ListingCreateManyCultivarReferenceInput | ListingCreateManyCultivarReferenceInput[]
+  }
+
+  export type V2AhsCultivarCreateWithoutCultivarReferenceInput = {
+    id: string
+    post_id?: string | null
+    link_normalized_name?: string | null
+    post_title?: string | null
+    post_status?: string | null
+    introduction_date?: string | null
+    primary_hybridizer_id?: string | null
+    primary_hybridizer_name?: string | null
+    additional_hybridizers_ids?: string | null
+    additional_hybridizers_names?: string | null
+    hybridizer_code_legacy?: string | null
+    seedling_number?: string | null
+    bloom_season_ids?: string | null
+    bloom_season_names?: string | null
+    fragrance_ids?: string | null
+    fragrance_names?: string | null
+    bloom_habit_ids?: string | null
+    bloom_habit_names?: string | null
+    foliage_ids?: string | null
+    foliage_names?: string | null
+    ploidy_ids?: string | null
+    ploidy_names?: string | null
+    scape_height_in?: number | null
+    bloom_size_in?: number | null
+    bud_count?: number | null
+    branches?: number | null
+    color?: string | null
+    rebloom?: number | null
+    flower_form_ids?: string | null
+    flower_form_names?: string | null
+    double_percentage?: number | null
+    polymerous_percentage?: number | null
+    spider_ratio?: number | null
+    petal_length_in?: number | null
+    petal_width_in?: number | null
+    unusual_forms_ids?: string | null
+    unusual_forms_names?: string | null
+    parentage?: string | null
+    images_count?: number | null
+    last_updated?: string | null
+    image_url?: string | null
+    awards_json?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V2AhsCultivarUncheckedCreateWithoutCultivarReferenceInput = {
+    id: string
+    post_id?: string | null
+    link_normalized_name?: string | null
+    post_title?: string | null
+    post_status?: string | null
+    introduction_date?: string | null
+    primary_hybridizer_id?: string | null
+    primary_hybridizer_name?: string | null
+    additional_hybridizers_ids?: string | null
+    additional_hybridizers_names?: string | null
+    hybridizer_code_legacy?: string | null
+    seedling_number?: string | null
+    bloom_season_ids?: string | null
+    bloom_season_names?: string | null
+    fragrance_ids?: string | null
+    fragrance_names?: string | null
+    bloom_habit_ids?: string | null
+    bloom_habit_names?: string | null
+    foliage_ids?: string | null
+    foliage_names?: string | null
+    ploidy_ids?: string | null
+    ploidy_names?: string | null
+    scape_height_in?: number | null
+    bloom_size_in?: number | null
+    bud_count?: number | null
+    branches?: number | null
+    color?: string | null
+    rebloom?: number | null
+    flower_form_ids?: string | null
+    flower_form_names?: string | null
+    double_percentage?: number | null
+    polymerous_percentage?: number | null
+    spider_ratio?: number | null
+    petal_length_in?: number | null
+    petal_width_in?: number | null
+    unusual_forms_ids?: string | null
+    unusual_forms_names?: string | null
+    parentage?: string | null
+    images_count?: number | null
+    last_updated?: string | null
+    image_url?: string | null
+    awards_json?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type V2AhsCultivarCreateOrConnectWithoutCultivarReferenceInput = {
+    where: V2AhsCultivarWhereUniqueInput
+    create: XOR<V2AhsCultivarCreateWithoutCultivarReferenceInput, V2AhsCultivarUncheckedCreateWithoutCultivarReferenceInput>
+  }
+
+  export type AhsListingUpsertWithoutCultivarReferenceInput = {
+    update: XOR<AhsListingUpdateWithoutCultivarReferenceInput, AhsListingUncheckedUpdateWithoutCultivarReferenceInput>
+    create: XOR<AhsListingCreateWithoutCultivarReferenceInput, AhsListingUncheckedCreateWithoutCultivarReferenceInput>
+    where?: AhsListingWhereInput
+  }
+
+  export type AhsListingUpdateToOneWithWhereWithoutCultivarReferenceInput = {
+    where?: AhsListingWhereInput
+    data: XOR<AhsListingUpdateWithoutCultivarReferenceInput, AhsListingUncheckedUpdateWithoutCultivarReferenceInput>
+  }
+
+  export type AhsListingUpdateWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    scapeHeight?: NullableStringFieldUpdateOperationsInput | string | null
+    bloomSize?: NullableStringFieldUpdateOperationsInput | string | null
+    bloomSeason?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy?: NullableStringFieldUpdateOperationsInput | string | null
+    foliageType?: NullableStringFieldUpdateOperationsInput | string | null
+    bloomHabit?: NullableStringFieldUpdateOperationsInput | string | null
+    seedlingNum?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    form?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    ahsImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance?: NullableStringFieldUpdateOperationsInput | string | null
+    budcount?: NullableStringFieldUpdateOperationsInput | string | null
+    branches?: NullableStringFieldUpdateOperationsInput | string | null
+    sculpting?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage?: NullableStringFieldUpdateOperationsInput | string | null
+    flower?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lilies?: ListingUpdateManyWithoutAhsListingNestedInput
+  }
+
+  export type AhsListingUncheckedUpdateWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    scapeHeight?: NullableStringFieldUpdateOperationsInput | string | null
+    bloomSize?: NullableStringFieldUpdateOperationsInput | string | null
+    bloomSeason?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy?: NullableStringFieldUpdateOperationsInput | string | null
+    foliageType?: NullableStringFieldUpdateOperationsInput | string | null
+    bloomHabit?: NullableStringFieldUpdateOperationsInput | string | null
+    seedlingNum?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    form?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    ahsImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance?: NullableStringFieldUpdateOperationsInput | string | null
+    budcount?: NullableStringFieldUpdateOperationsInput | string | null
+    branches?: NullableStringFieldUpdateOperationsInput | string | null
+    sculpting?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage?: NullableStringFieldUpdateOperationsInput | string | null
+    flower?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lilies?: ListingUncheckedUpdateManyWithoutAhsListingNestedInput
+  }
+
+  export type ListingUpsertWithWhereUniqueWithoutCultivarReferenceInput = {
+    where: ListingWhereUniqueInput
+    update: XOR<ListingUpdateWithoutCultivarReferenceInput, ListingUncheckedUpdateWithoutCultivarReferenceInput>
+    create: XOR<ListingCreateWithoutCultivarReferenceInput, ListingUncheckedCreateWithoutCultivarReferenceInput>
+  }
+
+  export type ListingUpdateWithWhereUniqueWithoutCultivarReferenceInput = {
+    where: ListingWhereUniqueInput
+    data: XOR<ListingUpdateWithoutCultivarReferenceInput, ListingUncheckedUpdateWithoutCultivarReferenceInput>
+  }
+
+  export type ListingUpdateManyWithWhereWithoutCultivarReferenceInput = {
+    where: ListingScalarWhereInput
+    data: XOR<ListingUpdateManyMutationInput, ListingUncheckedUpdateManyWithoutCultivarReferenceInput>
+  }
+
+  export type V2AhsCultivarUpsertWithoutCultivarReferenceInput = {
+    update: XOR<V2AhsCultivarUpdateWithoutCultivarReferenceInput, V2AhsCultivarUncheckedUpdateWithoutCultivarReferenceInput>
+    create: XOR<V2AhsCultivarCreateWithoutCultivarReferenceInput, V2AhsCultivarUncheckedCreateWithoutCultivarReferenceInput>
+    where?: V2AhsCultivarWhereInput
+  }
+
+  export type V2AhsCultivarUpdateToOneWithWhereWithoutCultivarReferenceInput = {
+    where?: V2AhsCultivarWhereInput
+    data: XOR<V2AhsCultivarUpdateWithoutCultivarReferenceInput, V2AhsCultivarUncheckedUpdateWithoutCultivarReferenceInput>
+  }
+
+  export type V2AhsCultivarUpdateWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    post_id?: NullableStringFieldUpdateOperationsInput | string | null
+    link_normalized_name?: NullableStringFieldUpdateOperationsInput | string | null
+    post_title?: NullableStringFieldUpdateOperationsInput | string | null
+    post_status?: NullableStringFieldUpdateOperationsInput | string | null
+    introduction_date?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_names?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer_code_legacy?: NullableStringFieldUpdateOperationsInput | string | null
+    seedling_number?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_names?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_names?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_names?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_names?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_names?: NullableStringFieldUpdateOperationsInput | string | null
+    scape_height_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloom_size_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bud_count?: NullableIntFieldUpdateOperationsInput | number | null
+    branches?: NullableIntFieldUpdateOperationsInput | number | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    rebloom?: NullableIntFieldUpdateOperationsInput | number | null
+    flower_form_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    flower_form_names?: NullableStringFieldUpdateOperationsInput | string | null
+    double_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    polymerous_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    spider_ratio?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_length_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_width_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    unusual_forms_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    unusual_forms_names?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    images_count?: NullableIntFieldUpdateOperationsInput | number | null
+    last_updated?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    awards_json?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type V2AhsCultivarUncheckedUpdateWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    post_id?: NullableStringFieldUpdateOperationsInput | string | null
+    link_normalized_name?: NullableStringFieldUpdateOperationsInput | string | null
+    post_title?: NullableStringFieldUpdateOperationsInput | string | null
+    post_status?: NullableStringFieldUpdateOperationsInput | string | null
+    introduction_date?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    primary_hybridizer_name?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    additional_hybridizers_names?: NullableStringFieldUpdateOperationsInput | string | null
+    hybridizer_code_legacy?: NullableStringFieldUpdateOperationsInput | string | null
+    seedling_number?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_season_names?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    fragrance_names?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    bloom_habit_names?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    foliage_names?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    ploidy_names?: NullableStringFieldUpdateOperationsInput | string | null
+    scape_height_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloom_size_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    bud_count?: NullableIntFieldUpdateOperationsInput | number | null
+    branches?: NullableIntFieldUpdateOperationsInput | number | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    rebloom?: NullableIntFieldUpdateOperationsInput | number | null
+    flower_form_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    flower_form_names?: NullableStringFieldUpdateOperationsInput | string | null
+    double_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    polymerous_percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    spider_ratio?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_length_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    petal_width_in?: NullableFloatFieldUpdateOperationsInput | number | null
+    unusual_forms_ids?: NullableStringFieldUpdateOperationsInput | string | null
+    unusual_forms_names?: NullableStringFieldUpdateOperationsInput | string | null
+    parentage?: NullableStringFieldUpdateOperationsInput | string | null
+    images_count?: NullableIntFieldUpdateOperationsInput | number | null
+    last_updated?: NullableStringFieldUpdateOperationsInput | string | null
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    awards_json?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CultivarReferenceCreateWithoutV2AhsCultivarInput = {
+    id: string
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    ahsListing?: AhsListingCreateNestedOneWithoutCultivarReferenceInput
+    listings?: ListingCreateNestedManyWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput = {
+    id: string
+    ahsId?: string | null
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    listings?: ListingUncheckedCreateNestedManyWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceCreateOrConnectWithoutV2AhsCultivarInput = {
+    where: CultivarReferenceWhereUniqueInput
+    create: XOR<CultivarReferenceCreateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput>
+  }
+
+  export type CultivarReferenceUpsertWithoutV2AhsCultivarInput = {
+    update: XOR<CultivarReferenceUpdateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedUpdateWithoutV2AhsCultivarInput>
+    create: XOR<CultivarReferenceCreateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedCreateWithoutV2AhsCultivarInput>
+    where?: CultivarReferenceWhereInput
+  }
+
+  export type CultivarReferenceUpdateToOneWithWhereWithoutV2AhsCultivarInput = {
+    where?: CultivarReferenceWhereInput
+    data: XOR<CultivarReferenceUpdateWithoutV2AhsCultivarInput, CultivarReferenceUncheckedUpdateWithoutV2AhsCultivarInput>
+  }
+
+  export type CultivarReferenceUpdateWithoutV2AhsCultivarInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ahsListing?: AhsListingUpdateOneWithoutCultivarReferenceNestedInput
+    listings?: ListingUpdateManyWithoutCultivarReferenceNestedInput
+  }
+
+  export type CultivarReferenceUncheckedUpdateWithoutV2AhsCultivarInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    listings?: ListingUncheckedUpdateManyWithoutCultivarReferenceNestedInput
   }
 
   export type ImageCreateWithoutListingInput = {
@@ -12318,6 +17087,7 @@ export namespace Prisma {
     flower?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutAhsListingInput
   }
 
   export type AhsListingUncheckedCreateWithoutLiliesInput = {
@@ -12344,11 +17114,35 @@ export namespace Prisma {
     flower?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    cultivarReference?: CultivarReferenceUncheckedCreateNestedOneWithoutAhsListingInput
   }
 
   export type AhsListingCreateOrConnectWithoutLiliesInput = {
     where: AhsListingWhereUniqueInput
     create: XOR<AhsListingCreateWithoutLiliesInput, AhsListingUncheckedCreateWithoutLiliesInput>
+  }
+
+  export type CultivarReferenceCreateWithoutListingsInput = {
+    id: string
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    ahsListing?: AhsListingCreateNestedOneWithoutCultivarReferenceInput
+    v2AhsCultivar?: V2AhsCultivarCreateNestedOneWithoutCultivarReferenceInput
+  }
+
+  export type CultivarReferenceUncheckedCreateWithoutListingsInput = {
+    id: string
+    ahsId?: string | null
+    v2AhsCultivarId?: string | null
+    normalizedName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CultivarReferenceCreateOrConnectWithoutListingsInput = {
+    where: CultivarReferenceWhereUniqueInput
+    create: XOR<CultivarReferenceCreateWithoutListingsInput, CultivarReferenceUncheckedCreateWithoutListingsInput>
   }
 
   export type ListCreateWithoutListingsInput = {
@@ -12468,6 +17262,7 @@ export namespace Prisma {
     flower?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cultivarReference?: CultivarReferenceUpdateOneWithoutAhsListingNestedInput
   }
 
   export type AhsListingUncheckedUpdateWithoutLiliesInput = {
@@ -12492,6 +17287,36 @@ export namespace Prisma {
     sculpting?: NullableStringFieldUpdateOperationsInput | string | null
     foliage?: NullableStringFieldUpdateOperationsInput | string | null
     flower?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cultivarReference?: CultivarReferenceUncheckedUpdateOneWithoutAhsListingNestedInput
+  }
+
+  export type CultivarReferenceUpsertWithoutListingsInput = {
+    update: XOR<CultivarReferenceUpdateWithoutListingsInput, CultivarReferenceUncheckedUpdateWithoutListingsInput>
+    create: XOR<CultivarReferenceCreateWithoutListingsInput, CultivarReferenceUncheckedCreateWithoutListingsInput>
+    where?: CultivarReferenceWhereInput
+  }
+
+  export type CultivarReferenceUpdateToOneWithWhereWithoutListingsInput = {
+    where?: CultivarReferenceWhereInput
+    data: XOR<CultivarReferenceUpdateWithoutListingsInput, CultivarReferenceUncheckedUpdateWithoutListingsInput>
+  }
+
+  export type CultivarReferenceUpdateWithoutListingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ahsListing?: AhsListingUpdateOneWithoutCultivarReferenceNestedInput
+    v2AhsCultivar?: V2AhsCultivarUpdateOneWithoutCultivarReferenceNestedInput
+  }
+
+  export type CultivarReferenceUncheckedUpdateWithoutListingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    v2AhsCultivarId?: NullableStringFieldUpdateOperationsInput | string | null
+    normalizedName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12570,6 +17395,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ImageCreateNestedManyWithoutListingInput
     ahsListing?: AhsListingCreateNestedOneWithoutLiliesInput
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutListingsInput
     user: UserCreateNestedOneWithoutListingsInput
   }
 
@@ -12582,6 +17408,7 @@ export namespace Prisma {
     description?: string | null
     privateNote?: string | null
     ahsId?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12816,6 +17643,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     ahsListing?: AhsListingCreateNestedOneWithoutLiliesInput
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutListingsInput
     lists?: ListCreateNestedManyWithoutListingsInput
     user: UserCreateNestedOneWithoutListingsInput
   }
@@ -12829,6 +17657,7 @@ export namespace Prisma {
     description?: string | null
     privateNote?: string | null
     ahsId?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12899,6 +17728,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ahsListing?: AhsListingUpdateOneWithoutLiliesNestedInput
+    cultivarReference?: CultivarReferenceUpdateOneWithoutListingsNestedInput
     lists?: ListUpdateManyWithoutListingsNestedInput
     user?: UserUpdateOneRequiredWithoutListingsNestedInput
   }
@@ -12912,6 +17742,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12930,6 +17761,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     images?: ImageCreateNestedManyWithoutListingInput
     ahsListing?: AhsListingCreateNestedOneWithoutLiliesInput
+    cultivarReference?: CultivarReferenceCreateNestedOneWithoutListingsInput
     lists?: ListCreateNestedManyWithoutListingsInput
   }
 
@@ -12941,6 +17773,7 @@ export namespace Prisma {
     description?: string | null
     privateNote?: string | null
     ahsId?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13094,6 +17927,7 @@ export namespace Prisma {
     price?: number | null
     description?: string | null
     privateNote?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13110,6 +17944,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ImageUpdateManyWithoutListingNestedInput
+    cultivarReference?: CultivarReferenceUpdateOneWithoutListingsNestedInput
     lists?: ListUpdateManyWithoutListingsNestedInput
     user?: UserUpdateOneRequiredWithoutListingsNestedInput
   }
@@ -13122,6 +17957,7 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13137,6 +17973,67 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ListingCreateManyCultivarReferenceInput = {
+    id?: string
+    userId: string
+    title: string
+    slug: string
+    price?: number | null
+    description?: string | null
+    privateNote?: string | null
+    ahsId?: string | null
+    status?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ListingUpdateWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    privateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    images?: ImageUpdateManyWithoutListingNestedInput
+    ahsListing?: AhsListingUpdateOneWithoutLiliesNestedInput
+    lists?: ListUpdateManyWithoutListingsNestedInput
+    user?: UserUpdateOneRequiredWithoutListingsNestedInput
+  }
+
+  export type ListingUncheckedUpdateWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    privateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    images?: ImageUncheckedUpdateManyWithoutListingNestedInput
+    lists?: ListUncheckedUpdateManyWithoutListingsNestedInput
+  }
+
+  export type ListingUncheckedUpdateManyWithoutCultivarReferenceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    privateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    ahsId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13224,6 +18121,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ImageUpdateManyWithoutListingNestedInput
     ahsListing?: AhsListingUpdateOneWithoutLiliesNestedInput
+    cultivarReference?: CultivarReferenceUpdateOneWithoutListingsNestedInput
     user?: UserUpdateOneRequiredWithoutListingsNestedInput
   }
 
@@ -13236,6 +18134,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13251,6 +18150,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13304,6 +18204,7 @@ export namespace Prisma {
     description?: string | null
     privateNote?: string | null
     ahsId?: string | null
+    cultivarReferenceId?: string | null
     status?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13330,6 +18231,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: ImageUpdateManyWithoutListingNestedInput
     ahsListing?: AhsListingUpdateOneWithoutLiliesNestedInput
+    cultivarReference?: CultivarReferenceUpdateOneWithoutListingsNestedInput
     lists?: ListUpdateManyWithoutListingsNestedInput
   }
 
@@ -13341,6 +18243,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13356,6 +18259,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     privateNote?: NullableStringFieldUpdateOperationsInput | string | null
     ahsId?: NullableStringFieldUpdateOperationsInput | string | null
+    cultivarReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

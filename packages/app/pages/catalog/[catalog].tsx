@@ -7,14 +7,8 @@ import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import { GetStaticProps, NextPage } from "next";
-import {
-  AhsListing,
-  Listing,
-  List,
-  Image,
-} from "../../prisma/generated/sqlite-client";
+import { Listing, List, Image } from "../../prisma/generated/sqlite-client";
 import { useSnackBar } from "../../components/snackBarProvider";
-import slugify from "slugify";
 import { siteConfig } from "../../siteConfig";
 import { prisma } from "../../prisma/db";
 import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
@@ -27,8 +21,13 @@ import {
 } from "@packages/design-system";
 import { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
+import {
+  AhsDisplay,
+  fullCultivarReferenceInclude,
+  mapListingCultivarDisplay,
+  parseLeadingNumber,
+} from "../../lib/cultivarDisplay";
 
-// Add this type declaration before the getStaticProps declaration
 type Props = {
   title: string;
   description: string;
@@ -272,9 +271,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         break;
     }
     return lilyArr.filter((node) => {
-      const size =
-        node.ahsListing?.bloomSize &&
-        parseInt(node.ahsListing.bloomSize.toLowerCase().split(/[^\d.]/)[0]);
+      const size = parseLeadingNumber(node.ahsListing?.bloomSize);
       return size && size > low && size <= high;
     });
   };
@@ -308,9 +305,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         break;
     }
     return lilyArr.filter((node) => {
-      const size =
-        node.ahsListing?.scapeHeight &&
-        parseInt(node.ahsListing.scapeHeight.toLowerCase().split(/[^\d.]/)[0]);
+      const size = parseLeadingNumber(node.ahsListing?.scapeHeight);
       return size && size > low && size <= high;
     });
   };
@@ -348,8 +343,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         break;
     }
     return lilyArr.filter((node) => {
-      const price = node.price as unknown as number;
-      return price && price > low && price <= high;
+      return node.price != null && node.price > low && node.price <= high;
     });
   };
 
@@ -975,10 +969,9 @@ export async function getStaticPaths() {
   };
 }
 
-// Make sure we're using the correct type definition
 type DisplayListing = Listing & {
-  ahsListing: AhsListing | null;
-  lists: List[]; // Ensure this is defined as an array
+  ahsListing: AhsDisplay | null;
+  lists: List[];
   images: Image[];
 };
 
@@ -1026,14 +1019,19 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
     throw new Error("List not found");
   }
 
-  const listings = await prisma.listing.findMany({
+  const rawListings = await prisma.listing.findMany({
     include: {
-      ahsListing: true,
+      cultivarReference: {
+        include: fullCultivarReferenceInclude,
+      },
       lists: true,
-      images: true,
+      images: {
+        orderBy: { order: "asc" },
+      },
     },
     where: listingsWhere,
   });
+  const listings = rawListings.map(mapListingCultivarDisplay);
 
   const title = list.title;
   const description = list.description;

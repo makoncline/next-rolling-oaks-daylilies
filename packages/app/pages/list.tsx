@@ -3,12 +3,14 @@ import Layout from "../components/layout";
 import { GetStaticProps } from "next";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
-import { Heading, Thumbnail } from "@packages/design-system";
+import { Heading } from "@packages/design-system";
 import { sortTitlesLettersBeforeNumbers } from "../lib/sort";
 import type { InferGetStaticPropsType } from "next";
-import { getImageUrls } from "components/Image";
-import Image from "next/image";
 import Link from "next/link";
+import {
+  hybridizerCultivarReferenceInclude,
+  mapListingCultivarDisplay,
+} from "../lib/cultivarDisplay";
 
 const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { listings } = props;
@@ -95,22 +97,26 @@ export const getStaticProps: GetStaticProps<{
       OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
     },
     include: {
-      ahsListing: { select: { hybridizer: true } },
+      cultivarReference: {
+        include: hybridizerCultivarReferenceInclude,
+      },
       images: { take: 1, orderBy: { order: "asc" } },
     },
   });
 
   const improvedListings = listings.map((listing) => {
-    const firstImage = listing.images.length > 0 ? listing.images[0].url : null;
+    const displayListing = mapListingCultivarDisplay(listing);
+    const firstImage =
+      displayListing.images.length > 0 ? displayListing.images[0].url : null;
 
     return {
-      id: listing.id,
-      title: listing.title,
-      price: listing.price,
-      description: listing.description,
+      id: displayListing.id,
+      title: displayListing.title,
+      price: displayListing.price,
+      description: displayListing.description,
       image: firstImage,
-      slug: listing.slug,
-      hybridizer: listing.ahsListing?.hybridizer || null,
+      slug: displayListing.slug,
+      hybridizer: displayListing.ahsListing?.hybridizer ?? null,
     };
   });
 

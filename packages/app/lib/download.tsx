@@ -1,4 +1,15 @@
-function download(lilies: any[]): string {
+import type { AhsDisplay } from "./cultivarDisplay";
+
+type DownloadableLily = {
+  title?: string;
+  price?: number | null;
+  description?: string | null;
+  privateNote?: string | null;
+  images?: { url: string }[];
+  ahsListing?: AhsDisplay | null;
+};
+
+function download(lilies: DownloadableLily[]): string {
   const columns = [
     "name",
     "price",
@@ -62,26 +73,31 @@ function download(lilies: any[]): string {
   lilies.forEach((lily, i) => {
     let row = ``;
     columns.forEach((column, j) => {
-      if (
-        column === "name" ||
-        column === "price" ||
-        column === "publicNote" ||
-        column === "privateNote"
-      ) {
-        row += `${lily[column] || ""}`;
+      if (column === "name") {
+        row += `${lily.title || ""}`;
+      } else if (column === "price") {
+        row += `${lily.price ?? ""}`;
+      } else if (column === "publicNote") {
+        row += `${lily.description || ""}`;
+      } else if (column === "privateNote") {
+        row += `${lily.privateNote || ""}`;
       } else if (column === "imgUrl") {
-        const imgUrls = lily.imgUrl;
+        const imgUrls = lily.images?.map((image) => image.url) || [];
+        const fallbackImage = lily.ahsListing?.ahsImageUrl;
+        const displayUrls =
+          imgUrls.length > 0
+            ? imgUrls
+            : fallbackImage
+            ? [fallbackImage]
+            : [];
         const urls =
-          imgUrls?.map((url: string) => `"${encodeURI(url)}"`).join(", ") ??
-          null;
+          displayUrls.map((url) => `"${encodeURI(url)}"`).join(", ") || null;
         row += `${urls || ""}`;
       } else if (
-        lily.ahsDatumByAhsRef &&
-        getKeyValue(lily.ahsDatumByAhsRef, column as ahsProps)
+        lily.ahsListing &&
+        getKeyValue(lily.ahsListing, column as ahsProps)
       ) {
-        row += `${
-          getKeyValue(lily.ahsDatumByAhsRef, column as ahsProps) || ""
-        }`;
+        row += `${getKeyValue(lily.ahsListing, column as ahsProps) || ""}`;
       }
       if (j !== columns.length - 1) {
         row += `\t`;

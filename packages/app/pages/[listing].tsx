@@ -6,10 +6,9 @@ import cart from "@iconify/icons-ic/round-shopping-cart";
 import Layout from "../components/layout";
 import { DaylilyCatalogAd } from "../components/DaylilyCatAd";
 import { useSnackBar } from "components/snackBarProvider";
-import { AhsListing, Listing, Image } from "../prisma/generated/sqlite-client";
+import { Listing, Image } from "../prisma/generated/sqlite-client";
 import { useCart } from "components/cart";
 import { siteConfig } from "siteConfig";
-import slugify from "slugify";
 import { prisma } from "../prisma/db";
 import { ImageDisplay } from "components/ImageDisplay";
 import {
@@ -22,9 +21,13 @@ import {
   PropertyListItem,
   Space,
 } from "@packages/design-system";
-import { useRouter } from "next/router";
+import {
+  AhsDisplay,
+  fullCultivarReferenceInclude,
+  mapListingCultivarDisplay,
+} from "../lib/cultivarDisplay";
 
-const traitLabels: Partial<Record<keyof AhsListing, string>> = {
+const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
   hybridizer: "Hybridizer",
   year: "Year",
   parentage: "Parentage",
@@ -52,7 +55,7 @@ function objectKeys<T extends {}>(obj: T): Array<keyof T> {
 }
 
 type DisplayListing = Listing & {
-  ahsListing: AhsListing | null;
+  ahsListing: AhsDisplay | null;
   images: Image[];
   lists?: {
     title: string;
@@ -78,7 +81,6 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
   }, Updated: ${formatDistanceToNow(new Date(listing.updatedAt), {
     addSuffix: true,
   })}`.substring(0, 160);
-  const { asPath } = useRouter();
   const title = `${listing.title} Daylily`;
   const {
     title: name,
@@ -98,7 +100,6 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
 
-  // Include AHS listing image as fallback if no images exist
   const allImageUrls =
     images.length > 0
       ? images.map((img) => img.url)
@@ -212,7 +213,7 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
 
 export default LilyTemplate;
 
-function getTraits(ahsData: AhsListing) {
+function getTraits(ahsData: AhsDisplay) {
   return objectKeys(traitLabels)
     .map((key) => (ahsData[key] ? [traitLabels[key], ahsData[key]] : null))
     .filter(Boolean) as [string, string][];
@@ -245,7 +246,9 @@ export async function getStaticProps(context: any) {
       OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
     },
     include: {
-      ahsListing: true,
+      cultivarReference: {
+        include: fullCultivarReferenceInclude,
+      },
       images: {
         orderBy: { order: "asc" },
       },
@@ -263,7 +266,9 @@ export async function getStaticProps(context: any) {
 
   return {
     props: {
-      listing: JSON.parse(JSON.stringify(listing)),
+      listing: JSON.parse(
+        JSON.stringify(mapListingCultivarDisplay(listing))
+      ),
     },
     revalidate: 60,
   };

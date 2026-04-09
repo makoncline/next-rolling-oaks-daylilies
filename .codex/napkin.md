@@ -1,0 +1,28 @@
+# Napkin
+
+## Corrections
+
+| Date | Source | What Went Wrong | What To Do Instead |
+| ---- | ------ | --------------- | ------------------ |
+| 2026-04-08 | self | Tried raw LibSQL introspection with plain `node` and got `URL_INVALID` because `.env` is not auto-loaded in ad hoc scripts | For one-off DB inspection in `packages/app`, explicitly `source .env` before running Node/LibSQL commands |
+| 2026-04-08 | user | Considered keeping `Listing.ahsId` available as a possible read-path bridge | Treat public cultivar display as `Listing.cultivarReference -> CultivarReference.v2AhsCultivar` only; do not read display data via `Listing.ahsId` |
+| 2026-04-09 | self | Regenerated Prisma while `next dev` was already running, then hit `Unknown field cultivarReference` at runtime from the stale in-memory client | After changing `prisma/schema.sqlite.prisma` or regenerating the SQLite client, restart the existing `next dev` server before browser verification |
+
+## User Preferences
+
+- Explore the repo first before making changes.
+
+## Patterns That Work
+
+- Start public read-path changes in `packages/app` by tracing Prisma schema, server data fetches in page `getServerSideProps`, and the shared card/detail components before editing UI code.
+- The live Turso DB for `packages/app` already contains `CultivarReference` and `V2AhsCultivar`; inspect that DB directly before changing `prisma/schema.sqlite.prisma`.
+- `npm run test:e2e` works on this machine once `npx playwright install chromium` has populated `~/Library/Caches/ms-playwright/chromium-1134`.
+
+## Patterns That Don't Work
+
+- Assuming a repo-root `AGENTS.md` or `.codex/napkin.md` exists in this project; check first.
+
+## Domain Notes
+
+- Goal for this task: move public cultivar display reads from legacy `Listing.ahsListing` to the repo's real V2 cultivar source without changing writes or adding Prisma migrations.
+- Current public listing coverage in the live DB for `userId = "3"`: `3028` visible listings total, `1599` with `cultivarReferenceId`, `1590` with both `cultivarReferenceId` and `ahsId`, `9` V2-only, and `1429` with neither.
