@@ -34,30 +34,104 @@ model AhsListing {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  lilies Listing[]
+  cultivarReference CultivarReference?
+  lilies            Listing[]
+}
+
+model CultivarReference {
+  id              String   @id
+  ahsId           String?  @unique
+  v2AhsCultivarId String?  @unique
+  normalizedName  String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ahsListing    AhsListing?    @relation(fields: [ahsId], references: [id], onDelete: SetNull)
+  listings      Listing[]
+  v2AhsCultivar V2AhsCultivar? @relation(fields: [v2AhsCultivarId], references: [id], onDelete: SetNull)
+
+  @@index([ahsId])
+  @@index([v2AhsCultivarId])
+}
+
+model V2AhsCultivar {
+  id                           String   @id
+  post_id                      String?
+  link_normalized_name         String?
+  post_title                   String?
+  post_status                  String?
+  introduction_date            String?
+  primary_hybridizer_id        String?
+  primary_hybridizer_name      String?
+  additional_hybridizers_ids   String?
+  additional_hybridizers_names String?
+  hybridizer_code_legacy       String?
+  seedling_number              String?
+  bloom_season_ids             String?
+  bloom_season_names           String?
+  fragrance_ids                String?
+  fragrance_names              String?
+  bloom_habit_ids              String?
+  bloom_habit_names            String?
+  foliage_ids                  String?
+  foliage_names                String?
+  ploidy_ids                   String?
+  ploidy_names                 String?
+  scape_height_in              Float?
+  bloom_size_in                Float?
+  bud_count                    Int?
+  branches                     Int?
+  color                        String?
+  rebloom                      Int?
+  flower_form_ids              String?
+  flower_form_names            String?
+  double_percentage            Float?
+  polymerous_percentage        Float?
+  spider_ratio                 Float?
+  petal_length_in              Float?
+  petal_width_in               Float?
+  unusual_forms_ids            String?
+  unusual_forms_names          String?
+  parentage                    String?
+  images_count                 Int?
+  last_updated                 String?
+  image_url                    String?
+  awards_json                  String?
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+
+  cultivarReference CultivarReference?
+
+  @@index([post_id])
+  @@index([link_normalized_name])
+  @@index([post_title])
+  @@index([primary_hybridizer_name])
 }
 
 model Listing {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  slug        String
-  price       Float?
-  description String?
-  privateNote String?
-  ahsId       String?
-  status      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  userId              String
+  title               String
+  slug                String
+  price               Float?
+  description         String?
+  privateNote         String?
+  ahsId               String?
+  cultivarReferenceId String?
+  status              String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   images Image[]
 
-  ahsListing AhsListing? @relation(fields: [ahsId], references: [id])
-  lists      List[]      @relation("ListToListing")
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ahsListing        AhsListing?        @relation(fields: [ahsId], references: [id])
+  cultivarReference CultivarReference? @relation(fields: [cultivarReferenceId], references: [id], onDelete: SetNull)
+  lists             List[]             @relation("ListToListing")
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, slug])
   @@index([ahsId])
+  @@index([cultivarReferenceId])
   @@index([userId])
   @@index([slug])
 }

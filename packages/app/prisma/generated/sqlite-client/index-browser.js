@@ -140,6 +140,62 @@ exports.Prisma.AhsListingScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CultivarReferenceScalarFieldEnum = {
+  id: 'id',
+  ahsId: 'ahsId',
+  v2AhsCultivarId: 'v2AhsCultivarId',
+  normalizedName: 'normalizedName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.V2AhsCultivarScalarFieldEnum = {
+  id: 'id',
+  post_id: 'post_id',
+  link_normalized_name: 'link_normalized_name',
+  post_title: 'post_title',
+  post_status: 'post_status',
+  introduction_date: 'introduction_date',
+  primary_hybridizer_id: 'primary_hybridizer_id',
+  primary_hybridizer_name: 'primary_hybridizer_name',
+  additional_hybridizers_ids: 'additional_hybridizers_ids',
+  additional_hybridizers_names: 'additional_hybridizers_names',
+  hybridizer_code_legacy: 'hybridizer_code_legacy',
+  seedling_number: 'seedling_number',
+  bloom_season_ids: 'bloom_season_ids',
+  bloom_season_names: 'bloom_season_names',
+  fragrance_ids: 'fragrance_ids',
+  fragrance_names: 'fragrance_names',
+  bloom_habit_ids: 'bloom_habit_ids',
+  bloom_habit_names: 'bloom_habit_names',
+  foliage_ids: 'foliage_ids',
+  foliage_names: 'foliage_names',
+  ploidy_ids: 'ploidy_ids',
+  ploidy_names: 'ploidy_names',
+  scape_height_in: 'scape_height_in',
+  bloom_size_in: 'bloom_size_in',
+  bud_count: 'bud_count',
+  branches: 'branches',
+  color: 'color',
+  rebloom: 'rebloom',
+  flower_form_ids: 'flower_form_ids',
+  flower_form_names: 'flower_form_names',
+  double_percentage: 'double_percentage',
+  polymerous_percentage: 'polymerous_percentage',
+  spider_ratio: 'spider_ratio',
+  petal_length_in: 'petal_length_in',
+  petal_width_in: 'petal_width_in',
+  unusual_forms_ids: 'unusual_forms_ids',
+  unusual_forms_names: 'unusual_forms_names',
+  parentage: 'parentage',
+  images_count: 'images_count',
+  last_updated: 'last_updated',
+  image_url: 'image_url',
+  awards_json: 'awards_json',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ListingScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -149,6 +205,7 @@ exports.Prisma.ListingScalarFieldEnum = {
   description: 'description',
   privateNote: 'privateNote',
   ahsId: 'ahsId',
+  cultivarReferenceId: 'cultivarReferenceId',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -217,6 +274,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   AhsListing: 'AhsListing',
+  CultivarReference: 'CultivarReference',
+  V2AhsCultivar: 'V2AhsCultivar',
   Listing: 'Listing',
   List: 'List',
   UserProfile: 'UserProfile',

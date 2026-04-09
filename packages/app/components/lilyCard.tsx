@@ -1,5 +1,4 @@
 import React from "react";
-import slugify from "slugify";
 import { Icon } from "@iconify/react";
 import cart from "@iconify/icons-ic/round-shopping-cart";
 import { useSnackBar } from "./snackBarProvider";
@@ -16,7 +15,7 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
 
-  let imageUrl =
+  const imageUrl =
     lily.images?.length > 0
       ? lily.images[0].url
       : lily.ahsListing?.ahsImageUrl || getPlaceholderImageUrl(lily.title);
