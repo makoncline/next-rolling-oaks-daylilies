@@ -29,3 +29,5 @@
 
 - Goal for this task: move public cultivar display reads from legacy `Listing.ahsListing` to the repo's real V2 cultivar source without changing writes or adding Prisma migrations.
 - Current public listing coverage in the live DB for `userId = "3"`: `3028` visible listings total, `1599` with `cultivarReferenceId`, `1590` with both `cultivarReferenceId` and `ahsId`, `9` V2-only, and `1429` with neither.
+- For the VPS migration, contact/cart forms post to `/api/forms` and send through Nodemailer. Runtime requires `SMTP_USER` and `SMTP_PASS`; `CONTACT_TO_EMAIL` defaults to `kaymcline@gmail.com` and accepts comma-separated recipients.
+- `packages/design-system` is a git submodule. If it is uninitialized, full `tsc` and Docker builds fail before reaching app code because `@packages/design-system` cannot be resolved.

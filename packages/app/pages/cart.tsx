@@ -8,15 +8,14 @@ import {
   Form,
   FormError,
   FormWrapper,
-  Heading,
   Hr,
   Space,
 } from "@packages/design-system";
 import { useRouter } from "next/router";
 import {
-  NETLIFY_FORMS_PATH,
-  submitNetlifyForm,
-} from "../lib/netlifyForms";
+  WEBSITE_FORMS_PATH,
+  submitWebsiteForm,
+} from "../lib/formSubmission";
 
 const CartTable = () => {
   const { addOne, removeOne, numItems, shipping, cart, total } = useCart();
@@ -111,7 +110,7 @@ const CartForm = () => {
     setSubmitError(null);
 
     try {
-      await submitNetlifyForm(event.currentTarget);
+      await submitWebsiteForm(event.currentTarget);
       await router.push("/thanks");
     } catch (error) {
       console.error(error);
@@ -127,7 +126,7 @@ const CartForm = () => {
         formId={"cart"}
         name="cart"
         method="post"
-        action={NETLIFY_FORMS_PATH}
+        action={WEBSITE_FORMS_PATH}
         onSubmitCapture={handleSubmit}
         hidden={numItems < 1}
         autocomplete="off"
