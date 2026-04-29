@@ -28,7 +28,7 @@ const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
 
 export default Catalogs;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const snapshot = await getPublicSnapshot();
   const realCatalogs = Object.values(snapshot.catalogsBySlug)
     .filter((catalog) => !["all", "search", "for-sale"].includes(catalog.slug))
@@ -42,6 +42,5 @@ export async function getStaticProps() {
         snapshot.catalogsBySlug.all,
       ].filter(Boolean),
     },
-    revalidate: 900,
   };
 }

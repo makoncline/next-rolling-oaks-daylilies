@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../prisma/db";
 import {
-  getExistingPublicSnapshot,
+  getPublicSnapshot,
   getPublicSnapshotAgeSeconds,
   getPublicSnapshotStatus,
   isPublicSnapshotRefreshing,
@@ -19,21 +19,22 @@ export default async function handler(
     return;
   }
 
-  const snapshot = await getExistingPublicSnapshot().catch((error) => {
+  const snapshot = await getPublicSnapshot().catch((error) => {
     console.error(error);
     return null;
   });
 
-  const database = await prisma.$queryRaw`SELECT 1`
-    .then(() => true)
-    .catch((error) => {
-      console.error(error);
-      return false;
-    });
-  const canServePublicData = Boolean(snapshot) || database;
+  let database = false;
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    database = true;
+  } catch (error) {
+    console.error(error);
+  }
+  const ok = Boolean(snapshot);
 
-  res.status(canServePublicData ? 200 : 503).json({
-    ok: canServePublicData,
+  res.status(ok ? 200 : 503).json({
+    ok,
     service: "rolling-oaks-daylilies",
     publicSnapshot: snapshot
       ? {
@@ -48,7 +49,6 @@ export default async function handler(
         }
       : null,
     checks: {
-      canServePublicData,
       database,
       publicSnapshot: Boolean(snapshot),
     },
