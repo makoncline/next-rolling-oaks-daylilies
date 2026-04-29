@@ -17,7 +17,9 @@ test("catalog search surfaces v2 hybridizer and image data", async ({ page }) =>
 
   await page.goto("/catalog/search?name=Carbon%20Black");
 
-  await expect(page.getByRole("heading", { name: "Search" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Search", exact: true })
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Carbon Black" }).first()
   ).toBeVisible({ timeout: 20_000 });
