@@ -36,90 +36,119 @@ export type Catalog = {
   image: string | null;
 };
 
+type ImageRow = {
+  url: string;
+};
+
+const randomListImageUrl = async (listId: string) => {
+  const rows = await prisma.$queryRaw<ImageRow[]>`
+    SELECT Image.url
+    FROM Image
+    JOIN Listing ON Listing.id = Image.listingId
+    JOIN _ListToListing ON _ListToListing.B = Listing.id
+    WHERE _ListToListing.A = ${listId}
+      AND Listing.userId = ${siteConfig.userId}
+      AND (Listing.status IS NULL OR Listing.status != 'HIDDEN')
+    ORDER BY RANDOM()
+    LIMIT 1
+  `;
+
+  return rows[0]?.url ?? null;
+};
+
+const randomAllListingsImageUrl = async () => {
+  const rows = await prisma.$queryRaw<ImageRow[]>`
+    SELECT Image.url
+    FROM Image
+    JOIN Listing ON Listing.id = Image.listingId
+    WHERE Listing.userId = ${siteConfig.userId}
+      AND (Listing.status IS NULL OR Listing.status != 'HIDDEN')
+    ORDER BY RANDOM()
+    LIMIT 1
+  `;
+
+  return rows[0]?.url ?? null;
+};
+
+const randomForSaleImageUrl = async () => {
+  const rows = await prisma.$queryRaw<ImageRow[]>`
+    SELECT Image.url
+    FROM Image
+    JOIN Listing ON Listing.id = Image.listingId
+    WHERE Listing.userId = ${siteConfig.userId}
+      AND Listing.price > 0
+      AND (Listing.status IS NULL OR Listing.status != 'HIDDEN')
+    ORDER BY RANDOM()
+    LIMIT 1
+  `;
+
+  return rows[0]?.url ?? null;
+};
+
 export async function getServerSideProps() {
   const lists = await prisma.list.findMany({
     where: { userId: siteConfig.userId },
   });
 
-  const catalogs: Catalog[] = [];
-  const listsImages: Record<string, string[]> = {};
+  const catalogs = await Promise.all(
+    lists.map(async (list) => {
+      const [totalCount, image] = await Promise.all([
+        prisma.listing.count({
+          where: {
+            lists: { some: { id: list.id } },
+            OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+          },
+        }),
+        randomListImageUrl(list.id),
+      ]);
 
-  for (const list of lists) {
-    // Count listings for this list
-    const listCountQuery = await prisma.listing.count({
-      where: {
-        lists: { some: { id: list.id } },
-        OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-      },
-    });
-
-    // Get images for listings in this list
-    const listingImageQuery = await prisma.image.findMany({
-      where: {
-        listing: {
-          lists: { some: { id: list.id } },
-          OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-        },
-      },
-      orderBy: { updatedAt: "desc" },
-      select: { url: true },
-    });
-
-    const listImages = listingImageQuery.map((img) => img.url);
-    listsImages[list.id] = listImages;
-
-    catalogs.push({
-      slug: list.title.toLowerCase().replace(/\s+/g, "-"),
-      name: list.title,
-      intro: list.description,
-      totalCount: listCountQuery,
-      image: randomImageUrl(listImages),
-    });
-  }
+      return {
+        slug: list.title.toLowerCase().replace(/\s+/g, "-"),
+        name: list.title,
+        intro: list.description,
+        totalCount,
+        image,
+      };
+    })
+  );
 
   // All listings catalog
-  const allListingCountQuery = await prisma.listing.count({
-    where: {
-      userId: siteConfig.userId,
-      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-    },
-  });
+  const [allListingCountQuery, allListingImage] = await Promise.all([
+    prisma.listing.count({
+      where: {
+        userId: siteConfig.userId,
+        OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
+      },
+    }),
+    randomAllListingsImageUrl(),
+  ]);
 
-  const allListingImages = Object.values(listsImages).flat();
   const allCatalog = {
     slug: "all",
     name: "All Rolling Oaks Daylilies",
     intro: `View all of my daylilies in a single list. This is a great place to start if you're searching for something specific.`,
     totalCount: allListingCountQuery,
-    image: randomImageUrl(allListingImages),
+    image: allListingImage,
   };
 
   // For sale catalog
-  const forSaleListingCountQuery = await prisma.listing.count({
-    where: {
-      price: { gt: 0 },
-      userId: siteConfig.userId,
-      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-    },
-  });
-
-  const forSalesListingImagesQuery = await prisma.image.findMany({
-    where: {
-      listing: {
+  const [forSaleListingCountQuery, forSaleImage] = await Promise.all([
+    prisma.listing.count({
+      where: {
         price: { gt: 0 },
         userId: siteConfig.userId,
         OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
       },
-    },
-    select: { url: true },
-  });
+    }),
+    randomForSaleImageUrl(),
+  ]);
 
   const forSaleCatalog = {
     slug: "for-sale",
     name: "For Sale",
     intro: `Daylilies available for purchase. Send me a message to check availability`,
     totalCount: forSaleListingCountQuery,
-    image: randomImageUrl(forSalesListingImagesQuery.map((img) => img.url)),
+    image: forSaleImage,
   };
 
   return {
@@ -132,11 +161,3 @@ export async function getServerSideProps() {
     },
   };
 }
-
-const randomImageUrl = (imageUrls: string[]): string | null => {
-  if (imageUrls.length === 0) {
-    return null;
-  }
-  const randomIndex = Math.floor(Math.random() * imageUrls.length);
-  return imageUrls[randomIndex];
-};
