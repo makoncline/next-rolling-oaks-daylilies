@@ -65,6 +65,16 @@ jobs:
       - name: Pull image
         run: docker pull "${{ needs.build.outputs.image_ref }}"
 
+      - name: Validate runtime secrets
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_DATABASE_AUTH_TOKEN: ${{ secrets.TURSO_DATABASE_AUTH_TOKEN }}
+        run: |
+          if [ -z "$TURSO_DATABASE_URL" ] || [ -z "$TURSO_DATABASE_AUTH_TOKEN" ]; then
+            echo "::error::TURSO_DATABASE_URL and TURSO_DATABASE_AUTH_TOKEN GitHub Actions secrets are required for image verification."
+            exit 1
+          fi
+
       - name: Run container
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
@@ -128,6 +138,16 @@ jobs:
 
       - name: Pull image
         run: docker pull "${{ needs.build.outputs.image_ref }}"
+
+      - name: Validate runtime secrets
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_DATABASE_AUTH_TOKEN: ${{ secrets.TURSO_DATABASE_AUTH_TOKEN }}
+        run: |
+          if [ -z "$TURSO_DATABASE_URL" ] || [ -z "$TURSO_DATABASE_AUTH_TOKEN" ]; then
+            echo "::error::TURSO_DATABASE_URL and TURSO_DATABASE_AUTH_TOKEN GitHub Actions secrets are required for Playwright verification."
+            exit 1
+          fi
 
       - name: Run container
         env:
