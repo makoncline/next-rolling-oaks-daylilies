@@ -34,6 +34,8 @@ type Props = {
   listings: DisplayListing[];
 };
 
+const getListSlug = (title: string) => title.toLowerCase().replace(/\s+/g, "-");
+
 const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   title,
   description,
@@ -947,25 +949,9 @@ const useSearchChange = (numResults: number, filters: any) => {
 };
 
 export async function getStaticPaths() {
-  const lists = await prisma.list.findMany({
-    where: { userId: siteConfig.userId },
-    select: { title: true },
-  });
-
-  const paths = lists.map((list) => ({
-    params: {
-      catalog: list.title.toLowerCase().replace(/\s+/g, "-"),
-    },
-  }));
-
-  // Add paths for special catalogs
-  paths.push({ params: { catalog: "all" } });
-  paths.push({ params: { catalog: "for-sale" } });
-  paths.push({ params: { catalog: "search" } });
-
   return {
-    paths,
-    fallback: false,
+    paths: [],
+    fallback: "blocking",
   };
 }
 
@@ -995,17 +981,10 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   } else if (catalog === "search") {
     list = { ...defaultList, title: "Search", description: "" };
   } else {
-    // Look up list by slug
-    list = await prisma.list.findFirst({
-      where: {
-        userId: siteConfig.userId,
-        title: {
-          contains: catalog.replace(/-/g, " "),
-          // SQLite doesn't support insensitive mode like PostgreSQL
-          // We'll handle case insensitivity differently
-        },
-      },
+    const lists = await prisma.list.findMany({
+      where: { userId: siteConfig.userId },
     });
+    list = lists.find((candidate) => getListSlug(candidate.title) === catalog);
 
     if (list) {
       listingsWhere = {
@@ -1016,7 +995,9 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   }
 
   if (!list) {
-    throw new Error("List not found");
+    return {
+      notFound: true,
+    };
   }
 
   const rawListings = await prisma.listing.findMany({

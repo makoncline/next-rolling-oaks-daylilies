@@ -1,18 +1,18 @@
 import React from "react";
 import Layout from "../components/layout";
-import { GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
 import { Heading } from "@packages/design-system";
 import { sortTitlesLettersBeforeNumbers } from "../lib/sort";
-import type { InferGetStaticPropsType } from "next";
+import type { InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 import {
   hybridizerCultivarReferenceInclude,
   mapListingCultivarDisplay,
 } from "../lib/cultivarDisplay";
 
-const Listings = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Listings = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { listings } = props;
   return (
     <Layout>
@@ -88,7 +88,7 @@ type Listing = {
   hybridizer: string | null;
 };
 
-export const getStaticProps: GetStaticProps<{
+export const getServerSideProps: GetServerSideProps<{
   listings: Listing[];
 }> = async () => {
   const listings = await prisma.listing.findMany({
@@ -128,6 +128,5 @@ export const getStaticProps: GetStaticProps<{
         listings: sortedListings,
       })
     ),
-    revalidate: 60,
   };
 };

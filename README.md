@@ -1,3 +1,3 @@
 # Rolling Oaks Daylilies
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for VPS runtime notes.
+See [DEPLOY.md](./DEPLOY.md) for VPS runtime notes.

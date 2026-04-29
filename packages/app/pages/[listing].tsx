@@ -220,19 +220,9 @@ function getTraits(ahsData: AhsDisplay) {
 }
 
 export async function getStaticPaths() {
-  const listings = await prisma.listing.findMany({
-    where: {
-      userId: siteConfig.userId,
-      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-    },
-    select: { title: true, slug: true },
-  });
-
   return {
-    paths: listings.map((listing) => ({
-      params: { listing: listing.slug },
-    })),
-    fallback: false,
+    paths: [],
+    fallback: "blocking",
   };
 }
 
