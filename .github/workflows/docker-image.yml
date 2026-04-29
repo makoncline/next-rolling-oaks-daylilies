@@ -3,9 +3,8 @@ name: Docker
 on:
   pull_request:
   workflow_dispatch:
-  # Re-enable when main merges should publish and deploy images automatically.
-  # push:
-  #   branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   build:
@@ -200,8 +199,7 @@ jobs:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: [build, verify-health, playwright]
-    # Temporary PR hook test. Before merging, switch this to push/main only.
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
     steps:
@@ -209,7 +207,7 @@ jobs:
         env:
           DEPLOY_WEBHOOK_TOKEN: ${{ secrets.DEPLOY_WEBHOOK_TOKEN }}
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
-          EXPECTED_IMAGE_TAG: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_IMAGE_TAG: ${{ github.sha }}
         run: |
           if [ -z "$DEPLOY_WEBHOOK_TOKEN" ]; then
             echo "::error::DEPLOY_WEBHOOK_TOKEN GitHub Actions secret is required for VPS deployment."
