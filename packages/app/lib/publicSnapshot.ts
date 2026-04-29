@@ -429,27 +429,29 @@ export async function writePublicSnapshot(snapshot: PublicSnapshot) {
 }
 
 export async function refreshPublicSnapshot() {
-  try {
-    const snapshot = await buildPublicSnapshot();
-    await writePublicSnapshot(snapshot);
-    return snapshot;
-  } catch (error) {
-    logPublicSnapshot("public_snapshot_build_failed", {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    throw error;
-  }
-}
-
-function refreshPublicSnapshotInBackground() {
   if (!refreshInFlight) {
-    logPublicSnapshot("public_snapshot_background_refresh_started");
-    refreshInFlight = refreshPublicSnapshot().finally(() => {
+    refreshInFlight = (async () => {
+      try {
+        const snapshot = await buildPublicSnapshot();
+        await writePublicSnapshot(snapshot);
+        return snapshot;
+      } catch (error) {
+        logPublicSnapshot("public_snapshot_build_failed", {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      }
+    })().finally(() => {
       refreshInFlight = undefined;
     });
   }
 
   return refreshInFlight;
+}
+
+function refreshPublicSnapshotInBackground() {
+  logPublicSnapshot("public_snapshot_background_refresh_started");
+  return refreshPublicSnapshot();
 }
 
 async function readPublicSnapshot() {
