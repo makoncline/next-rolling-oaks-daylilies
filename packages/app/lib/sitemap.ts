@@ -20,7 +20,6 @@ export const getSitemapUrls = async () => {
     getSitemapEntry("/catalog/for-sale", new Date()),
     getSitemapEntry("/cart", new Date()),
     getSitemapEntry("/thanks", new Date()),
-    getSitemapEntry("/list", new Date()),
     getSitemapEntry("/blog", new Date()),
     getSitemapEntry("/blog/dorothy-and-toto", new Date()),
   ];
