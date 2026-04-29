@@ -56,7 +56,7 @@ git submodule update --init --recursive
 docker build -t rolling-oaks-daylilies:local .
 ```
 
-During PR testing, GitHub Actions builds the image once, pushes it to GHCR with the full commit SHA tag, then pulls that same image back down for both `GET /api/health` and Playwright verification. Re-enable the commented `push` trigger when `main` should publish images automatically.
+During PR testing, GitHub Actions builds the image once, pushes it to GHCR with the full commit SHA tag, then pulls that same image back down for both `GET /api/health` and end-to-end verification. Pull requests do not deploy. Pushes to `main` build and verify the merge commit image, then deploy that immutable SHA tag through the VPS webhook.
 
 ## Local Production-Image Test
 
@@ -78,7 +78,7 @@ curl -fsS http://localhost:3000/api/health
 
 ## VPS Compose
 
-Use this under `/srv/stacks/rolling-oaks-daylilies/compose.yaml`, replacing `${IMAGE_TAG}` with a pushed full commit SHA or `main`.
+Use this under `/srv/stacks/rolling-oaks-daylilies/compose.yaml`, replacing `${IMAGE_TAG}` with a pushed full commit SHA.
 
 ```yaml
 services:
@@ -102,16 +102,16 @@ The service does not publish host ports. Caddy reaches it over the external `edg
 Add this route to the local Caddy config behind the existing Cloudflare Tunnel:
 
 ```caddy
-@rolling_oaks_daylilies host rollingoaksdaylilies.com
+@rolling_oaks_daylilies host rolling-oaks-daylilies.makon.dev
 handle @rolling_oaks_daylilies {
   reverse_proxy app:3000
 }
 ```
 
-If `www.rollingoaksdaylilies.com` should also serve this app, include it in the matcher:
+If the production domain should also serve this app, include it in the matcher:
 
 ```caddy
-@rolling_oaks_daylilies host rollingoaksdaylilies.com www.rollingoaksdaylilies.com
+@rolling_oaks_daylilies host rolling-oaks-daylilies.makon.dev rollingoaksdaylilies.com www.rollingoaksdaylilies.com
 ```
 
 ## Reverse Proxy Notes

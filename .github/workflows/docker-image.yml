@@ -150,7 +150,7 @@ jobs:
           TURSO_DATABASE_AUTH_TOKEN: ${{ secrets.TURSO_DATABASE_AUTH_TOKEN }}
         run: |
           if [ -z "$TURSO_DATABASE_URL" ] || [ -z "$TURSO_DATABASE_AUTH_TOKEN" ]; then
-            echo "::error::TURSO_DATABASE_URL and TURSO_DATABASE_AUTH_TOKEN GitHub Actions secrets are required for Playwright verification."
+            echo "::error::TURSO_DATABASE_URL and TURSO_DATABASE_AUTH_TOKEN GitHub Actions secrets are required for end-to-end verification."
             exit 1
           fi
 
