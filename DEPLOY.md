@@ -18,7 +18,7 @@ The container runs the Next.js standalone server from the image. The source repo
 
 - Turso/libSQL database
 - Gmail SMTP for contact and cart emails
-- Optional resized-image bucket host configured by `NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET`
+- Resized image CDN at `images.daylilycatalog.com`
 
 `/api/health` performs a lightweight Turso database check with `SELECT 1`. SMTP is intentionally not checked because a probe would need to log in to Gmail on every request and can be slow or rate-limited; successful contact/cart form submissions exercise SMTP separately.
 
@@ -40,11 +40,10 @@ Required non-secret config:
 Optional config:
 
 - `CONTACT_BCC_EMAIL`: comma-separated BCC recipient list.
-- `NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET`: image bucket host prefix used by `packages/app/components/Image.tsx`.
 
 Build-time-only variables:
 
-- None.
+- `NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET`: optional image bucket host override used by `packages/app/components/Image.tsx`. The Dockerfile defaults it to `images.daylilycatalog.com` during image build and Next.js bakes it into the client bundle, so setting it only in the VPS runtime `.env` will not affect browser-rendered image URLs.
 
 ## Build Image
 

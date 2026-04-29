@@ -18,7 +18,9 @@ FROM base AS builder
 
 WORKDIR /app
 
+ARG NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET=images.daylilycatalog.com
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET=${NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/app/node_modules ./packages/app/node_modules
