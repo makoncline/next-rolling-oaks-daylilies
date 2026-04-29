@@ -1,2 +1,269 @@
-@import "@packages/design-system/src/styles/index.css";
-@import "./theme.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ro-bg: #1b2733;
+  --ro-surface: #222d38;
+  --ro-surface-2: #28323e;
+  --ro-text-high: #ece9e6;
+  --ro-text: #aaabad;
+  --ro-muted: #7f858c;
+  --ro-blue: #1f78d1;
+  --ro-blue-glint: #2f8de8;
+  --ro-violet: #7c3aed;
+  --ro-success: #22c55e;
+  --ro-danger: #ef4444;
+}
+
+@layer base {
+  html {
+    background: var(--ro-bg);
+    color: var(--ro-text);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ro-bg);
+    color: var(--ro-text);
+  }
+
+  body,
+  input,
+  textarea,
+  select,
+  button {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--ro-text-high);
+    font-weight: 700;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    line-height: 1.7;
+    max-width: 70ch;
+  }
+
+  a[href] {
+    color: #8dbcf5;
+    text-decoration: none;
+  }
+
+  a[href]:hover {
+    color: #b7d5ff;
+    text-decoration: underline;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    border: 1px solid #4b5563;
+    border-radius: 0.375rem;
+    background: var(--ro-surface-2);
+    color: var(--ro-text-high);
+    padding: 0.5rem 0.75rem;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid var(--ro-blue);
+    outline-offset: 2px;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 0.375rem;
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border: 1px solid var(--ro-muted);
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--ro-text-high);
+    padding: 0.35rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .btn:hover {
+    cursor: pointer;
+    border-color: var(--ro-text-high);
+    background: var(--ro-surface-2);
+    text-decoration: none;
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn-primary {
+    border-color: var(--ro-blue);
+    background: var(--ro-blue);
+  }
+
+  .btn-primary:hover {
+    border-color: var(--ro-blue-glint);
+    background: var(--ro-blue-glint);
+  }
+
+  .btn-danger {
+    border-color: var(--ro-danger);
+    color: #fecaca;
+  }
+
+  .btn-danger.btn-primary {
+    background: var(--ro-danger);
+    color: var(--ro-text-high);
+  }
+
+  .badge {
+    display: inline-flex;
+    width: max-content;
+    white-space: nowrap;
+    border-radius: 0.375rem;
+    background: var(--ro-text-high);
+    color: var(--ro-bg);
+    padding: 0.0625rem 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .ro-hr {
+    width: 100%;
+    height: 1px;
+    border: 0;
+    background: linear-gradient(135deg, var(--ro-blue), var(--ro-violet));
+  }
+
+  .fancy-heading {
+    display: grid;
+    width: 100%;
+    background: var(--ro-bg);
+  }
+
+  .fancy-heading > span,
+  .fancy-heading > .ro-hr {
+    grid-area: 1 / 1;
+  }
+
+  .fancy-heading > .ro-hr {
+    align-self: center;
+  }
+
+  .fancy-heading > span {
+    z-index: 1;
+    margin: auto;
+    background: inherit;
+    padding: 0 0.75rem;
+  }
+
+  .property-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .property-list-divider > *:not(:last-child) {
+    border-right: 1px solid #4b5563;
+    padding-right: 1rem;
+  }
+
+  .property-list-divider > *:not(:first-child) {
+    padding-left: 1rem;
+  }
+
+  .property-list-column {
+    flex-direction: column;
+  }
+
+  .property-list-column > *:not(:last-child) {
+    padding-bottom: 1rem;
+  }
+
+  .property-list-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .property-list-inline {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .property-list-inline > * {
+    flex: 0 0 20%;
+    min-width: 150px;
+  }
+
+  .property-list-label {
+    color: var(--ro-muted);
+  }
+
+  .alert {
+    display: flex;
+    width: 100%;
+    max-width: 30rem;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid;
+    border-radius: 0.375rem;
+    padding: 1rem;
+  }
+
+  .alert-success {
+    border-color: var(--ro-success);
+    background: rgb(34 197 94 / 0.1);
+  }
+
+  .alert-danger {
+    border-color: var(--ro-danger);
+    background: rgb(239 68 68 / 0.1);
+  }
+
+  .field {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

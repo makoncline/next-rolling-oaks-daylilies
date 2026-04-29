@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../components/layout";
-import { Alert, Heading } from "@packages/design-system";
+import { Alert } from "components/ui";
 
 const Page404: React.FC = () => {
   return (

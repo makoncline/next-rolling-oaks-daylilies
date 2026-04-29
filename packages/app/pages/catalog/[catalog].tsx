@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import Head from "next/head";
 import Layout from "../../components/layout";
 import BackToTop from "../../components/backToTop";
@@ -16,7 +15,7 @@ import {
   FormWrapper,
   Heading,
   Space,
-} from "@packages/design-system";
+} from "components/ui";
 import { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { parseLeadingNumber } from "../../lib/cultivarDisplay";
@@ -897,7 +896,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             />
           )}
         </Space>
-        <LilyWrapper>
+        <div className="grid w-full grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {displayLilies.map((node: DisplayListing) => {
             if (!node) return;
             return (
@@ -906,7 +905,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               </React.Fragment>
             );
           })}
-        </LilyWrapper>
+        </div>
         {displayLilies.length < 1 && <p>No results found for this search...</p>}
         {filteredLilies.length > pageLimit && (
           <Paginate
@@ -926,15 +925,6 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   );
 };
 export default SearchPage;
-
-const LilyWrapper = styled.div`
-  // flex wrap
-
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--size-4);
-`;
 
 const useSearchChange = (numResults: number, filters: any) => {
   const [prevNum, setPrevNum] = React.useState(numResults);
@@ -984,6 +974,6 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   };
 };
 
-const FullWidthSelect = styled.select`
-  width: 100%;
-`;
+const FullWidthSelect = (
+  props: React.SelectHTMLAttributes<HTMLSelectElement>
+) => <select className="w-full" {...props} />;

@@ -1,10 +1,9 @@
 import React from "react";
-import styled from "styled-components";
-import { Alert, Button } from "@packages/design-system";
+import { Alert, Button } from "components/ui";
 
 export const DaylilyCatalogAd = () => {
   return (
-    <Wrapper>
+    <div className="mt-12 flex w-full justify-center">
       <Alert type="success">
         <Alert.Heading>Build Your Own Daylily Website!</Alert.Heading>
         <p>
@@ -23,20 +22,6 @@ export const DaylilyCatalogAd = () => {
           Get Started For Free!
         </Button>
       </Alert>
-    </Wrapper>
+    </div>
   );
 };
-
-const Wrapper = styled.div`
-  display: flex;
-  width: 100%;
-  margin-top: 3rem;
-  justify-content: center;
-`;
-const Article = styled.article`
-  width: 100%;
-  padding: 1rem;
-  background: var(--bg-2);
-  border-radius: 5px;
-  margin: 1rem;
-`;

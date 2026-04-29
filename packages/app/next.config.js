@@ -8,9 +8,6 @@ const nextConfig = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  compiler: {
-    styledComponents: true,
-  },
   images: {
     domains: [
       "www.daylilies.org",

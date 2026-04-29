@@ -5,11 +5,10 @@ import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
 import { ListingType } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
-import { Button, Heading, Space } from "@packages/design-system";
+import { Button, Heading, Space } from "components/ui";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 import Image from "next/image";
 import { getImageUrls } from "./Image";
-import styled from "styled-components";
 
 const LilyCard = ({ lily }: { lily: ListingType }) => {
   const { addOrUpdateProduct } = useCart();
@@ -29,15 +28,9 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
   };
 
   return (
-    <LilyCardWrapper direction="column">
+    <article className="flex w-full max-w-[300px] flex-col gap-4">
       {imageUrl ? (
-        <div
-          css={`
-            height: var(--size-image-card);
-            aspect-ratio: var(--ratio-square);
-            position: relative;
-          `}
-        >
+        <div className="relative aspect-square w-full">
           <Image
             src={images.full}
             alt={lily.title + " image"}
@@ -74,13 +67,8 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
           )}
         </Space>
       </Space>
-    </LilyCardWrapper>
+    </article>
   );
 };
 
 export default LilyCard;
-
-const LilyCardWrapper = styled(Space)`
-  width: 100%;
-  max-width: 300px;
-`;

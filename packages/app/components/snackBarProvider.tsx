@@ -1,4 +1,4 @@
-import { Badge, GreenBadge } from "@packages/design-system";
+import { Badge } from "components/ui";
 import React, {
   createContext,
   useMemo,
@@ -7,7 +7,6 @@ import React, {
   useState,
   useContext,
 } from "react";
-import styled from "styled-components";
 
 export const SnackBarContext = createContext<
   | {
@@ -47,20 +46,18 @@ export const SnackBarProvider = ({
   return (
     <SnackBarContext.Provider value={value}>
       {children}
-      <SnackBarContainer>
+      <div className="fixed bottom-0 z-20 flex flex-col items-start justify-center gap-2 text-ro-text-high">
         {alerts.map((alert, i) => (
           <Badge
             key={i}
-            css={`
-              border: 1px solid var(--green-4);
-              background-color: var(--surface-2);
-              color: var(--text-1);
-            `}
+            className="border border-ro-success bg-ro-surface text-ro-text-high"
           >
-            <p>{alert}</p>
+            <p className="m-0 rounded-full border border-ro-blue bg-ro-surface2 px-6 py-2 text-base">
+              {alert}
+            </p>
           </Badge>
         ))}
-      </SnackBarContainer>
+      </div>
     </SnackBarContext.Provider>
   );
 };
@@ -72,25 +69,3 @@ export const useSnackBar = () => {
   }
   return context;
 };
-
-const SnackBarContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-  margin: auto;
-
-  color: var(--text-high);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: var(--size-2);
-
-  p {
-    margin: 0 0 2.5px 10px;
-    background-color: var(--bg-shine);
-    border: 1px solid rgb(var(--rgb-blue));
-    border-radius: 3rem;
-    font-size: 1rem;
-    padding: 0.5rem 1.5rem;
-  }
-`;
