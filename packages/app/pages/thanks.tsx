@@ -1,13 +1,13 @@
 import React from "react";
 import Layout from "../components/layout";
-import { Alert } from "@packages/design-system";
+import { Alert } from "components/ui";
 import { useCart } from "components/cart";
 
 const Thanks: React.FC = () => {
   const { clear } = useCart();
   React.useEffect(() => {
     clear();
-  }, []);
+  }, [clear]);
   return (
     <Layout>
       <Alert type="success">

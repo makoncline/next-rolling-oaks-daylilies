@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import Image from "next/image";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 import { getImageUrls } from "./Image";
@@ -9,8 +8,16 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
   const imageUrl = imageUrls[imageIndex] || getPlaceholderImageUrl();
   const images = getImageUrls(imageUrl);
   return (
-    <Wrapper hasMultipleImages={imageUrls.length > 1}>
-      <DisplayImage>
+    <div
+      className="grid grid-cols-4"
+      style={{
+        gridTemplateRows:
+          imageUrls.length > 1
+            ? "min(calc(100vw - 4rem), 32rem) min(calc((100vw - 4rem) / 4), 8rem)"
+            : "min(calc(100vw - 4rem), 32rem)",
+      }}
+    >
+      <div className="relative col-span-4">
         {imageUrl && (
           <Image
             key={imageIndex}
@@ -25,12 +32,17 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             unoptimized
           />
         )}
-      </DisplayImage>
+      </div>
       {imageUrls.length > 1 &&
         imageUrls.map((url, i) => {
           const thumbImages = getImageUrls(url);
           return (
-            <Thumbnail key={i} selected={i === imageIndex}>
+            <div
+              key={i}
+              className={`relative aspect-square ${
+                i === imageIndex ? "border border-ro-text" : ""
+              }`}
+            >
               <Image
                 src={thumbImages.thumb}
                 alt={`listing photo ${i}`}
@@ -41,35 +53,11 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
                   objectFit: "cover",
                 }}
               />
-            </Thumbnail>
+            </div>
           );
         })}
-    </Wrapper>
+    </div>
   );
 }
 
 export { ImageDisplay };
-
-const Wrapper = styled.div<{ hasMultipleImages: boolean }>`
-  display: grid;
-
-  grid-template-rows: min(var(--full-width), var(--size-image)) ${({
-      hasMultipleImages,
-    }) =>
-      hasMultipleImages
-        ? "min(calc(var(--full-width) / 4), var(--size-image-thumbnail))"
-        : ""};
-
-  grid-template-columns: repeat(
-    4,
-    min(calc(var(--full-width) / 4), var(--size-image-thumbnail))
-  );
-`;
-const DisplayImage = styled.div`
-  position: relative;
-  grid-column: span 4;
-`;
-const Thumbnail = styled.div<{ selected: boolean }>`
-  position: relative;
-  ${({ selected }) => (selected ? `border: var(--hairline);` : "")}
-`;

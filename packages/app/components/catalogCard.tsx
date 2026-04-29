@@ -1,12 +1,10 @@
 import {
-  above,
   Heading,
   PropertyList,
   PropertyListItem,
   Space,
-} from "@packages/design-system";
+} from "components/ui";
 import React from "react";
-import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
 import { getImageUrls } from "./Image";
@@ -26,27 +24,17 @@ export const CatalogCard = ({
 }) => {
   const images = getImageUrls(image);
   return (
-    <StyledCard>
-      <div
-        css={`
-          width: var(--size-image-card);
-          aspect-ratio: var(--ratio-square);
-          position: relative;
-        `}
-      >
-        <Image
-          src={images.full}
-          alt={`${name} catalog image`}
-          priority
-          fill
-          sizes="600px"
-          style={{
-            objectFit: "cover",
-          }}
-          unoptimized
-        />
-      </div>
-      <Body block direction="column">
+    <article className="grid w-full grid-cols-1 grid-rows-[18rem_auto] justify-items-center gap-4 hover:bg-ro-surface md:grid-cols-[18rem_1fr] md:grid-rows-[minmax(18rem,auto)]">
+      <Image
+        src={images.full}
+        alt={`${name} catalog image`}
+        priority
+        width={288}
+        height={288}
+        className="h-72 w-72 object-cover"
+        unoptimized
+      />
+      <Space block direction="column" className="items-start p-4">
         <Heading level={3}>{name}</Heading>
         <PropertyList divider>
           <PropertyListItem label="# Listings">
@@ -57,29 +45,7 @@ export const CatalogCard = ({
         <Link href={`/catalog/${slug}`} passHref>
           View Catalog
         </Link>
-      </Body>
-    </StyledCard>
+      </Space>
+    </article>
   );
 };
-
-const StyledCard = styled.article`
-  width: 100%;
-  display: grid;
-  gap: var(--size-4);
-  grid-template-columns: 1fr;
-  grid-template-rows: var(--size-image-card) auto;
-  justify-items: center;
-  ${above.sm`
-    grid-template-columns: var(--size-image-card) 1fr;
-    grid-template-rows: minmax(var(--size-image-card), auto);
-    width: 100%;
-  `}
-  :hover {
-    background: var(--surface-2);
-  }
-`;
-
-const Body = styled(Space)`
-  padding: var(--size-4);
-  align-items: flex-start;
-`;

@@ -2,7 +2,7 @@ import React from "react";
 import Head from "next/head";
 import { siteConfig } from "../siteConfig";
 import { useCart } from "./cart";
-import { Nav, Space } from "@packages/design-system";
+import { Nav } from "components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../public/assets/logo-square.png";
@@ -49,24 +49,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
-      <Space
-        direction="column"
-        center
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 2,
-          background: "var(--surface-1)",
-          opacity: 0.9,
-        }}
-      >
-        <Space
-          direction="column"
-          block
-          center
-          style={{ maxWidth: "60rem" }}
-          as="main"
-        >
+      <div className="sticky top-0 z-10 bg-ro-bg/90">
+        <header className="mx-auto w-full max-w-content px-5 sm:px-8">
           <Nav
             logo={
               <Link href="/">
@@ -90,19 +74,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               {`Cart ${numItems ? ` (${numItems})` : ""}`}
             </Link>
           </Nav>
-        </Space>
-      </Space>
-      <Space direction="column" center>
-        <Space
-          direction="column"
-          block
-          center
-          style={{ maxWidth: "60rem" }}
-          as="main"
-        >
-          {children}
-        </Space>
-      </Space>
+        </header>
+      </div>
+      <main className="mx-auto flex w-full max-w-content flex-col items-stretch gap-4 px-5 py-6 text-left sm:px-8">
+        {children}
+      </main>
     </>
   );
 };

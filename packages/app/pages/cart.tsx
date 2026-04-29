@@ -10,7 +10,7 @@ import {
   FormWrapper,
   Hr,
   Space,
-} from "@packages/design-system";
+} from "components/ui";
 import { useRouter } from "next/router";
 import {
   WEBSITE_FORMS_PATH,
@@ -35,7 +35,7 @@ const CartTable = () => {
           <tbody>
             <tr>
               <td colSpan={8}>
-                <Hr style={{ margin: "var(--size-2) 0 " }} />
+                <Hr className="my-2" />
               </td>
             </tr>
             {cart &&
@@ -43,7 +43,7 @@ const CartTable = () => {
                 <tr key={i}>
                   <td style={{ textAlign: "left" }}>{item.name}</td>
                   <td style={{ textAlign: "center" }}>{item.quantity}</td>
-                  <td className="btn">
+                  <td>
                     <Button
                       aria-label="quantity minus"
                       onClick={() => removeOne(item.id)}
@@ -51,7 +51,7 @@ const CartTable = () => {
                       -
                     </Button>
                   </td>
-                  <td className="btn">
+                  <td>
                     <Button
                       aria-label="quantity plus"
                       onClick={() => addOne(item.id)}
@@ -63,11 +63,7 @@ const CartTable = () => {
                 </tr>
               ))}
             <tr className="total">
-              <td
-                className="wide"
-                colSpan={4}
-                style={{ padding: "var(--size-6) 0 0" }}
-              >
+              <td className="wide pt-6" colSpan={4}>
                 Shipping:
               </td>
               <td style={{ textAlign: "right" }}>{`$${shipping.toFixed(
@@ -129,7 +125,7 @@ const CartForm = () => {
         action={WEBSITE_FORMS_PATH}
         onSubmitCapture={handleSubmit}
         hidden={numItems < 1}
-        autocomplete="off"
+        autoComplete="off"
       >
         <input
           aria-label="form name"

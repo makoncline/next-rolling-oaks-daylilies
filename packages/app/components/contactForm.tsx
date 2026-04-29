@@ -4,7 +4,7 @@ import {
   Form,
   FormError,
   FormWrapper,
-} from "@packages/design-system";
+} from "components/ui";
 import React from "react";
 import { useRouter } from "next/router";
 import {
@@ -42,7 +42,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
         method="post"
         action={WEBSITE_FORMS_PATH}
         onSubmitCapture={handleSubmit}
-        autocomplete="off"
+        autoComplete="off"
       >
         <input
           aria-label="form name"

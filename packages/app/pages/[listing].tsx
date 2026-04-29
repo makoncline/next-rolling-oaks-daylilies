@@ -17,10 +17,8 @@ import {
   PropertyList,
   PropertyListItem,
   Space,
-} from "@packages/design-system";
-import {
-  AhsDisplay,
-} from "../lib/cultivarDisplay";
+} from "components/ui";
+import { AhsDisplay } from "../lib/cultivarDisplay";
 import { getPublicSnapshot, PublicListingCard } from "../lib/publicSnapshot";
 
 const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
@@ -185,7 +183,7 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
             <div>
               <Heading level={3}>Details</Heading>
               <Hr />
-              <PropertyList column padding="var(--size-1)">
+              <PropertyList column>
                 {getTraits(ahsData).map(([key, value]) => (
                   <PropertyListItem inline label={key} key={key}>
                     {value}

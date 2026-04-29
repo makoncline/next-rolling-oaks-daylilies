@@ -10,7 +10,6 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY packages/app/package.json packages/app/package.json
-COPY packages/design-system/package.json packages/design-system/package.json
 
 RUN npm ci
 
@@ -24,7 +23,6 @@ ENV NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET=${NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/app/node_modules ./packages/app/node_modules
-COPY --from=deps /app/packages/design-system/node_modules ./packages/design-system/node_modules
 COPY . .
 
 RUN npm run build -w @packages/app

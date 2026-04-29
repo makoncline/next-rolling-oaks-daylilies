@@ -1,6 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
-import { DebounceInput } from 'react-debounce-input';
+import React from "react";
+import { DebounceInput } from "react-debounce-input";
 
 const Input: React.FC<{
   name: string;
@@ -9,34 +8,20 @@ const Input: React.FC<{
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ name, placeholder, value, onChange }) => {
   return (
-    <Style>
+    <div className="w-full">
       <DebounceInput
+        className="mx-auto block w-full max-w-[35rem] border-0 bg-ro-surface2 p-2 text-base text-ro-text-high"
         debounceTimeout={500}
         id={name}
         name={name}
         placeholder={placeholder}
-        type='text'
+        type="text"
         value={value}
         onChange={onChange}
         onBlur={onChange}
       />
-    </Style>
+    </div>
   );
 };
 
 export default Input;
-
-const Style = styled.div`
-  width: 100%;
-  input {
-    display: block;
-    width: 100%;
-    max-width: 35rem;
-    padding: 0.5rem;
-    margin: 0 auto;
-    font-size: 1rem;
-    background-color: var(--bg-1);
-    color: var(--text-high);
-    border: none;
-  }
-`;

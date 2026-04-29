@@ -15,11 +15,7 @@
     "jsx": "preserve",
     "incremental": true,
     "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@packages/design-system/*": ["../../packages/design-system/src/*"],
-      "@packages/design-system": ["../../packages/design-system/src/index"]
-    }
+    "baseUrl": "."
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

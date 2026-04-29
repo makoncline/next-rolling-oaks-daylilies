@@ -1,4 +1,4 @@
-import { useLocalStorage } from "@packages/design-system";
+import { useLocalStorage } from "components/ui";
 import React from "react";
 import { siteConfig } from "../siteConfig";
 
@@ -145,10 +145,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     0
   );
 
-  const clear = () => {
+  const clear = React.useCallback(() => {
     setProducts({});
     setCart({});
-  };
+  }, [setCart, setProducts]);
 
   const cartList = Object.values(cart).map((item) => {
     const product = products[item.productId];

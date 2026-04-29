@@ -1,33 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-
-type BackToTopLinkProps = {
-  percent: number;
-};
-
-const BackToTopLink = styled.a<BackToTopLinkProps>`
-  position: fixed;
-  bottom: 1%;
-  right: 1%;
-  background: var(--pink);
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-  border-radius: 3px;
-  padding: 1rem;
-  transition: opacity 0.2s;
-  opacity: 0;
-  text-decoration: none;
-  ${(props): string =>
-    props.percent > 0.1
-      ? `
-    opacity: 1;
-  `
-      : ``}
-  @media screen and (max-width: 500px) {
-    display: none;
-  }
-`;
 
 function useScrollPosition(): number {
   const [percent, setPercent] = useState(0);
@@ -59,9 +30,15 @@ function useScrollPosition(): number {
 const BackToTop: React.FC = () => {
   const percent = useScrollPosition();
   return (
-    <BackToTopLink href='#top' title='Back To Top' percent={percent}>
+    <a
+      href="#top"
+      title="Back To Top"
+      className={`fixed bottom-[1%] right-[1%] hidden cursor-pointer rounded bg-black/50 p-4 text-white no-underline transition-opacity sm:block ${
+        percent > 0.1 ? "opacity-100" : "opacity-0"
+      }`}
+    >
       &uarr;
-    </BackToTopLink>
+    </a>
   );
 };
 

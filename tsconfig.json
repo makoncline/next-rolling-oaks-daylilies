@@ -8,15 +8,10 @@
     "strict": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "packages/*": ["packages/*"]
-    }
+    "composite": true
   },
   "include": [],
   "references": [
-    { "path": "packages/app" },
-    { "path": "packages/design-system" }
+    { "path": "packages/app" }
   ]
 }

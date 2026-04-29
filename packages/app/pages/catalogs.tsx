@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../components/layout";
 import { CatalogCard } from "../components/catalogCard";
 import { NextPage } from "next";
-import { Heading } from "@packages/design-system";
+import { Heading } from "components/ui";
 import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
 import { getPublicSnapshot, PublicCatalogSummary } from "../lib/publicSnapshot";
 

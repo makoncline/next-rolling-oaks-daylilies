@@ -8,27 +8,26 @@ import logoSquare from "../public/assets/logo.png";
 import home1 from "../public/assets/home-1.jpeg";
 import home2 from "../public/assets/home-2.jpg";
 import home3 from "../public/assets/home-3.jpeg";
-import { Button, Heading, Space } from "@packages/design-system";
+import { Button, Heading, Space } from "components/ui";
 import Link from "next/link";
 
 const Home: NextPage = () => {
   const contactFormRef = useRef<HTMLDivElement>(null);
   return (
     <Layout>
-      <Space responsive gap="large" center>
+      <div className="grid w-full items-center justify-items-start gap-8 lg:grid-cols-[16rem_1fr]">
         <Image
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
-          style={{
-            maxWidth: "100%",
-            height: "auto",
-          }}
+          className="h-auto w-full max-w-[16rem]"
+          width={256}
+          height={256}
         />
 
         <Space direction="column" as="section">
           <Heading level={1}>Rolling Oaks Daylilies</Heading>
-          <span css={``}>
+          <span>
             Shop Our Stunning Collection of Named Daylilies and Seedlings.
           </span>
           <br />
@@ -63,16 +62,14 @@ const Home: NextPage = () => {
             </span>
           </Space>
         </Space>
-      </Space>
+      </div>
 
       <Image
         src={home1}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-        style={{
-          maxWidth: "100%",
-          height: "auto",
-        }}
+        priority
+        className="h-auto w-full"
       />
 
       <Space direction="column" block as="section">
@@ -103,10 +100,7 @@ const Home: NextPage = () => {
         src={home2}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-        style={{
-          maxWidth: "100%",
-          height: "auto",
-        }}
+        className="h-auto w-full"
       />
 
       <Space direction="column" block as="section">
@@ -124,10 +118,7 @@ const Home: NextPage = () => {
         src={home3}
         placeholder="blur"
         alt="Rolling Oaks Daylilies Landscape"
-        style={{
-          maxWidth: "100%",
-          height: "auto",
-        }}
+        className="h-auto w-full"
       />
 
       <Space direction="column" block as="section">
@@ -139,12 +130,7 @@ const Home: NextPage = () => {
       <br />
       <br />
       <br />
-      <Space
-        block
-        css={`
-          justify-content: flex-end;
-        `}
-      >
+      <Space block className="justify-end">
         <Link href="/catalogs">View Catalogs</Link>
         <Link href="/catalog/search">Search</Link>
       </Space>

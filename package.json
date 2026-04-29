@@ -8,7 +8,7 @@
     "start": "npm run start -w @packages/app"
   },
   "workspaces": [
-    "packages/*"
+    "packages/app"
   ],
   "dependencies": {
     "@libsql/client": "^0.8.1",
