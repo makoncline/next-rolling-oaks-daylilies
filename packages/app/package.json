@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npx prisma generate --schema=prisma/schema.sqlite.prisma && next dev",
-    "build": "npx prisma generate --schema=prisma/schema.sqlite.prisma && next build",
+    "build": "node scripts/validate-env.cjs && npx prisma generate --schema=prisma/schema.sqlite.prisma && next build",
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "playwright test",
@@ -18,6 +18,7 @@
     "@packages/design-system": "0.0.0",
     "@prisma/adapter-libsql": "^6.5.0",
     "@prisma/client": "^6.5.0",
+    "@t3-oss/env-nextjs": "^0.13.11",
     "date-fns": "^2.29.3",
     "next": "^13.5.11",
     "nodemailer": "^8.0.7",
@@ -29,7 +30,8 @@
     "remark-html": "^15.0.2",
     "sharp": "^0.31.3",
     "slugify": "^1.6.5",
-    "styled-components": "^5.3.8"
+    "styled-components": "^5.3.8",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.47.2",
@@ -43,7 +45,8 @@
     "@typescript-eslint/parser": "^5.54.1",
     "eslint": "^8.35.0",
     "eslint-config-next": "^13.5.11",
+    "jiti": "^2.6.1",
     "prisma": "^6.5.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.9.3"
   }
 }

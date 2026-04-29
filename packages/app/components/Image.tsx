@@ -1,3 +1,5 @@
+import { env } from "../env";
+
 const S3_BUCKET_HOST_NAMES = [
   "daylily-catalog-images-stage.s3.amazonaws.com",
   "daylily-catalog-images.s3.amazonaws.com",
@@ -21,7 +23,7 @@ export const getImageUrls = (inputSrc: string) => {
     }
     const filePathNoExt =
       pathname.substring(0, pathname.lastIndexOf(".")) || pathname;
-    const resizedImagesBaseUrl = `https://${process.env.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET}${filePathNoExt}`;
+    const resizedImagesBaseUrl = `https://${env.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET}${filePathNoExt}`;
     const resizedImagesExt = `.webp`;
     return {
       blur: `${resizedImagesBaseUrl}-placeholder${resizedImagesExt}`,

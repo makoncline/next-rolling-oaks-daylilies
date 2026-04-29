@@ -45,6 +45,8 @@ Build-time-only variables:
 
 - `NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET`: optional image bucket host override used by `packages/app/components/Image.tsx`. The Dockerfile defaults it to `images.daylilycatalog.com` during image build and Next.js bakes it into the client bundle, so setting it only in the VPS runtime `.env` will not affect browser-rendered image URLs.
 
+Build-time environment is validated with T3 Env before `next build`; missing or blank build variables fail the image build before Next.js compiles.
+
 ## Build Image
 
 Build locally:
