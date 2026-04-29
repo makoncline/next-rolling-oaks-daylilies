@@ -36,7 +36,7 @@ export type Catalog = {
   image: string | null;
 };
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const lists = await prisma.list.findMany({
     where: { userId: siteConfig.userId },
   });

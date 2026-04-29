@@ -8,9 +8,9 @@ import {
 import React from "react";
 import { useRouter } from "next/router";
 import {
-  NETLIFY_FORMS_PATH,
-  submitNetlifyForm,
-} from "../lib/netlifyForms";
+  WEBSITE_FORMS_PATH,
+  submitWebsiteForm,
+} from "../lib/formSubmission";
 
 type ContactFormProps = {
   cta: string;
@@ -26,7 +26,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
     setSubmitError(null);
 
     try {
-      await submitNetlifyForm(event.currentTarget);
+      await submitWebsiteForm(event.currentTarget);
       await router.push(successPath);
     } catch (error) {
       console.error(error);
@@ -40,7 +40,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
         formId="contact-form"
         name="contact"
         method="post"
-        action={NETLIFY_FORMS_PATH}
+        action={WEBSITE_FORMS_PATH}
         onSubmitCapture={handleSubmit}
         autocomplete="off"
       >
