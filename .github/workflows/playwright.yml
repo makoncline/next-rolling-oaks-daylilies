@@ -8,27 +8,60 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
         with:
-          node-version: 18
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Wait for Vercel Preview
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: waitFor200
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 300
+
+      - name: Build production image
+        run: docker build -t rolling-oaks-daylilies:e2e .
+
+      - name: Run production container
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_DATABASE_AUTH_TOKEN: ${{ secrets.TURSO_DATABASE_AUTH_TOKEN }}
+        run: |
+          docker run -d --rm \
+            --name rolling-oaks-daylilies-e2e \
+            -p 3000:3000 \
+            -e TURSO_DATABASE_URL \
+            -e TURSO_DATABASE_AUTH_TOKEN \
+            rolling-oaks-daylilies:e2e
+
+      - name: Wait for health endpoint
+        run: |
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/api/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker logs rolling-oaks-daylilies-e2e
+          exit 1
+
       - name: Run Playwright tests
         run: cd packages/app && npx playwright test
         env:
-          TEST_BASE_URL: ${{ steps.waitFor200.outputs.url }}
+          TEST_BASE_URL: http://127.0.0.1:3000
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
           path: packages/app/playwright-report/
           retention-days: 30
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f rolling-oaks-daylilies-e2e || true
