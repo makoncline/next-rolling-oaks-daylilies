@@ -55,7 +55,7 @@ git submodule update --init --recursive
 docker build -t rolling-oaks-daylilies:local .
 ```
 
-During PR testing, GitHub Actions builds the image, pushes it to GHCR with the full commit SHA tag, pulls that same image back down, runs it, and verifies `GET /api/health`. Re-enable the commented `push` trigger when `main` should publish images automatically.
+During PR testing, GitHub Actions builds the image once, pushes it to GHCR with the full commit SHA tag, then pulls that same image back down for both `GET /api/health` and Playwright verification. Re-enable the commented `push` trigger when `main` should publish images automatically.
 
 ## Local Production-Image Test
 
