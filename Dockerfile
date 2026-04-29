@@ -37,9 +37,12 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV PUBLIC_SNAPSHOT_DIR=/app/.public-data
 
 RUN groupadd --system --gid 1001 nodejs \
-  && useradd --system --uid 1001 --gid nodejs nextjs
+  && useradd --system --uid 1001 --gid nodejs nextjs \
+  && mkdir -p /app/.public-data \
+  && chown nextjs:nodejs /app/.public-data
 
 COPY --from=builder --chown=nextjs:nodejs /app/packages/app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/packages/app/node_modules/@libsql ./packages/app/node_modules/@libsql

@@ -6,10 +6,7 @@ import cart from "@iconify/icons-ic/round-shopping-cart";
 import Layout from "../components/layout";
 import { DaylilyCatalogAd } from "../components/DaylilyCatAd";
 import { useSnackBar } from "components/snackBarProvider";
-import { Listing, Image } from "../prisma/generated/sqlite-client";
 import { useCart } from "components/cart";
-import { siteConfig } from "siteConfig";
-import { prisma } from "../prisma/db";
 import { ImageDisplay } from "components/ImageDisplay";
 import {
   Badge,
@@ -23,9 +20,8 @@ import {
 } from "@packages/design-system";
 import {
   AhsDisplay,
-  fullCultivarReferenceInclude,
-  mapListingCultivarDisplay,
 } from "../lib/cultivarDisplay";
+import { getPublicSnapshot, PublicListingCard } from "../lib/publicSnapshot";
 
 const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
   hybridizer: "Hybridizer",
@@ -54,13 +50,7 @@ function objectKeys<T extends {}>(obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>;
 }
 
-type DisplayListing = Listing & {
-  ahsListing: AhsDisplay | null;
-  images: Image[];
-  lists?: {
-    title: string;
-  } | null;
-};
+type DisplayListing = PublicListingCard;
 
 const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
   const description = `${
@@ -91,7 +81,7 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
     images,
     lists,
   } = listing;
-  const listName = lists?.title;
+  const listName = lists[0]?.title;
   const cartItem = listing.price && {
     id: listing.id,
     name: listing.title,
@@ -228,25 +218,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context: any) {
   const slug = context.params.listing;
-
-  const listing = await prisma.listing.findFirst({
-    where: {
-      userId: siteConfig.userId,
-      slug,
-      OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-    },
-    include: {
-      cultivarReference: {
-        include: fullCultivarReferenceInclude,
-      },
-      images: {
-        orderBy: { order: "asc" },
-      },
-      lists: {
-        select: { title: true },
-      },
-    },
-  });
+  const snapshot = await getPublicSnapshot();
+  const listing = snapshot.detailsBySlug[slug];
 
   if (!listing) {
     return {
@@ -256,10 +229,8 @@ export async function getStaticProps(context: any) {
 
   return {
     props: {
-      listing: JSON.parse(
-        JSON.stringify(mapListingCultivarDisplay(listing))
-      ),
+      listing,
     },
-    revalidate: 60,
+    revalidate: 900,
   };
 }

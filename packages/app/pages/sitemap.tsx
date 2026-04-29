@@ -2,7 +2,7 @@ const Sitemap = () => null;
 
 export const getServerSideProps = async () => ({
   redirect: {
-    destination: "/404",
+    destination: "/api/sitemap",
     permanent: false,
   },
 });

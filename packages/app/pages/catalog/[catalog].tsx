@@ -7,10 +7,8 @@ import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import { GetStaticProps, NextPage } from "next";
-import { Listing, List, Image } from "../../prisma/generated/sqlite-client";
 import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
-import { prisma } from "../../prisma/db";
 import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
 import {
   Button,
@@ -21,20 +19,19 @@ import {
 } from "@packages/design-system";
 import { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
+import { parseLeadingNumber } from "../../lib/cultivarDisplay";
 import {
-  AhsDisplay,
-  fullCultivarReferenceInclude,
-  mapListingCultivarDisplay,
-  parseLeadingNumber,
-} from "../../lib/cultivarDisplay";
+  getCatalogListings,
+  getPublicSnapshot,
+  PublicListRef,
+  PublicListingCard,
+} from "../../lib/publicSnapshot";
 
 type Props = {
   title: string;
-  description: string;
+  description: string | null;
   listings: DisplayListing[];
 };
-
-const getListSlug = (title: string) => title.toLowerCase().replace(/\s+/g, "-");
 
 const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   title,
@@ -140,7 +137,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     return lilyArr.filter((node: DisplayListing) => {
       return (
         node.lists &&
-        node.lists.some((list: List) =>
+        node.lists.some((list: PublicListRef) =>
           list.title.toLowerCase().includes(filters.list.toLowerCase())
         )
       );
@@ -531,7 +528,9 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                           new Set(
                             listings.flatMap((listing: DisplayListing) =>
                               listing.lists && listing.lists.length > 0
-                                ? listing.lists.map((list: List) => list.title)
+                                ? listing.lists.map(
+                                    (list: PublicListRef) => list.title
+                                  )
                                 : ["No List"]
                             )
                           )
@@ -955,44 +954,14 @@ export async function getStaticPaths() {
   };
 }
 
-type DisplayListing = Listing & {
-  ahsListing: AhsDisplay | null;
-  lists: List[];
-  images: Image[];
-};
+type DisplayListing = PublicListingCard;
 
 export type ListingType = DisplayListing;
 
 export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
   const catalog = context.params.catalog;
-  let listingsWhere: any = {
-    userId: siteConfig.userId,
-    OR: [{ status: null }, { NOT: { status: "HIDDEN" } }],
-  };
-  let list: any = undefined;
-
-  const defaultList = { id: "", title: "", description: "" };
-
-  if (catalog === "for-sale") {
-    listingsWhere = { ...listingsWhere, price: { gt: 0 } };
-    list = { ...defaultList, title: "For Sale", description: "" };
-  } else if (catalog === "all") {
-    list = { ...defaultList, title: "All", description: "" };
-  } else if (catalog === "search") {
-    list = { ...defaultList, title: "Search", description: "" };
-  } else {
-    const lists = await prisma.list.findMany({
-      where: { userId: siteConfig.userId },
-    });
-    list = lists.find((candidate) => getListSlug(candidate.title) === catalog);
-
-    if (list) {
-      listingsWhere = {
-        ...listingsWhere,
-        lists: { some: { id: list.id } },
-      };
-    }
-  }
+  const snapshot = await getPublicSnapshot();
+  const list = snapshot.catalogsBySlug[catalog];
 
   if (!list) {
     return {
@@ -1000,32 +969,18 @@ export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
     };
   }
 
-  const rawListings = await prisma.listing.findMany({
-    include: {
-      cultivarReference: {
-        include: fullCultivarReferenceInclude,
-      },
-      lists: true,
-      images: {
-        orderBy: { order: "asc" },
-      },
-    },
-    where: listingsWhere,
-  });
-  const listings = rawListings.map(mapListingCultivarDisplay);
+  const listings = getCatalogListings(snapshot, catalog);
 
-  const title = list.title;
-  const description = list.description;
+  const title = list.name;
+  const description = list.intro;
 
   return {
-    props: JSON.parse(
-      JSON.stringify({
-        title,
-        description,
-        listings: listings,
-      })
-    ),
-    revalidate: 60,
+    props: {
+      title,
+      description,
+      listings,
+    },
+    revalidate: 900,
   };
 };
 

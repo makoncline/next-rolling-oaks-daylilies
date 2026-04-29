@@ -10,9 +10,9 @@ This app deploys as a Docker image on a single VPS. Public traffic reaches the c
 - Health endpoint: `GET /api/health`
 - Smoke-test path: `/api/health`
 - GHCR image: `ghcr.io/makoncline/rolling-oaks-daylilies`
-- Persistent volumes: none
+- Persistent volumes: optional public snapshot cache at `/app/.public-data`
 
-The container runs the Next.js standalone server from the image. The source repo is not required on the VPS at runtime.
+The container runs the Next.js standalone server from the image. The source repo is not required on the VPS at runtime. Public catalog pages render from a local public-data snapshot. If the snapshot is missing, the app rebuilds it from Turso on first use and writes it to `PUBLIC_SNAPSHOT_DIR` or `/app/.public-data`. If the snapshot is older than the app's freshness window, requests keep serving the stale snapshot and trigger one background refresh.
 
 ## External Services
 
@@ -20,7 +20,7 @@ The container runs the Next.js standalone server from the image. The source repo
 - Gmail SMTP for contact and cart emails
 - Resized image CDN at `images.daylilycatalog.com`
 
-`/api/health` performs a lightweight Turso database check with `SELECT 1`. SMTP is intentionally not checked because a probe would need to log in to Gmail on every request and can be slow or rate-limited; successful contact/cart form submissions exercise SMTP separately.
+`/api/health` reports public snapshot status and performs a lightweight Turso database check with `SELECT 1`. SMTP is intentionally not checked because a probe would need to log in to Gmail on every request and can be slow or rate-limited; successful contact/cart form submissions exercise SMTP separately.
 
 ## Environment
 
@@ -40,6 +40,8 @@ Required non-secret config:
 Optional config:
 
 - `CONTACT_BCC_EMAIL`: comma-separated BCC recipient list.
+- `PUBLIC_SNAPSHOT_DIR`: writable directory for the public read-model snapshot. Defaults to `.public-data` under the app working directory.
+- `PUBLIC_SNAPSHOT_REFRESH_TOKEN`: enables protected `GET /api/public-snapshot/refresh?token=...` for manual refreshes.
 
 Build-time-only variables:
 
@@ -87,15 +89,35 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - public-data:/app/.public-data
     networks:
       - edge
+
+volumes:
+  public-data:
 
 networks:
   edge:
     external: true
 ```
 
-The service does not publish host ports. Caddy reaches it over the external `edge` Docker network.
+The service does not publish host ports. Caddy reaches it over the external `edge` Docker network. The `public-data` volume preserves the generated public snapshot across container recreates; it is safe to delete because the app can rebuild it from Turso.
+
+## Public Snapshot Refresh
+
+Public catalog, listing, and sitemap routes read from a local snapshot instead of querying Turso on request. The app builds the snapshot on first use if it is missing. To refresh it manually, set `PUBLIC_SNAPSHOT_REFRESH_TOKEN` and open the protected endpoint:
+
+```sh
+curl --fail-with-body \
+  "http://app:3000/api/public-snapshot/refresh?token=${PUBLIC_SNAPSHOT_REFRESH_TOKEN}"
+```
+
+The app also self-refreshes: snapshots are fresh for 1 hour, and stale snapshots are served while a background refresh runs. Use this endpoint for an explicit refresh after admin data changes or when you want to refresh immediately. If a refresh fails, the app keeps serving the previous snapshot from the `public-data` volume and `/api/health` reports the snapshot age/status.
+
+Self-refresh is request-driven. If nobody visits the site and no one calls the refresh endpoint, the container does not rebuild snapshots unnecessarily.
+
+Snapshot refreshes emit structured JSON logs with `component: "public-snapshot"` and events such as `public_snapshot_build_started`, `public_snapshot_build_succeeded`, `public_snapshot_written`, `public_snapshot_build_failed`, and `public_snapshot_manual_refresh_requested`. These are intended for VPS log inspection.
 
 ## Caddy Route
 

@@ -7,6 +7,7 @@
     "build": "node scripts/validate-env.cjs && npx prisma generate --schema=prisma/schema.sqlite.prisma && next build",
     "start": "next start",
     "lint": "next lint",
+    "snapshot:build": "jiti scripts/build-public-snapshot.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

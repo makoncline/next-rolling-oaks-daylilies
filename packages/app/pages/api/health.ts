@@ -1,5 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../prisma/db";
+import {
+  getPublicSnapshot,
+  getPublicSnapshotAgeSeconds,
+  getPublicSnapshotStatus,
+  isPublicSnapshotRefreshing,
+  PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS,
+  PUBLIC_SNAPSHOT_MAX_STALE_SECONDS,
+} from "../../lib/publicSnapshot";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,24 +19,38 @@ export default async function handler(
     return;
   }
 
+  const snapshot = await getPublicSnapshot().catch((error) => {
+    console.error(error);
+    return null;
+  });
+
+  let database = false;
   try {
     await prisma.$queryRaw`SELECT 1`;
-
-    res.status(200).json({
-      ok: true,
-      service: "rolling-oaks-daylilies",
-      checks: {
-        database: true,
-      },
-    });
+    database = true;
   } catch (error) {
     console.error(error);
-    res.status(503).json({
-      ok: false,
-      service: "rolling-oaks-daylilies",
-      checks: {
-        database: false,
-      },
-    });
   }
+  const ok = Boolean(snapshot);
+
+  res.status(ok ? 200 : 503).json({
+    ok,
+    service: "rolling-oaks-daylilies",
+    publicSnapshot: snapshot
+      ? {
+          status: getPublicSnapshotStatus(snapshot),
+          version: snapshot.version,
+          generatedAt: snapshot.generatedAt,
+          ageSeconds: getPublicSnapshotAgeSeconds(snapshot),
+          freshForSeconds: PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS,
+          maxStaleSeconds: PUBLIC_SNAPSHOT_MAX_STALE_SECONDS,
+          refreshing: isPublicSnapshotRefreshing(),
+          visibleListings: snapshot.counts.visibleListings,
+        }
+      : null,
+    checks: {
+      database,
+      publicSnapshot: Boolean(snapshot),
+    },
+  });
 }
