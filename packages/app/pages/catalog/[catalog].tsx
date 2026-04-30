@@ -5,7 +5,7 @@ import BackToTop from "../../components/backToTop";
 import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
-import type { GetStaticProps, NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
 import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
@@ -29,6 +29,8 @@ type Props = {
   title: string;
   description: string | null;
   listings: DisplayListing[];
+  initialPage: number;
+  path: string;
 };
 
 const defaultFilters = {
@@ -52,10 +54,19 @@ const defaultFilters = {
 
 type Filters = typeof defaultFilters;
 
-const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
+const SearchPage: NextPage<Props> = ({
+  title,
+  description,
+  listings,
+  initialPage,
+  path,
+}) => {
   const router = useRouter();
   const { query, pathname, isReady } = router;
-  const [filters, setFilters] = useState(defaultFilters);
+  const [filters, setFilters] = useState({
+    ...defaultFilters,
+    page: initialPage,
+  });
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
@@ -370,18 +381,20 @@ const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
   const filteredLilies = filterLilies();
 
   const pageLimit = 24;
+  const lastPage = Math.max(
+    Math.ceil(filteredLilies.length / pageLimit) - 1,
+    0
+  );
+  const currentPage = Math.min(Math.max(filters.page, 0), lastPage);
   const displayLilies =
     listings &&
     filteredLilies &&
     filteredLilies.slice(
-      filters.page * pageLimit,
-      (filters.page + 1) * pageLimit
+      currentPage * pageLimit,
+      (currentPage + 1) * pageLimit
     );
 
-  const pages =
-    listings.length &&
-    filteredLilies &&
-    Math.floor(filteredLilies.length / pageLimit);
+  const pages = listings.length && filteredLilies && lastPage;
 
   const removeQueryParam = () => {
     const { asPath } = router;
@@ -417,6 +430,16 @@ const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
   const numResults = filteredLilies?.length || 0;
   useSearchChange(numResults, filters);
   const isSearch = title === "Search";
+  const canonicalPath =
+    currentPage > 0 ? `${path}?page=${currentPage + 1}` : path;
+  const previousPath =
+    currentPage > 1
+      ? `${path}?page=${currentPage}`
+      : currentPage === 1
+      ? path
+      : null;
+  const nextPath =
+    currentPage < lastPage ? `${path}?page=${currentPage + 2}` : null;
   return (
     <Layout>
       <Head>
@@ -440,7 +463,7 @@ const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
         <meta
           key="og:image"
           property="og:image"
-          content={`${siteConfig.baseUrl}/logo.png`}
+          content={`${siteConfig.baseUrl}/assets/logo.png`}
         />
         <meta key="og:image:width" property="og:image:width" content="800" />
         <meta key="og:image:height" property="og:image:height" content="800" />
@@ -459,6 +482,25 @@ const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
           name="twitter:image:alt"
           content={`${title} image`}
         />
+        <link
+          key="canonical"
+          rel="canonical"
+          href={`${siteConfig.baseUrl}${canonicalPath}`}
+        />
+        {previousPath && (
+          <link
+            key="prev"
+            rel="prev"
+            href={`${siteConfig.baseUrl}${previousPath}`}
+          />
+        )}
+        {nextPath && (
+          <link
+            key="next"
+            rel="next"
+            href={`${siteConfig.baseUrl}${nextPath}`}
+          />
+        )}
       </Head>
       <Space direction="column" block center>
         <FancyHeading level={1}>{title}</FancyHeading>
@@ -884,9 +926,9 @@ const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
         <Space direction="column">
           {filteredLilies.length > pageLimit && (
             <Paginate
-              page={filters.page}
+              page={currentPage}
               pages={pages || 0}
-              paginate={{ page: filters.page, limit: pageLimit }}
+              paginate={{ page: currentPage, limit: pageLimit }}
               setPaginate={({ page }) => setFilters({ ...filters, page })}
               onPageChange={handlePageChange}
             />
@@ -905,9 +947,9 @@ const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
         {displayLilies.length < 1 && <p>No results found for this search...</p>}
         {filteredLilies.length > pageLimit && (
           <Paginate
-            page={filters.page}
+            page={currentPage}
             pages={pages || 0}
-            paginate={{ page: filters.page, limit: pageLimit }}
+            paginate={{ page: currentPage, limit: pageLimit }}
             setPaginate={({ page }) => setFilters({ ...filters, page })}
             onPageChange={handlePageChange}
           />
@@ -933,18 +975,17 @@ const useSearchChange = (numResults: number, filters: Filters) => {
   }, [addAlert, filters, numResults, prevNum]);
 };
 
-export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-}
-
 type DisplayListing = PublicListingCard;
 
 export type ListingType = DisplayListing;
 
-export const getStaticProps: GetStaticProps<
+const getPageFromQuery = (value: string | string[] | undefined) => {
+  const page = parseInt(Array.isArray(value) ? value[0] : value || "1", 10);
+  if (!Number.isFinite(page) || page < 1) return 0;
+  return page - 1;
+};
+
+export const getServerSideProps: GetServerSideProps<
   Props,
   { catalog: string }
 > = async (context) => {
@@ -968,14 +1009,18 @@ export const getStaticProps: GetStaticProps<
 
   const title = list.name;
   const description = list.intro;
+  const pageLimit = 24;
+  const lastPage = Math.max(Math.ceil(listings.length / pageLimit) - 1, 0);
+  const initialPage = Math.min(getPageFromQuery(context.query.page), lastPage);
 
   return {
     props: {
       title,
       description,
       listings,
+      initialPage,
+      path: `/catalog/${catalog}`,
     },
-    revalidate: 900,
   };
 };
 

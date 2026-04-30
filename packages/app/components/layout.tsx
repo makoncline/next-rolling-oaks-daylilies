@@ -29,14 +29,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           content={description.substring(0, 160)}
         />
         <meta key="og:type" property="og:type" content="website" />
-        <meta key="og:image" property="og:image" content={`/assets/logo.png`} />
+        <meta
+          key="og:image"
+          property="og:image"
+          content={`${baseUrl}/assets/logo.png`}
+        />
         <meta
           key="og:image:alt"
           name="og:image:alt"
           content={`${title} logo`}
         />
         <meta key="og:url" property="og:url" content={baseUrl + asPath} />
-        <meta key="canonical" property="canonical" content={baseUrl + asPath} />
+        <link key="canonical" rel="canonical" href={baseUrl + asPath} />
         <meta
           key="twitter:card"
           name="twitter:card"

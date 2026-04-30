@@ -22,6 +22,7 @@
 - Start public read-path changes in `packages/app` by tracing Prisma schema, server data fetches in page `getServerSideProps`, and the shared card/detail components before editing UI code.
 - The live Turso DB for `packages/app` already contains `CultivarReference` and `V2AhsCultivar`; inspect that DB directly before changing `prisma/schema.sqlite.prisma`.
 - `npm run test:e2e` works on this machine once `npx playwright install chromium` has populated `~/Library/Caches/ms-playwright/chromium-1134`.
+- For temporary public scanner checks, `rolling-oaks-agent-test.makon.dev` can route to the local named Cloudflare tunnel and serve `packages/app` on `localhost:3000`; verify the emitted `tunnelID` because `cloudflared tunnel route dns` may use the default config tunnel.
 
 ## Patterns That Don't Work
 

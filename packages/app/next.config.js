@@ -26,6 +26,28 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
+  async headers() {
+    return [
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Link",
+            value:
+              '</sitemap.xml>; rel="sitemap"; type="application/xml", </llms.txt>; rel="service-doc"; type="text/plain", </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </.well-known/agent-skills/index.json>; rel="service-desc"; type="application/json"',
+          },
+        ],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/.well-known/api-catalog",
+        destination: "/api/api-catalog",
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
