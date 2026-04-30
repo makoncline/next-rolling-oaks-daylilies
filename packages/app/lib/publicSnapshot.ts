@@ -1,5 +1,13 @@
 import { createHash } from "crypto";
-import { mkdir, readFile, rename, stat, writeFile } from "fs/promises";
+import {
+  mkdir,
+  open,
+  readFile,
+  rename,
+  stat,
+  unlink,
+  writeFile,
+} from "fs/promises";
 import path from "path";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
@@ -14,6 +22,7 @@ const HIDDEN_STATUS = "HIDDEN";
 const LISTING_BATCH_SIZE = 900;
 export const PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS = 60 * 60;
 export const PUBLIC_SNAPSHOT_MAX_STALE_SECONDS = 24 * 60 * 60;
+const PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS = 30 * 60 * 1000;
 
 export type PublicImage = {
   id: string;
@@ -112,8 +121,13 @@ const getSnapshotDir = () =>
 
 const getManifestPath = () => path.join(getSnapshotDir(), "manifest.json");
 
+const getRefreshLockPath = () => path.join(getSnapshotDir(), "refresh.lock");
+
 const isMissingFileError = (error: unknown) =>
   error instanceof Error && "code" in error && error.code === "ENOENT";
+
+const isFileExistsError = (error: unknown) =>
+  error instanceof Error && "code" in error && error.code === "EEXIST";
 
 const visibleListingWhere = {
   userId: siteConfig.userId,
@@ -437,6 +451,12 @@ export async function writePublicSnapshot(snapshot: PublicSnapshot) {
   await writeFile(manifestTmpPath, JSON.stringify(manifest), "utf8");
   await rename(manifestTmpPath, manifestPath);
 
+  logPublicSnapshot("public_snapshot_manifest_updated", {
+    version: snapshot.version,
+    path: finalPath,
+    manifestPath,
+  });
+
   logPublicSnapshot("public_snapshot_written", {
     version: snapshot.version,
     path: finalPath,
@@ -446,18 +466,72 @@ export async function writePublicSnapshot(snapshot: PublicSnapshot) {
   memo = undefined;
 }
 
+async function acquireRefreshLock() {
+  const snapshotDir = getSnapshotDir();
+  await mkdir(snapshotDir, { recursive: true });
+
+  const lockPath = getRefreshLockPath();
+  let lockHandle: Awaited<ReturnType<typeof open>>;
+  try {
+    lockHandle = await open(lockPath, "wx");
+  } catch (error) {
+    if (!isFileExistsError(error)) {
+      throw error;
+    }
+
+    const lockStat = await stat(lockPath);
+    if (Date.now() - lockStat.mtimeMs < PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS) {
+      throw error;
+    }
+
+    await unlink(lockPath);
+    lockHandle = await open(lockPath, "wx");
+  }
+
+  await lockHandle.writeFile(
+    JSON.stringify({
+      pid: process.pid,
+      createdAt: new Date().toISOString(),
+    }),
+    "utf8"
+  );
+
+  return async () => {
+    await lockHandle.close();
+    await unlink(lockPath).catch((error) => {
+      if (!isMissingFileError(error)) {
+        throw error;
+      }
+    });
+  };
+}
+
 export async function refreshPublicSnapshot() {
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
+      let releaseLock: (() => Promise<void>) | undefined;
+
       try {
+        releaseLock = await acquireRefreshLock();
         const snapshot = await buildPublicSnapshot();
         await writePublicSnapshot(snapshot);
         return snapshot;
       } catch (error) {
+        if (isFileExistsError(error)) {
+          const existingSnapshot = await getExistingPublicSnapshot();
+          if (existingSnapshot) {
+            return existingSnapshot;
+          }
+        }
+
         logPublicSnapshot("public_snapshot_build_failed", {
           error: error instanceof Error ? error.message : String(error),
         });
         throw error;
+      } finally {
+        if (releaseLock) {
+          await releaseLock();
+        }
       }
     })().finally(() => {
       refreshInFlight = undefined;
@@ -485,6 +559,18 @@ async function readPublicSnapshot() {
   const snapshot = JSON.parse(
     await readFile(manifest.path, "utf8")
   ) as PublicSnapshot;
+
+  if (
+    manifest.schemaVersion !== SNAPSHOT_SCHEMA_VERSION ||
+    snapshot.schemaVersion !== SNAPSHOT_SCHEMA_VERSION ||
+    snapshot.version !== manifest.version ||
+    snapshot.generatedAt !== manifest.generatedAt ||
+    Number.isNaN(new Date(snapshot.generatedAt).getTime())
+  ) {
+    throw new Error("Public snapshot manifest is invalid.");
+  }
+
+  assertPublicSnapshot(snapshot);
 
   memo = {
     manifestMtimeMs: manifestStat.mtimeMs,
@@ -534,8 +620,21 @@ export function getPublicSnapshotAgeSeconds(snapshot: PublicSnapshot) {
   );
 }
 
-export function isPublicSnapshotRefreshing() {
-  return Boolean(refreshInFlight);
+export async function isPublicSnapshotRefreshing() {
+  if (refreshInFlight) {
+    return true;
+  }
+
+  try {
+    await stat(getRefreshLockPath());
+    return true;
+  } catch (error) {
+    if (isMissingFileError(error)) {
+      return false;
+    }
+
+    throw error;
+  }
 }
 
 export function getPublicSnapshotStatus(snapshot: PublicSnapshot) {

@@ -10,6 +10,8 @@
 | 2026-04-09 | self | Investigated broken Netlify preview images assuming missing assets, but the real failure was Netlify IPX crashing on `/_next/image` with `sharp`/`libvips-cpp.so.42` errors | For `packages/app` deploy previews, inspect one failing `/_next/image` URL directly; `images.unoptimized = true` is only a short-term fallback, not the preferred long-term fix |
 | 2026-04-09 | self | Treated `images.unoptimized = true` as the primary fix, but the more correct repo-level fix was upgrading from unsupported Next `13.2.3` to Netlify-supported Next `13.5+` | On this repo, keep optimized images by upgrading `next` and `eslint-config-next` to at least `13.5.x`; use `unoptimized` only as a fallback workaround |
 | 2026-04-09 | self | Upgrading Next to Netlify’s supported runtime exposed a second deploy blocker: Netlify Forms in React pages no longer count for deploy-time form detection | For this repo, keep form definitions in `packages/app/public/__forms.html` and submit live Next forms to that static file path with URL-encoded POSTs instead of relying on `data-netlify` in React components |
+| 2026-04-29 | self | Used broad `find /Users/makon ...` searches for local env files and produced huge output through protected and dependency directories | For this repo, check `/Users/makon/dev/next-rolling-oaks-daylilies/packages/app/.env` directly when the worktree lacks `packages/app/.env` |
+| 2026-04-29 | self | Included a `prefix_rule` on a destructive cleanup command for a temporary env file | Never provide `prefix_rule` for destructive commands, even narrow temporary-file cleanup; request one-off escalation without a reusable rule |
 
 ## User Preferences
 
