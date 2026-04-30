@@ -10,9 +10,9 @@ This app deploys as a Docker image on a single VPS. Public traffic reaches the c
 - Health endpoint: `GET /api/health`
 - Smoke-test path: `/api/health`
 - GHCR image: `ghcr.io/makoncline/rolling-oaks-daylilies`
-- Persistent volumes: optional public snapshot cache at `/app/.public-data`
+- Persistent volumes: public snapshot cache at `/app/.public-data`
 
-The container runs the Next.js standalone server from the image. The source repo is not required on the VPS at runtime. Public catalog pages render from a local public-data snapshot. If the snapshot is missing, the app rebuilds it from Turso on first use and writes it to `PUBLIC_SNAPSHOT_DIR` or `/app/.public-data`. If the snapshot is older than the app's freshness window, requests keep serving the stale snapshot and trigger one background refresh.
+The container runs the Next.js standalone server from the image. The source repo is not required on the VPS at runtime. Public catalog pages render from a local public-data snapshot stored in persistent storage, not in the immutable image. On startup, the container validates `/app/.public-data/manifest.json`; if it points to an existing snapshot file, Next starts immediately from that snapshot and a refresh runs in the background after `/api/health` responds. If the manifest or snapshot file is missing, startup performs a one-time bootstrap build before Next starts so the first deployment has data.
 
 ## External Services
 
@@ -43,7 +43,7 @@ Required non-secret config:
 Optional config:
 
 - `CONTACT_BCC_EMAIL`: comma-separated BCC recipient list.
-- `PUBLIC_SNAPSHOT_DIR`: writable directory for the public read-model snapshot. Defaults to `.public-data` under the app working directory.
+- `PUBLIC_SNAPSHOT_DIR`: writable directory for the public read-model snapshot. The Docker image defaults this to `/app/.public-data`; production should mount persistent storage there.
 - `PUBLIC_SNAPSHOT_REFRESH_TOKEN`: enables protected `GET /api/public-snapshot/refresh?token=...` for manual refreshes.
 
 Build-time-only variables:
@@ -69,7 +69,11 @@ Test a locally built image:
 
 ```sh
 docker build -t rolling-oaks-daylilies:local .
-docker run --rm --env-file .env.local -p 3000:3000 rolling-oaks-daylilies:local
+mkdir -p /tmp/rolling-oaks-public-data
+docker run --rm --env-file .env.local \
+  -v /tmp/rolling-oaks-public-data:/app/.public-data \
+  -p 3000:3000 \
+  rolling-oaks-daylilies:local
 curl -fsS http://localhost:3000/api/health
 ```
 
@@ -77,9 +81,20 @@ Test a GHCR image:
 
 ```sh
 docker pull ghcr.io/makoncline/rolling-oaks-daylilies:TAG
-docker run --rm --env-file .env.local -p 3000:3000 ghcr.io/makoncline/rolling-oaks-daylilies:TAG
+mkdir -p /tmp/rolling-oaks-public-data
+docker run --rm --env-file .env.local \
+  -v /tmp/rolling-oaks-public-data:/app/.public-data \
+  -p 3000:3000 \
+  ghcr.io/makoncline/rolling-oaks-daylilies:TAG
 curl -fsS http://localhost:3000/api/health
 ```
+
+To verify startup reuse locally:
+
+1. Remove and recreate an empty test volume: `rm -rf /tmp/rolling-oaks-public-data && mkdir -p /tmp/rolling-oaks-public-data`.
+2. Start the container with `-v /tmp/rolling-oaks-public-data:/app/.public-data`; the logs should include `public_snapshot_missing`, then `public_snapshot_build_succeeded`, then `public_snapshot_manifest_updated`.
+3. Stop the container and start it again with the same volume; the logs should include `public_snapshot_existing_loaded` before Next starts, not a blocking rebuild.
+4. After `/api/health` responds, the logs should include `public_snapshot_background_refresh_started`; `/api/health` reports `publicSnapshot.version`, `generatedAt`, `ageSeconds`, and `refreshing`.
 
 ## VPS Compose
 
@@ -87,40 +102,44 @@ Use this under `/srv/stacks/rolling-oaks-daylilies/compose.yaml`, replacing `${I
 
 ```yaml
 services:
-  app:
+  rolling-oaks-daylilies:
     image: ghcr.io/makoncline/rolling-oaks-daylilies:${IMAGE_TAG}
     restart: unless-stopped
     env_file:
       - .env
     volumes:
-      - public-data:/app/.public-data
+      - ./public-data:/app/.public-data
     networks:
       - edge
-
-volumes:
-  public-data:
 
 networks:
   edge:
     external: true
 ```
 
-The service does not publish host ports. Caddy reaches it over the external `edge` Docker network. The `public-data` volume preserves the generated public snapshot across container recreates; it is safe to delete because the app can rebuild it from Turso.
+The service does not publish host ports. Caddy reaches it over the external `edge` Docker network. The `./public-data` bind mount preserves the generated public snapshot across container recreates. It is safe to delete because the app can rebuild it from Turso, but deleting it makes the next startup perform the bootstrap build before Next starts.
+
+Create the bind-mounted directory with ownership that the non-root container user can write:
+
+```sh
+mkdir -p /srv/stacks/rolling-oaks-daylilies/public-data
+chown 1001:1001 /srv/stacks/rolling-oaks-daylilies/public-data
+```
 
 ## Public Snapshot Refresh
 
-Public catalog, listing, and sitemap routes read from a local snapshot instead of querying Turso on request. The app builds the snapshot on first use if it is missing. To refresh it manually, set `PUBLIC_SNAPSHOT_REFRESH_TOKEN` and open the protected endpoint:
+Public catalog, listing, and sitemap routes read from a local snapshot instead of querying Turso on request. The app bootstraps the snapshot at startup only when no valid persistent snapshot exists. To refresh it manually, set `PUBLIC_SNAPSHOT_REFRESH_TOKEN` and open the protected endpoint:
 
 ```sh
 curl --fail-with-body \
-  "http://app:3000/api/public-snapshot/refresh?token=${PUBLIC_SNAPSHOT_REFRESH_TOKEN}"
+  "http://rolling-oaks-daylilies:3000/api/public-snapshot/refresh?token=${PUBLIC_SNAPSHOT_REFRESH_TOKEN}"
 ```
 
-The app also self-refreshes: snapshots are fresh for 1 hour, and stale snapshots are served while a background refresh runs. Use this endpoint for an explicit refresh after admin data changes or when you want to refresh immediately. If a refresh fails, the app keeps serving the previous snapshot from the `public-data` volume and `/api/health` reports the snapshot age/status.
+The app also self-refreshes: every normal container start launches a background refresh after Next is listening, snapshots are fresh for 1 hour, and stale snapshots are served while a background refresh runs. Refreshes take a lock in `PUBLIC_SNAPSHOT_DIR`, write a new snapshot file first, then atomically replace `manifest.json`. If a refresh fails, the app keeps serving the previous snapshot from the `public-data` mount and `/api/health` reports the snapshot age/status.
 
-Self-refresh is request-driven. If nobody visits the site and no one calls the refresh endpoint, the container does not rebuild snapshots unnecessarily.
+Only one refresh should run at a time across the server process and the startup helper process. If another refresh is already running, the app keeps using the current snapshot.
 
-Snapshot refreshes emit structured JSON logs with `component: "public-snapshot"` and events such as `public_snapshot_build_started`, `public_snapshot_build_succeeded`, `public_snapshot_written`, `public_snapshot_build_failed`, and `public_snapshot_manual_refresh_requested`. These are intended for VPS log inspection.
+Snapshot refreshes emit structured JSON logs with `component: "public-snapshot"` and events such as `public_snapshot_existing_loaded`, `public_snapshot_missing`, `public_snapshot_background_refresh_started`, `public_snapshot_build_started`, `public_snapshot_build_succeeded`, `public_snapshot_build_failed`, `public_snapshot_manifest_updated`, `public_snapshot_written`, and `public_snapshot_manual_refresh_requested`. These are intended for VPS log inspection.
 
 ## Caddy Route
 
@@ -129,7 +148,7 @@ Add this route to the local Caddy config behind the existing Cloudflare Tunnel:
 ```caddy
 @rolling_oaks_daylilies host rolling-oaks-daylilies.makon.dev
 handle @rolling_oaks_daylilies {
-  reverse_proxy app:3000
+  reverse_proxy rolling-oaks-daylilies:3000
 }
 ```
 

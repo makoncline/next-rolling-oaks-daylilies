@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../prisma/db";
 import {
-  getPublicSnapshot,
   getPublicSnapshotAgeSeconds,
   getPublicSnapshotStatus,
+  getExistingPublicSnapshot,
   isPublicSnapshotRefreshing,
   PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS,
   PUBLIC_SNAPSHOT_MAX_STALE_SECONDS,
@@ -19,10 +19,16 @@ export default async function handler(
     return;
   }
 
-  const snapshot = await getPublicSnapshot().catch((error) => {
+  const snapshot = await getExistingPublicSnapshot().catch((error) => {
     console.error(error);
     return null;
   });
+  const publicSnapshotRefreshing = await isPublicSnapshotRefreshing().catch(
+    (error) => {
+      console.error(error);
+      return false;
+    }
+  );
 
   let database = false;
   try {
@@ -31,7 +37,7 @@ export default async function handler(
   } catch (error) {
     console.error(error);
   }
-  const ok = Boolean(snapshot);
+  const ok = database && Boolean(snapshot);
 
   res.status(ok ? 200 : 503).json({
     ok,
@@ -44,7 +50,7 @@ export default async function handler(
           ageSeconds: getPublicSnapshotAgeSeconds(snapshot),
           freshForSeconds: PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS,
           maxStaleSeconds: PUBLIC_SNAPSHOT_MAX_STALE_SECONDS,
-          refreshing: isPublicSnapshotRefreshing(),
+          refreshing: publicSnapshotRefreshing,
           visibleListings: snapshot.counts.visibleListings,
         }
       : null,

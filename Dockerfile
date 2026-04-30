@@ -51,4 +51,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node packages/app/scripts/prestart-public-snapshot.cjs && exec node packages/app/server.js"]
+CMD ["sh", "-c", "node packages/app/scripts/prestart-public-snapshot.cjs bootstrap && (node packages/app/scripts/prestart-public-snapshot.cjs background &) && exec node packages/app/server.js"]
