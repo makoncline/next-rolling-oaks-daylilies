@@ -87,6 +87,11 @@ const CartForm = () => {
   const { numItems, shipping, cart, total } = useCart();
   const router = useRouter();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const [formStartedAt, setFormStartedAt] = React.useState("");
+
+  React.useEffect(() => {
+    setFormStartedAt(String(Date.now()));
+  }, []);
 
   const cartText = () => {
     if (!numItems) return null;
@@ -138,8 +143,15 @@ const CartForm = () => {
             Don’t fill this out:{" "}
             <input aria-label="bot field" name="bot-field" />
           </label>
-          <Field name="bot-field">bot-field</Field>
+          <input name="website" tabIndex={-1} autoComplete="off" />
+          <input name="company" tabIndex={-1} autoComplete="off" />
         </div>
+        <input
+          type="hidden"
+          name="form-started-at"
+          value={formStartedAt}
+          readOnly
+        />
         <Field name="name" required>
           Your name
         </Field>
