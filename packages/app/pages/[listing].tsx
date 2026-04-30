@@ -134,7 +134,7 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
       <Space responsive gap="medium" className="items-start">
-        <div className="w-full max-w-80 justify-self-center md:max-w-none">
+        <div className="w-full max-w-72 justify-self-center md:max-w-none">
           <ImageDisplay imageUrls={allImageUrls} title={name} />
         </div>
         <Space

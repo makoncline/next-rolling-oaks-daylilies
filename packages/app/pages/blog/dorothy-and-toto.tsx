@@ -6,14 +6,14 @@ const Blog = () => {
     <Layout>
       <article className="mx-auto w-full max-w-[46rem]">
         <h1>Dorothy and Toto</h1>
-        <h2>Introduction</h2>
+        <h2 className="mb-2 mt-6">Introduction</h2>
         <p>
           Dorothy and Toto is a stunning daylily that was introduced in 2003 by
           Herrington-K. It has won several awards, including the Stout Silver
           Medal in 2015, and is highly regarded by daylily enthusiasts.
         </p>
 
-        <h2>Description</h2>
+        <h2 className="mb-2 mt-8">Description</h2>
         <p>
           Dorothy and Toto is a semi-evergreen daylily that blooms in mid-season
           and reblooms. It grows up to 30 inches tall and has 22 buds on 5
@@ -35,7 +35,7 @@ const Blog = () => {
           </figcaption>
         </figure>
 
-        <h2>Background History</h2>
+        <h2 className="mb-2 mt-8">Background History</h2>
         <p>
           Dorothy and Toto is a hybrid of Night Embers and (Victoria’s Secret X
           sdlg). It has earned several awards from the American Hemerocallis
@@ -43,7 +43,7 @@ const Blog = () => {
           in 2012, and the Honorable Mention in 2009.
         </p>
 
-        <h2>Photos</h2>
+        <h2 className="mb-2 mt-8">Photos</h2>
         <p>Here are some stunning photos of the Dorothy and Toto daylily:</p>
         <figure className="my-6">
           <Image
@@ -72,7 +72,7 @@ const Blog = () => {
             A close-up of the beautiful blooms of the Dorothy and Toto daylily.
           </figcaption>
         </figure>
-        <h2>Conclusion</h2>
+        <h2 className="mb-2 mt-8">Conclusion</h2>
         <p>
           The Dorothy and Toto daylily is a must-have for any daylily
           enthusiast. Its beautiful blooms, pleasant fragrance, and multiple

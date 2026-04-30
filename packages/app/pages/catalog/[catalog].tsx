@@ -9,6 +9,7 @@ import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
 import {
   Button,
+  cx,
   FancyHeading,
   FormWrapper,
   Heading,
@@ -27,16 +28,11 @@ import {
   getCatalogFiltersFromQuery,
   getCatalogSearchResult,
   type CatalogFilterOptions,
-  type CatalogFilters,
 } from "../../lib/catalogSearch";
 import { formatNumber } from "../../lib/format";
 
-const panelQueryKey = "filters";
 const textFilterKeys = new Set(["name", "color", "note"]);
-const nonSearchQueryKeys = new Set(["catalog", panelQueryKey]);
-const activeFilterQueryKeys = new Set(
-  Object.keys(defaultCatalogFilters).filter((key) => key !== "page")
-);
+const nonSearchQueryKeys = new Set(["catalog", "filters"]);
 
 type Props = {
   title: string;
@@ -71,14 +67,7 @@ const SearchPage: NextPage<Props> = ({
     page: initialPage,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const hasActiveFilters = Object.keys(query).some((key) =>
-    activeFilterQueryKeys.has(key)
-  );
-  const panelPreference = Array.isArray(query[panelQueryKey])
-    ? query[panelQueryKey]?.[0]
-    : query[panelQueryKey];
-  const showFilters =
-    panelPreference === "1" || (panelPreference !== "0" && hasActiveFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     if (isReady) {
@@ -186,30 +175,20 @@ const SearchPage: NextPage<Props> = ({
   const displayLilies = result.listings;
   const pages = lastPage;
 
-  const removeQueryParam = () => {
-    const { asPath } = router;
-    const pathname = asPath.split("?")[0];
-    router.replace({ pathname, query: null }, undefined, {
-      shallow: true,
-    });
-  };
-
   function clearFilters() {
     if (textFilterTimeoutRef.current) {
       clearTimeout(textFilterTimeoutRef.current);
     }
     setFilters(defaultCatalogFilters);
-    removeQueryParam();
+    router.replace(
+      { pathname: router.asPath.split("?")[0], query: null },
+      undefined,
+      { shallow: true }
+    );
   }
 
   function toggleFilters() {
-    const newQuery = { ...router.query };
-    if (showFilters) {
-      newQuery[panelQueryKey] = "0";
-    } else {
-      newQuery[panelQueryKey] = "1";
-    }
-    router.replace({ query: newQuery }, undefined, { shallow: true });
+    setShowFilters((value) => !value);
   }
 
   const topRef = React.useRef<HTMLDivElement>(null);
@@ -227,25 +206,11 @@ const SearchPage: NextPage<Props> = ({
     }
   };
   const numResults = result.total;
-  useSearchChange(numResults, filters);
+  useSearchChange(numResults);
   const isSearch = title === "Search";
-  const activeFilterSummary = [
-    filters.char && `starts with ${filters.char}`,
-    filters.name && `name includes "${filters.name}"`,
-    filters.list && `on ${filters.list}`,
-    filters.color && `color includes "${filters.color}"`,
-    filters.hybridizer && `by ${filters.hybridizer}`,
-    filters.year && `year ${filters.year}`,
-    filters.ploidy && filters.ploidy,
-    filters.form && filters.form,
-    filters.foliageType && `${filters.foliageType} foliage`,
-    filters.fragrance && filters.fragrance,
-    filters.bloomSize && `${filters.bloomSize} blooms`,
-    filters.scapeHeight && `${filters.scapeHeight} scapes`,
-    filters.bloomSeason && `${filters.bloomSeason} season`,
-    filters.price && `price band ${filters.price}`,
-    filters.note && `note includes "${filters.note}"`,
-  ].filter(Boolean);
+  const activeFilterCount = Object.entries(filters).filter(
+    ([key, value]) => key !== "page" && value
+  ).length;
   const canonicalPath =
     currentPage > 0 ? `${path}?page=${currentPage + 1}` : path;
   const previousPath =
@@ -330,9 +295,10 @@ const SearchPage: NextPage<Props> = ({
             <p className="m-0 text-ro-text-high">
               {formatNumber(numResults)} {numResults === 1 ? "result" : "results"}
             </p>
-            {activeFilterSummary.length ? (
+            {activeFilterCount ? (
               <p className="m-0 text-sm">
-                Filters: {activeFilterSummary.join(", ")}
+                {activeFilterCount} active{" "}
+                {activeFilterCount === 1 ? "filter" : "filters"}
               </p>
             ) : null}
           </div>
@@ -611,8 +577,6 @@ const SearchPage: NextPage<Props> = ({
             <Paginate
               page={currentPage}
               pages={pages || 0}
-              paginate={{ page: currentPage, limit: pageLimit }}
-              setPaginate={({ page }) => setFilters({ ...filters, page })}
               onPageChange={handlePageChange}
               label="Top Catalog Pagination"
             />
@@ -638,8 +602,6 @@ const SearchPage: NextPage<Props> = ({
           <Paginate
             page={currentPage}
             pages={pages || 0}
-            paginate={{ page: currentPage, limit: pageLimit }}
-            setPaginate={({ page }) => setFilters({ ...filters, page })}
             onPageChange={handlePageChange}
             label="Bottom Catalog Pagination"
           />
@@ -651,15 +613,15 @@ const SearchPage: NextPage<Props> = ({
 };
 export default SearchPage;
 
-const useSearchChange = (numResults: number, filters: CatalogFilters) => {
+const useSearchChange = (numResults: number) => {
   const [prevNum, setPrevNum] = React.useState(numResults);
   const addAlert = useSnackBar().addAlert;
   useEffect(() => {
     if (numResults !== prevNum) {
-      addAlert?.(`${formatNumber(numResults)} Results`);
+      addAlert(`${formatNumber(numResults)} Results`);
       setPrevNum(numResults);
     }
-  }, [addAlert, filters, numResults, prevNum]);
+  }, [addAlert, numResults, prevNum]);
 };
 
 type DisplayListing = PublicListingCard;
@@ -752,7 +714,7 @@ const FullWidthSelect = ({
   <select
     id={id || name}
     name={name}
-    className={`w-full ${className || ""}`}
+    className={cx("w-full", className)}
     {...props}
   />
 );

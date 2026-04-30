@@ -67,9 +67,8 @@ const LilyCard = ({
               aria-label={`Add ${lily.title} to Cart`}
               onClick={() => {
                 addOrUpdateProduct(cartItem);
-                addAlert?.(`Added ${lily.title} to Cart`);
+                addAlert(`Added ${lily.title} to Cart`);
               }}
-              style={{ alignItems: "center" }}
             >
               <Icon className="icon" icon={cart} aria-hidden="true" />
             </Button>

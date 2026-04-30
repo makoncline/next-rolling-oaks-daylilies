@@ -8,9 +8,7 @@ const Page404: React.FC = () => {
       <Alert type="danger" className="mx-auto">
         <Alert.Heading>Page Not Found</Alert.Heading>
         <Alert.Body>
-          <Space direction="column">
-            <p>This page does not exist.</p>
-          </Space>
+          <p>This page does not exist.</p>
           <Space className="mt-4 flex-wrap">
             <Button as="a" href="/catalog/search" styleType="primary">
               Search Catalog

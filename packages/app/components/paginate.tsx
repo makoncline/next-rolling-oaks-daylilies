@@ -5,19 +5,11 @@ import { Button, Space } from "components/ui";
 const Paginate: React.FC<{
   page: number;
   pages: number;
-  paginate: {
-    limit: number;
-    page: number;
-  };
-  setPaginate: ({ limit, page }: { limit: number; page: number }) => void;
-
   onPageChange?: () => void;
   label?: string;
 }> = ({
   page,
   pages,
-  paginate,
-  setPaginate,
   onPageChange,
   label = "Catalog Pagination",
 }) => {
@@ -69,10 +61,6 @@ const Paginate: React.FC<{
         shallow: true,
       }
     );
-    setPaginate({
-      ...paginate,
-      page: clampedPage,
-    });
   };
 
   const handlePageSubmit = (event: React.FormEvent<HTMLFormElement>) => {
