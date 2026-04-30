@@ -19,6 +19,11 @@ type SmtpConfig = {
   smtpSecure: boolean;
 };
 
+const BOT_TRAP_FIELDS = ["bot-field", "website", "company"];
+const FORM_STARTED_AT_FIELD = "form-started-at";
+const MAX_SUBMIT_AGE_SECONDS = 60 * 60 * 2;
+const MAX_LINK_COUNT = 1;
+
 const logFormEvent = (
   level: "info" | "warn" | "error",
   event: string,
@@ -37,6 +42,11 @@ const getString = (value: unknown) => {
   if (Array.isArray(value)) return String(value[0] || "").trim();
   return String(value || "").trim();
 };
+
+const getStrings = (value: unknown) =>
+  (Array.isArray(value) ? value : [value])
+    .map((item) => String(item || "").trim())
+    .filter(Boolean);
 
 const getBody = (req: NextApiRequest) =>
   typeof req.body === "object" && req.body !== null
@@ -81,6 +91,47 @@ const parsePayload = (req: NextApiRequest): FormPayload | null => {
   if (formName === "cart" && !cartText) return null;
 
   return { formName, name, email, message, cartText };
+};
+
+const countLinks = (value: string) =>
+  (value.match(/\b(?:https?:\/\/|www\.)\S+/gi) || []).length;
+
+const getBotBlock = (
+  req: NextApiRequest,
+  payload: FormPayload
+): LogFields | null => {
+  const body = getBody(req);
+
+  const trapField = BOT_TRAP_FIELDS.find(
+    (field) => getStrings(body[field]).length > 0
+  );
+  if (trapField) {
+    return { reason: "honeypot_filled", trapField };
+  }
+
+  const formStartedAt = Number.parseInt(
+    getString(body[FORM_STARTED_AT_FIELD]),
+    10
+  );
+  const now = Date.now();
+  if (!Number.isFinite(formStartedAt)) {
+    return { reason: "missing_form_started_at" };
+  }
+
+  const submitAgeSeconds = Math.round((now - formStartedAt) / 1000);
+  if (submitAgeSeconds < 0 || submitAgeSeconds > MAX_SUBMIT_AGE_SECONDS) {
+    return {
+      reason: "invalid_form_started_at",
+      submitAgeSeconds,
+    };
+  }
+
+  const linkCount = countLinks(`${payload.message}\n${payload.cartText}`);
+  if (linkCount > MAX_LINK_COUNT) {
+    return { reason: "too_many_links", linkCount };
+  }
+
+  return null;
 };
 
 const getMailer = (smtpConfig: SmtpConfig) => {
@@ -159,14 +210,19 @@ export default async function handler(
     return;
   }
 
-  if (getString(getBody(req)["bot-field"])) {
-    res.status(200).json({ ok: true });
-    return;
-  }
-
   const payload = parsePayload(req);
   if (!payload) {
     res.status(400).json({ error: "Invalid form submission" });
+    return;
+  }
+
+  const botBlock = getBotBlock(req, payload);
+  if (botBlock) {
+    logFormEvent("warn", "form_bot_submission_blocked", {
+      formName: payload.formName,
+      ...botBlock,
+    });
+    res.status(200).json({ ok: true });
     return;
   }
 
