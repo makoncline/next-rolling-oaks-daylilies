@@ -3,7 +3,11 @@ import {
   getCatalogListings,
   getPublicSnapshot,
 } from "../../../lib/publicSnapshot";
-import { paginateListings } from "../../../lib/publicApi";
+import {
+  getCatalogFiltersFromQuery,
+  getCatalogSearchResult,
+} from "../../../lib/catalogSearch";
+import { getPagination } from "../../../lib/publicApi";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,9 +36,12 @@ export default async function handler(
     return;
   }
 
-  const { listings, pagination } = paginateListings(
+  const filters = getCatalogFiltersFromQuery(req.query);
+  const { limit } = getPagination(req.query);
+  const searchResult = getCatalogSearchResult(
     getCatalogListings(snapshot, catalogSlug),
-    req.query
+    filters,
+    limit
   );
 
   res.setHeader(
@@ -50,8 +57,13 @@ export default async function handler(
       totalCount: catalog.totalCount,
       url: `/catalog/${catalog.slug}`,
     },
-    pagination,
-    listings: listings.map((listing) => ({
+    pagination: {
+      page: searchResult.page + 1,
+      limit: searchResult.limit,
+      total: searchResult.total,
+      totalPages: searchResult.lastPage + 1,
+    },
+    listings: searchResult.listings.map((listing) => ({
       ...listing,
       url: `/${listing.slug}`,
       apiUrl: `/api/listings/${listing.slug}`,

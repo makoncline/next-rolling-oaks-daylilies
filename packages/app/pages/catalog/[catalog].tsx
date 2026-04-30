@@ -2,13 +2,11 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Layout from "../../components/layout";
 import BackToTop from "../../components/backToTop";
-import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import type { GetServerSideProps, NextPage } from "next";
 import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
-import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
 import {
   Button,
   FancyHeading,
@@ -17,79 +15,57 @@ import {
   Space,
 } from "components/ui";
 import { useRouter } from "next/router";
-import { parseLeadingNumber } from "../../lib/cultivarDisplay";
 import {
   getCatalogListings,
   getPublicSnapshot,
-  type PublicListRef,
   type PublicListingCard,
 } from "../../lib/publicSnapshot";
+import {
+  CATALOG_PAGE_LIMIT,
+  defaultCatalogFilters,
+  getCatalogFilterOptions,
+  getCatalogFiltersFromQuery,
+  getCatalogSearchResult,
+  type CatalogFilterOptions,
+  type CatalogFilters,
+} from "../../lib/catalogSearch";
 
 type Props = {
   title: string;
   description: string | null;
-  listings: DisplayListing[];
+  initialListings: DisplayListing[];
+  initialTotal: number;
   initialPage: number;
+  filterOptions: CatalogFilterOptions;
   path: string;
 };
-
-const defaultFilters = {
-  name: "",
-  list: "",
-  char: "",
-  hybridizer: "",
-  year: "",
-  ploidy: "",
-  color: "",
-  form: "",
-  foliageType: "",
-  note: "",
-  fragrance: "",
-  bloomSize: "",
-  scapeHeight: "",
-  bloomSeason: "",
-  price: "",
-  page: 0,
-};
-
-type Filters = typeof defaultFilters;
 
 const SearchPage: NextPage<Props> = ({
   title,
   description,
-  listings,
+  initialListings,
+  initialTotal,
   initialPage,
+  filterOptions,
   path,
 }) => {
   const router = useRouter();
   const { query, pathname, isReady } = router;
   const [filters, setFilters] = useState({
-    ...defaultFilters,
+    ...defaultCatalogFilters,
     page: initialPage,
   });
+  const [result, setResult] = useState({
+    listings: initialListings,
+    total: initialTotal,
+    page: initialPage,
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     if (isReady) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        name: query.name ? query.name.toString() : "",
-        char: query.char ? query.char.toString() : "",
-        list: query.list ? query.list.toString() : "",
-        hybridizer: query.hybridizer ? query.hybridizer.toString() : "",
-        year: query.year ? query.year.toString() : "",
-        ploidy: query.ploidy ? query.ploidy.toString() : "",
-        color: query.color ? query.color.toString() : "",
-        form: query.form ? query.form.toString() : "",
-        foliageType: query.foliageType ? query.foliageType.toString() : "",
-        note: query.note ? query.note.toString() : "",
-        fragrance: query.fragrance ? query.fragrance.toString() : "",
-        bloomSize: query.bloomSize ? query.bloomSize.toString() : "",
-        scapeHeight: query.scapeHeight ? query.scapeHeight.toString() : "",
-        bloomSeason: query.bloomSeason ? query.bloomSeason.toString() : "",
-        price: query.price ? query.price.toString() : "",
-        page: query.page ? parseInt(query.page.toString()) - 1 : 0,
-      }));
+      setFilters(getCatalogFiltersFromQuery(query));
     }
     if (isReady) {
       setShowFilters(
@@ -97,6 +73,52 @@ const SearchPage: NextPage<Props> = ({
       );
     }
   }, [query, pathname, isReady]);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    const controller = new AbortController();
+    const params = new URLSearchParams();
+
+    Object.entries(query).forEach(([key, value]) => {
+      if (key === "catalog") return;
+      if (Array.isArray(value)) {
+        value.forEach((item) => params.append(key, item));
+      } else if (value) {
+        params.set(key, value);
+      }
+    });
+
+    setIsLoading(true);
+    fetch(`/api/catalog/${query.catalog}?${params.toString()}`, {
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Catalog search failed: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setResult({
+          listings: data.listings,
+          total: data.pagination.total,
+          page: data.pagination.page - 1,
+        });
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error(error);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [isReady, query]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -110,7 +132,7 @@ const SearchPage: NextPage<Props> = ({
     }
     if (
       filterKey === "page" &&
-      parseInt(newValue) - 1 === defaultFilters.page
+      parseInt(newValue) - 1 === defaultCatalogFilters.page
     ) {
       delete newQuery[filterKey];
     } else {
@@ -125,276 +147,11 @@ const SearchPage: NextPage<Props> = ({
     );
   };
 
-  const sortAlphaNum = (a: string | number, b: string | number) =>
-    `${a}`.localeCompare(`${b}`, "en", { numeric: true }) < 0 ? -1 : 1;
-
-  const filterByName = (lilyArr: DisplayListing[]) => {
-    if (!filters.name) return listings;
-    return lilyArr.filter((node: DisplayListing) => {
-      return node.title.toLowerCase().includes(filters.name.toLowerCase());
-    });
-  };
-
-  const filterByList = (lilyArr: DisplayListing[]) => {
-    if (!filters.list) return lilyArr;
-    if (filters.list.toLowerCase() === "no list") {
-      return lilyArr.filter((node: DisplayListing) => {
-        return !node.lists || node.lists.length === 0;
-      });
-    }
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.lists &&
-        node.lists.some((list: PublicListRef) =>
-          list.title.toLowerCase().includes(filters.list.toLowerCase())
-        )
-      );
-    });
-  };
-
-  const filterByColor = (lilyArr: DisplayListing[]) => {
-    if (!filters.color) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return node.ahsListing?.color
-        ?.toLowerCase()
-        .includes(filters.color.toLowerCase());
-    });
-  };
-
-  const filterByNote = (lilyArr: DisplayListing[]) => {
-    if (!filters.note) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.description &&
-        node.description.toLowerCase().includes(filters.note.toLowerCase())
-      );
-    });
-  };
-
-  const filterByFirstChar = (lilyArr: DisplayListing[]) => {
-    if (!filters.char) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return node.title
-        .substring(0, 1)
-        .toLowerCase()
-        .includes(filters.char.toLowerCase());
-    });
-  };
-
-  const filterByHybridizer = (lilyArr: DisplayListing[]) => {
-    if (!filters.hybridizer) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.ahsListing?.hybridizer &&
-        node.ahsListing.hybridizer
-          .toLowerCase()
-          .includes(filters.hybridizer.toLowerCase())
-      );
-    });
-  };
-
-  const filterByYear = (lilyArr: DisplayListing[]) => {
-    if (!filters.year) return lilyArr;
-    return lilyArr
-      .filter((node: DisplayListing) => node.ahsListing?.year)
-      .filter((node: DisplayListing) => {
-        return node.ahsListing?.year?.includes(filters.year);
-      });
-  };
-  const filterByPloidy = (lilyArr: DisplayListing[]) => {
-    if (!filters.ploidy) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.ahsListing?.ploidy &&
-        node.ahsListing.ploidy
-          .toLowerCase()
-          .includes(filters.ploidy.toLowerCase())
-      );
-    });
-  };
-  const filterByForm = (lilyArr: DisplayListing[]) => {
-    if (!filters.form) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.ahsListing?.form &&
-        node.ahsListing.form.toLowerCase().includes(filters.form.toLowerCase())
-      );
-    });
-  };
-  const filterByFoliageType = (lilyArr: DisplayListing[]) => {
-    if (!filters.foliageType) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.ahsListing?.foliageType &&
-        node.ahsListing.foliageType
-          .toLowerCase()
-          .includes(filters.foliageType.toLowerCase())
-      );
-    });
-  };
-  const filterByFragrance = (lilyArr: DisplayListing[]) => {
-    if (!filters.fragrance) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.ahsListing?.fragrance &&
-        node.ahsListing.fragrance
-          .toLowerCase()
-          .includes(filters.fragrance.toLowerCase())
-      );
-    });
-  };
-  const filterByBloomSeason = (lilyArr: DisplayListing[]) => {
-    if (!filters.bloomSeason) return lilyArr;
-    return lilyArr.filter((node: DisplayListing) => {
-      return (
-        node.ahsListing?.bloomSeason &&
-        node.ahsListing.bloomSeason.toLowerCase() ===
-          filters.bloomSeason.toLowerCase()
-      );
-    });
-  };
-  const filterByBloomSize = (lilyArr: DisplayListing[]) => {
-    if (!filters.bloomSize) return lilyArr;
-    let low = 0;
-    let high = 1000;
-    switch (filters.bloomSize) {
-      case "miniature":
-        low = 0;
-        high = 3;
-        break;
-      case "small":
-        low = 3;
-        high = 4.5;
-        break;
-      case "large":
-        low = 4.5;
-        high = 7;
-        break;
-      case "extraLarge":
-        low = 7;
-        high = 1000;
-        break;
-      default:
-        break;
-    }
-    return lilyArr.filter((node) => {
-      const size = parseLeadingNumber(node.ahsListing?.bloomSize);
-      return size && size > low && size <= high;
-    });
-  };
-
-  const filterByScapeHeight = (lilyArr: DisplayListing[]) => {
-    if (!filters.scapeHeight) return lilyArr;
-    let low = 0;
-    let high = 1000;
-    switch (filters.scapeHeight) {
-      case "miniature":
-        low = 0;
-        high = 10;
-        break;
-      case "short":
-        low = 10.1;
-        high = 20;
-        break;
-      case "medium":
-        low = 20.1;
-        high = 30;
-        break;
-      case "tall":
-        low = 30.1;
-        high = 40;
-        break;
-      case "extraTall":
-        low = 40.1;
-        high = 1000;
-        break;
-      default:
-        break;
-    }
-    return lilyArr.filter((node) => {
-      const size = parseLeadingNumber(node.ahsListing?.scapeHeight);
-      return size && size > low && size <= high;
-    });
-  };
-
-  const filterByPrice = (lilyArr: DisplayListing[]) => {
-    if (!filters.price) return lilyArr;
-    let low = 0;
-    let high = 1000;
-    switch (filters.price) {
-      case "one":
-        low = 0;
-        high = 9.99;
-        break;
-      case "two":
-        low = 10;
-        high = 19.99;
-        break;
-      case "three":
-        low = 20;
-        high = 29.99;
-        break;
-      case "four":
-        low = 30;
-        high = 39.99;
-        break;
-      case "five":
-        low = 40;
-        high = 49.99;
-        break;
-      case "six":
-        low = 50;
-        high = 999;
-        break;
-      default:
-        break;
-    }
-    return lilyArr.filter((node) => {
-      return node.price != null && node.price > low && node.price <= high;
-    });
-  };
-
-  const filterLilies = () => {
-    let filtered = listings;
-    if (filters.name) filtered = filtered && filterByName(filtered);
-    if (filters.char) filtered = filtered && filterByFirstChar(filtered);
-    if (filters.list) filtered = filtered && filterByList(filtered);
-    if (filters.color) filtered = filtered && filterByColor(filtered);
-    if (filters.note) filtered = filtered && filterByNote(filtered);
-    if (filters.hybridizer) filtered = filtered && filterByHybridizer(filtered);
-    if (filters.year) filtered = filtered && filterByYear(filtered);
-    if (filters.ploidy) filtered = filtered && filterByPloidy(filtered);
-    if (filters.form) filtered = filtered && filterByForm(filtered);
-    if (filters.foliageType)
-      filtered = filtered && filterByFoliageType(filtered);
-    if (filters.fragrance) filtered = filtered && filterByFragrance(filtered);
-    if (filters.bloomSize) filtered = filtered && filterByBloomSize(filtered);
-    if (filters.scapeHeight)
-      filtered = filtered && filterByScapeHeight(filtered);
-    if (filters.bloomSeason)
-      filtered = filtered && filterByBloomSeason(filtered);
-    if (filters.price) filtered = filtered && filterByPrice(filtered);
-    const sorted = filtered && sortTitlesLettersBeforeNumbers(filtered);
-    return sorted;
-  };
-
-  const filteredLilies = filterLilies();
-
-  const pageLimit = 24;
-  const lastPage = Math.max(
-    Math.ceil(filteredLilies.length / pageLimit) - 1,
-    0
-  );
-  const currentPage = Math.min(Math.max(filters.page, 0), lastPage);
-  const displayLilies =
-    listings &&
-    filteredLilies &&
-    filteredLilies.slice(
-      currentPage * pageLimit,
-      (currentPage + 1) * pageLimit
-    );
-
-  const pages = listings.length && filteredLilies && lastPage;
+  const pageLimit = CATALOG_PAGE_LIMIT;
+  const lastPage = Math.max(Math.ceil(result.total / pageLimit) - 1, 0);
+  const currentPage = Math.min(Math.max(result.page, 0), lastPage);
+  const displayLilies = result.listings;
+  const pages = lastPage;
 
   const removeQueryParam = () => {
     const { asPath } = router;
@@ -405,18 +162,8 @@ const SearchPage: NextPage<Props> = ({
   };
 
   function clearFilters() {
-    setFilters(defaultFilters);
+    setFilters(defaultCatalogFilters);
     removeQueryParam();
-  }
-
-  function downloadTxtFile() {
-    const output = listings && download(listings);
-    const element = document.createElement("a");
-    const file = output && new Blob([output], { type: "text/plain" });
-    element.href = URL.createObjectURL(file as Blob);
-    element.download = `catalog_data_${new Date().toISOString()}.tsv`;
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
   }
 
   const topRef = React.useRef<HTMLDivElement>(null);
@@ -427,7 +174,7 @@ const SearchPage: NextPage<Props> = ({
       window.scrollTo({ top: topPosition, behavior: "smooth" });
     }
   };
-  const numResults = filteredLilies?.length || 0;
+  const numResults = result.total;
   useSearchChange(numResults, filters);
   const isSearch = title === "Search";
   const canonicalPath =
@@ -440,25 +187,27 @@ const SearchPage: NextPage<Props> = ({
       : null;
   const nextPath =
     currentPage < lastPage ? `${path}?page=${currentPage + 2}` : null;
+  const seoTitle = getCatalogSeoTitle(title, currentPage);
+  const seoDescription = getCatalogSeoDescription(
+    title,
+    description,
+    currentPage
+  );
   return (
     <Layout>
       <Head>
-        <title key="title">{title}</title>
-        <meta key="og:title" property="og:title" content={title} />
-        {description ? (
-          <>
-            <meta
-              key="description"
-              name="description"
-              content={description.substring(0, 160)}
-            />
-            <meta
-              key="og:description"
-              property="og:description"
-              content={description.substring(0, 160)}
-            />
-          </>
-        ) : null}
+        <title key="title">{seoTitle}</title>
+        <meta key="og:title" property="og:title" content={seoTitle} />
+        <meta
+          key="description"
+          name="description"
+          content={seoDescription.substring(0, 160)}
+        />
+        <meta
+          key="og:description"
+          property="og:description"
+          content={seoDescription.substring(0, 160)}
+        />
         <meta key="og:type" property="og:type" content="website" />
         <meta
           key="og:image"
@@ -523,21 +272,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="char-none" value="">
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings.map(({ title }) =>
-                            title.substring(0, 1).toUpperCase()
-                          )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a, b))
-                        .map((char, i) => (
-                          <option key={`char-${i}`} value={char}>
-                            {char}
-                          </option>
-                        ))}
+                    {filterOptions.chars.map((char, i) => (
+                      <option key={`char-${i}`} value={char}>
+                        {char}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Name filter */}
@@ -562,24 +301,11 @@ const SearchPage: NextPage<Props> = ({
                       <option key="list-none" value="">
                         Any
                       </option>
-                      {listings &&
-                        Array.from(
-                          new Set(
-                            listings.flatMap((listing: DisplayListing) =>
-                              listing.lists && listing.lists.length > 0
-                                ? listing.lists.map(
-                                    (list: PublicListRef) => list.title
-                                  )
-                                : ["No List"]
-                            )
-                          )
-                        )
-                          .sort((a, b) => sortAlphaNum(a, b))
-                          .map((list, i) => (
-                            <option key={`list-${i}`} value={list}>
-                              {list}
-                            </option>
-                          ))}
+                      {filterOptions.lists.map((list, i) => (
+                        <option key={`list-${i}`} value={list}>
+                          {list}
+                        </option>
+                      ))}
                     </FullWidthSelect>
                   </Space>
                 )}
@@ -604,29 +330,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="hybridizer-none" value="">
                       All
                     </option>
-                    {listings &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.hybridizer
-                            )
-                            .map(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.hybridizer
-                            )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .map((hybridizer, i) => (
-                          <option
-                            key={`hybridizer-${i}`}
-                            value={hybridizer as string}
-                          >
-                            {hybridizer}
-                          </option>
-                        ))}
+                    {filterOptions.hybridizers.map((hybridizer, i) => (
+                      <option key={`hybridizer-${i}`} value={hybridizer}>
+                        {hybridizer}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Year filter */}
@@ -640,28 +348,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="year-none" value="">
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing && lily.ahsListing.year
-                            )
-                            .map(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing && lily.ahsListing.year
-                            )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .reverse()
-                        .map((year, i) => (
-                          <option key={`year-${i}`} value={year as string}>
-                            {year}
-                          </option>
-                        ))}
+                    {filterOptions.years.map((year, i) => (
+                      <option key={`year-${i}`} value={year}>
+                        {year}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Ploidy filter */}
@@ -675,27 +366,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="ploidy-none" value="">
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing && lily.ahsListing.ploidy
-                            )
-                            .map(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing && lily.ahsListing.ploidy
-                            )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .map((ploidy, i) => (
-                          <option key={`ploidy-${i}`} value={ploidy as string}>
-                            {ploidy}
-                          </option>
-                        ))}
+                    {filterOptions.ploidies.map((ploidy, i) => (
+                      <option key={`ploidy-${i}`} value={ploidy}>
+                        {ploidy}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Form filter */}
@@ -709,26 +384,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="form-none" value="">
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) => lily.ahsListing?.form
-                            )
-                            .map(
-                              (lily: DisplayListing) => lily.ahsListing?.form
-                            )
-                            .map((form) => form && form.split(" ")[0])
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .map((form, i) => (
-                          <option key={`form-${i}`} value={form as string}>
-                            {form}
-                          </option>
-                        ))}
+                    {filterOptions.forms.map((form, i) => (
+                      <option key={`form-${i}`} value={form}>
+                        {form}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Foliage type filter */}
@@ -742,30 +402,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="foliageType-none" value="">
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.foliageType
-                            )
-                            .map(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.foliageType
-                            )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .map((foliageType, i) => (
-                          <option
-                            key={`foliageType-${i}`}
-                            value={foliageType as string}
-                          >
-                            {foliageType}
-                          </option>
-                        ))}
+                    {filterOptions.foliageTypes.map((foliageType, i) => (
+                      <option key={`foliageType-${i}`} value={foliageType}>
+                        {foliageType}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Fragrance filter */}
@@ -779,30 +420,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="fragrance-none" value={""}>
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.fragrance
-                            )
-                            .map(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.fragrance
-                            )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .map((fragrance, i) => (
-                          <option
-                            key={"fragrance-" + i}
-                            value={fragrance as string}
-                          >
-                            {fragrance}
-                          </option>
-                        ))}
+                    {filterOptions.fragrances.map((fragrance, i) => (
+                      <option key={`fragrance-${i}`} value={fragrance}>
+                        {fragrance}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* bloomSize filter */}
@@ -847,30 +469,11 @@ const SearchPage: NextPage<Props> = ({
                     <option key="bloomSeason-none" value="">
                       All
                     </option>
-                    {listings &&
-                      filteredLilies &&
-                      Array.from(
-                        new Set(
-                          listings
-                            .filter(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.bloomSeason
-                            )
-                            .map(
-                              (lily: DisplayListing) =>
-                                lily.ahsListing?.bloomSeason
-                            )
-                        )
-                      )
-                        .sort((a, b) => sortAlphaNum(a + "", b + ""))
-                        .map((bloomSeason, i) => (
-                          <option
-                            key={`bloomSeason-${i}`}
-                            value={bloomSeason as string}
-                          >
-                            {bloomSeason}
-                          </option>
-                        ))}
+                    {filterOptions.bloomSeasons.map((bloomSeason, i) => (
+                      <option key={`bloomSeason-${i}`} value={bloomSeason}>
+                        {bloomSeason}
+                      </option>
+                    ))}
                   </FullWidthSelect>
                 </Space>
                 {/* Price filter */}
@@ -924,7 +527,7 @@ const SearchPage: NextPage<Props> = ({
       </FormWrapper>
       <Space direction="column" ref={topRef} block>
         <Space direction="column">
-          {filteredLilies.length > pageLimit && (
+          {result.total > pageLimit && (
             <Paginate
               page={currentPage}
               pages={pages || 0}
@@ -934,6 +537,7 @@ const SearchPage: NextPage<Props> = ({
             />
           )}
         </Space>
+        {isLoading && <p>Loading results...</p>}
         <div className="grid w-full grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {displayLilies.map((node: DisplayListing) => {
             if (!node) return;
@@ -945,7 +549,7 @@ const SearchPage: NextPage<Props> = ({
           })}
         </div>
         {displayLilies.length < 1 && <p>No results found for this search...</p>}
-        {filteredLilies.length > pageLimit && (
+        {result.total > pageLimit && (
           <Paginate
             page={currentPage}
             pages={pages || 0}
@@ -954,9 +558,6 @@ const SearchPage: NextPage<Props> = ({
             onPageChange={handlePageChange}
           />
         )}
-        {filters.name === "download" && (
-          <Button onClick={() => downloadTxtFile()}>download data</Button>
-        )}
       </Space>
       <BackToTop />
     </Layout>
@@ -964,7 +565,7 @@ const SearchPage: NextPage<Props> = ({
 };
 export default SearchPage;
 
-const useSearchChange = (numResults: number, filters: Filters) => {
+const useSearchChange = (numResults: number, filters: CatalogFilters) => {
   const [prevNum, setPrevNum] = React.useState(numResults);
   const addAlert = useSnackBar().addAlert;
   useEffect(() => {
@@ -979,10 +580,40 @@ type DisplayListing = PublicListingCard;
 
 export type ListingType = DisplayListing;
 
-const getPageFromQuery = (value: string | string[] | undefined) => {
-  const page = parseInt(Array.isArray(value) ? value[0] : value || "1", 10);
-  if (!Number.isFinite(page) || page < 1) return 0;
-  return page - 1;
+const getCatalogSeoTitle = (title: string, pageIndex: number) => {
+  const pageSuffix = pageIndex > 0 ? ` - Page ${pageIndex + 1}` : "";
+
+  if (title === "Search") {
+    return `Search Rolling Oaks Daylily Catalog${pageSuffix}`;
+  }
+
+  if (title === "For Sale") {
+    return `Daylilies For Sale from Rolling Oaks${pageSuffix}`;
+  }
+
+  return `${title}${pageSuffix} | Rolling Oaks Daylilies`;
+};
+
+const getCatalogSeoDescription = (
+  title: string,
+  description: string | null,
+  pageIndex: number
+) => {
+  const pageContext = pageIndex > 0 ? ` Page ${pageIndex + 1}.` : "";
+
+  if (title === "Search") {
+    return `Search the Rolling Oaks Daylilies catalog by name, hybridizer, color, form, bloom season, height, bloom size, and other daylily traits.${pageContext}`;
+  }
+
+  if (title === "For Sale") {
+    return `Browse daylilies currently offered for purchase from Rolling Oaks Daylilies, including unique, rare, double, white, spider, and unusual form varieties.${pageContext}`;
+  }
+
+  if (description) {
+    return `${description}${pageContext}`;
+  }
+
+  return `${title} in the Rolling Oaks Daylilies catalog, with cultivar details, photos, and availability information.${pageContext}`;
 };
 
 export const getServerSideProps: GetServerSideProps<
@@ -1009,16 +640,18 @@ export const getServerSideProps: GetServerSideProps<
 
   const title = list.name;
   const description = list.intro;
-  const pageLimit = 24;
-  const lastPage = Math.max(Math.ceil(listings.length / pageLimit) - 1, 0);
-  const initialPage = Math.min(getPageFromQuery(context.query.page), lastPage);
+  const filterOptions = getCatalogFilterOptions(listings);
+  const filters = getCatalogFiltersFromQuery(context.query);
+  const searchResult = getCatalogSearchResult(listings, filters);
 
   return {
     props: {
       title,
       description,
-      listings,
-      initialPage,
+      initialListings: searchResult.listings,
+      initialTotal: searchResult.total,
+      initialPage: searchResult.page,
+      filterOptions,
       path: `/catalog/${catalog}`,
     },
   };
