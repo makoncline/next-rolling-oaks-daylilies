@@ -219,13 +219,15 @@ type AlertType = "success" | "danger";
 function AlertRoot({
   type,
   children,
+  className,
 }: {
   type: AlertType;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <div
-      className={cx("alert", `alert-${type}`)}
+      className={cx("alert", `alert-${type}`, className)}
       role={type === "danger" ? "alert" : "status"}
       aria-live={type === "danger" ? "assertive" : "polite"}
     >
@@ -237,11 +239,17 @@ function AlertRoot({
 function AlertHeading({
   children,
   level = 1,
+  className,
 }: {
   children: React.ReactNode;
   level?: HeadingLevel;
+  className?: string;
 }) {
-  return <Heading level={level}>{children}</Heading>;
+  return (
+    <Heading level={level} className={className}>
+      {children}
+    </Heading>
+  );
 }
 
 function AlertBody({ children }: { children: React.ReactNode }) {
@@ -315,7 +323,11 @@ export function Field({
   return (
     <div className={cx("field", hidden && "hidden")}>
       <label htmlFor={fieldId} hidden={!showLabel}>
-        {required ? <span aria-hidden="true">*</span> : null}
+        {required ? (
+          <span className="required-marker" aria-hidden="true">
+            *
+          </span>
+        ) : null}
         {children}
       </label>
       {textarea ? (
@@ -378,8 +390,8 @@ export function Nav({
   }, []);
 
   return (
-    <nav className="w-full py-4">
-      <div className="flex w-full items-center justify-between py-2">
+    <nav className="w-full py-2">
+      <div className="flex min-h-10 w-full items-center justify-between">
         <div className="mr-auto">{logo}</div>
         <ul className="m-0 hidden list-none flex-row items-center gap-3 p-0 md:flex">
           {React.Children.map(children, (child, index) => (

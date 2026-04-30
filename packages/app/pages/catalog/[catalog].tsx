@@ -229,6 +229,23 @@ const SearchPage: NextPage<Props> = ({
   const numResults = result.total;
   useSearchChange(numResults, filters);
   const isSearch = title === "Search";
+  const activeFilterSummary = [
+    filters.char && `starts with ${filters.char}`,
+    filters.name && `name includes "${filters.name}"`,
+    filters.list && `on ${filters.list}`,
+    filters.color && `color includes "${filters.color}"`,
+    filters.hybridizer && `by ${filters.hybridizer}`,
+    filters.year && `year ${filters.year}`,
+    filters.ploidy && filters.ploidy,
+    filters.form && filters.form,
+    filters.foliageType && `${filters.foliageType} foliage`,
+    filters.fragrance && filters.fragrance,
+    filters.bloomSize && `${filters.bloomSize} blooms`,
+    filters.scapeHeight && `${filters.scapeHeight} scapes`,
+    filters.bloomSeason && `${filters.bloomSeason} season`,
+    filters.price && `price band ${filters.price}`,
+    filters.note && `note includes "${filters.note}"`,
+  ].filter(Boolean);
   const canonicalPath =
     currentPage > 0 ? `${path}?page=${currentPage + 1}` : path;
   const previousPath =
@@ -303,14 +320,27 @@ const SearchPage: NextPage<Props> = ({
           />
         )}
       </Head>
-      <Space direction="column" block center>
+      <Space direction="column" block center className="gap-2">
         <FancyHeading level={1}>{title}</FancyHeading>
         <p>{description}</p>
       </Space>
       <FormWrapper>
         <Space direction="column">
+          <div className="border-b border-ro-muted pb-4">
+            <p className="m-0 text-ro-text-high">
+              {formatNumber(numResults)} {numResults === 1 ? "result" : "results"}
+            </p>
+            {activeFilterSummary.length ? (
+              <p className="m-0 text-sm">
+                Filters: {activeFilterSummary.join(", ")}
+              </p>
+            ) : null}
+          </div>
+          <Button onClick={toggleFilters} block>
+            {`${showFilters ? "Hide" : "Show"} Search and Filters`}
+          </Button>
           {showFilters && (
-            <>
+            <div className="max-h-[52vh] overflow-y-auto border-b border-ro-muted pb-4">
               <Heading level={2}>Search and Filter</Heading>
               <Space block direction="column">
                 {/* First char filter */}
@@ -571,14 +601,8 @@ const SearchPage: NextPage<Props> = ({
                   Clear Filters
                 </Button>
               </Space>
-            </>
+            </div>
           )}
-          <Button
-            onClick={toggleFilters}
-            block
-          >
-            {`${showFilters ? "Hide" : "Show"} Search and Filters`}
-          </Button>
         </Space>
       </FormWrapper>
       <Space direction="column" ref={topRef} block>

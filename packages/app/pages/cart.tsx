@@ -21,11 +21,63 @@ import { formatCurrency } from "../lib/format";
 
 const CartTable = () => {
   const { addOne, removeOne, numItems, shipping, cart, total } = useCart();
+  const confirmAndRemove = (item: { id: string; name: string; quantity: number }) => {
+    if (
+      item.quantity > 1 ||
+      window.confirm(`Remove ${item.name} from your cart?`)
+    ) {
+      removeOne(item.id);
+    }
+  };
+
   return (
     <>
       {numItems ? (
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-[34rem]" style={{ width: "100%" }}>
+        <div className="w-full">
+          <div className="grid gap-4 md:hidden">
+            {cart.map((item) => (
+              <article
+                className="border-b border-ro-muted pb-4"
+                key={item.id}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="m-0 text-lg">{item.name}</h2>
+                  <strong className="shrink-0 text-ro-text-high">
+                    {formatCurrency(item.price)}
+                  </strong>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-4">
+                  <span>Quantity: {item.quantity}</span>
+                  <Space gap="xsmall">
+                    <Button
+                      aria-label={`Remove One ${item.name}`}
+                      onClick={() => confirmAndRemove(item)}
+                    >
+                      -
+                    </Button>
+                    <Button
+                      aria-label={`Add One ${item.name}`}
+                      onClick={() => addOne(item.id)}
+                    >
+                      +
+                    </Button>
+                  </Space>
+                </div>
+              </article>
+            ))}
+            <div className="grid gap-3 border-b border-ro-muted pb-4 text-ro-text-high">
+              <div className="flex justify-between gap-4">
+                <span>Shipping</span>
+                <strong>{formatCurrency(shipping)}</strong>
+              </div>
+              <Hr className="my-1" />
+              <div className="flex justify-between gap-4 text-xl">
+                <span>Total</span>
+                <strong>{formatCurrency(total)}</strong>
+              </div>
+            </div>
+          </div>
+          <table className="hidden w-full md:table">
             <thead>
               <tr>
                 <th style={{ textAlign: "left" }}>Name</th>
@@ -52,14 +104,7 @@ const CartTable = () => {
                     <td>
                       <Button
                         aria-label={`Remove One ${item.name}`}
-                        onClick={() => {
-                          if (
-                            item.quantity > 1 ||
-                            window.confirm(`Remove ${item.name} from your cart?`)
-                          ) {
-                            removeOne(item.id);
-                          }
-                        }}
+                        onClick={() => confirmAndRemove(item)}
                       >
                         -
                       </Button>

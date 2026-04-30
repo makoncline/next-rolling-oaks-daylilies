@@ -5,7 +5,7 @@ import { Alert } from "components/ui";
 const Thanks: React.FC = () => {
   return (
     <Layout>
-      <Alert type="success">
+      <Alert type="success" className="mx-auto">
         <Alert.Heading>Thanks for Your Interest</Alert.Heading>
         <Alert.Body>
           <p>

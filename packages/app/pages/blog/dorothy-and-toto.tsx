@@ -4,8 +4,8 @@ import Image from "next/image";
 const Blog = () => {
   return (
     <Layout>
-      <h1>Dorothy and Toto</h1>
-      <article>
+      <article className="mx-auto w-full max-w-[46rem]">
+        <h1>Dorothy and Toto</h1>
         <h2>Introduction</h2>
         <p>
           Dorothy and Toto is a stunning daylily that was introduced in 2003 by
@@ -21,12 +21,13 @@ const Blog = () => {
           peach, and cream. The green throat of the flower provides an excellent
           contrast to the blooms’ colors.
         </p>
-        <figure>
+        <figure className="my-6">
           <Image
             src="https://garden.org/pics/2022-02-23/floota/4f618a-250.jpg"
             alt="Dorothy and Toto daylily"
-            width={250}
-            height={250}
+            width={500}
+            height={500}
+            className="w-full max-w-md object-cover"
             unoptimized
           />
           <figcaption>
@@ -44,12 +45,13 @@ const Blog = () => {
 
         <h2>Photos</h2>
         <p>Here are some stunning photos of the Dorothy and Toto daylily:</p>
-        <figure>
+        <figure className="my-6">
           <Image
             src="https://garden.org/pics/2019-04-24/hillbilly/bbc769-250.jpg"
             alt="Dorothy and Toto daylily"
-            width={250}
-            height={250}
+            width={500}
+            height={500}
+            className="w-full max-w-md object-cover"
             unoptimized
           />
           <figcaption>
@@ -57,12 +59,13 @@ const Blog = () => {
             background.
           </figcaption>
         </figure>
-        <figure>
+        <figure className="my-6">
           <Image
             src="https://garden.org/pics/2022-02-23/floota/2c5764-250.jpg"
             alt="Dorothy and Toto daylily"
-            width={250}
-            height={250}
+            width={500}
+            height={500}
+            className="w-full max-w-md object-cover"
             unoptimized
           />
           <figcaption>

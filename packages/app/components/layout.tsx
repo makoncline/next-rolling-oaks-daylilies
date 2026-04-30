@@ -68,7 +68,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   placeholder="blur"
                   width={64}
                   height={64}
-                  style={{ width: "auto", height: "auto" }}
+                  className="h-10 w-auto sm:h-12"
                 />
               </Link>
             }

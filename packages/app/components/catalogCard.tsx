@@ -26,8 +26,14 @@ export const CatalogCard = ({
   priority?: boolean;
 }) => {
   const images = getImageUrls(image);
+  const introCopy = intro
+    ?.replace(/Daylillies/g, "Daylilies")
+    .replace(/daylillies/g, "daylilies")
+    .replace(/Non registered/g, "Non-registered")
+    .replace(/non registered/g, "non-registered");
+
   return (
-    <article className="grid w-full grid-cols-1 grid-rows-[18rem_auto] justify-items-center gap-4 hover:bg-ro-surface md:grid-cols-[18rem_1fr] md:grid-rows-[minmax(18rem,auto)]">
+    <article className="grid w-full grid-cols-1 gap-4 border-b border-ro-muted pb-6 md:grid-cols-[14rem_1fr]">
       <Image
         src={images.full}
         alt={`${name} catalog image`}
@@ -35,17 +41,17 @@ export const CatalogCard = ({
         height={288}
         priority={priority}
         loading={priority ? undefined : "lazy"}
-        className="h-72 w-72 object-cover"
+        className="aspect-square w-full max-w-72 justify-self-center object-cover md:max-w-56"
         unoptimized
       />
-      <Space block direction="column" className="items-start p-4">
+      <Space block direction="column" className="items-start">
         <Heading level={2}>{name}</Heading>
         <PropertyList divider>
           <PropertyListItem label="# Listings">
             {formatNumber(numListings)}
           </PropertyListItem>
         </PropertyList>
-        {intro && <p>{intro}</p>}
+        {introCopy && <p>{introCopy}</p>}
         <Link href={`/catalog/${slug}`} passHref>
           View {name} Catalog
         </Link>

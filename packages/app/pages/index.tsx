@@ -14,14 +14,14 @@ import Link from "next/link";
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className="grid w-full items-center justify-items-start gap-8 lg:grid-cols-[16rem_1fr]">
+      <div className="grid w-full items-center justify-items-start gap-6 md:grid-cols-[12rem_1fr] lg:grid-cols-[16rem_1fr]">
         <Image
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
           width={256}
           height={256}
-          style={{ width: "auto", height: "auto" }}
+          className="w-44 max-w-full md:w-48 lg:w-64"
         />
 
         <Space direction="column" as="section">
@@ -29,7 +29,6 @@ const Home: NextPage = () => {
           <span>
             Shop Our Stunning Collection of Named Daylilies and Seedlings.
           </span>
-          <br />
           <p>
             Welcome to Rolling Oaks Daylilies, where you’ll find a stunning
             collection of over 1000 named daylilies and unique seedlings. Our
@@ -127,36 +126,11 @@ const Home: NextPage = () => {
           <ContactForm cta="Send Me a Message" successPath="/thanks" />
         </div>
       </Space>
-      <br />
-      <br />
-      <br />
-      <Space block className="justify-end">
+      <Space block className="justify-end pt-8">
         <Link href="/catalogs">View Catalogs</Link>
         <Link href="/catalog/search">Search</Link>
       </Space>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <Space>
+      <Space className="pt-8">
         <Link href="/blog">Blog</Link>
       </Space>
     </Layout>

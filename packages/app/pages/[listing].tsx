@@ -133,10 +133,13 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
         />
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
-      <Space center responsive gap="medium">
-        <ImageDisplay imageUrls={allImageUrls} title={name} />
+      <Space responsive gap="medium" className="items-start">
+        <div className="w-full max-w-80 justify-self-center md:max-w-none">
+          <ImageDisplay imageUrls={allImageUrls} title={name} />
+        </div>
         <Space
           direction="column"
+          className="border-b border-ro-muted pb-4"
           style={{ overflowX: "hidden", width: "100%" }}
         >
           <PropertyList divider>
@@ -179,21 +182,21 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
               </Button>
             </div>
           )}
-          {ahsData && (
-            <div>
-              <Heading level={2}>Details</Heading>
-              <Hr />
-              <PropertyList column>
-                {getTraits(ahsData).map(([key, value]) => (
-                  <PropertyListItem inline label={key} key={key}>
-                    {value}
-                  </PropertyListItem>
-                ))}
-              </PropertyList>
-            </div>
-          )}
         </Space>
       </Space>
+      {ahsData && (
+        <div>
+          <Heading level={2}>Details</Heading>
+          <Hr />
+          <PropertyList column>
+            {getTraits(ahsData).map(([key, value]) => (
+              <PropertyListItem inline label={key} key={key}>
+                {value}
+              </PropertyListItem>
+            ))}
+          </PropertyList>
+        </div>
+      )}
       <DaylilyCatalogAd />
     </Layout>
   );
