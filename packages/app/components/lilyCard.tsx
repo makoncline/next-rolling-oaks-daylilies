@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ListingType } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
 import { Button, Heading, Space } from "components/ui";
-import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
+import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import Image from "next/image";
 import { getImageUrls } from "./Image";
 
@@ -17,7 +17,7 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
   const imageUrl =
     lily.images?.length > 0
       ? lily.images[0].url
-      : lily.ahsListing?.ahsImageUrl || getPlaceholderImageUrl(lily.title);
+      : lily.ahsListing?.ahsImageUrl || PLACEHOLDER_IMAGE_URL;
 
   const images = getImageUrls(imageUrl);
 
@@ -58,7 +58,7 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
               aria-label="add to cart"
               onClick={() => {
                 addOrUpdateProduct(cartItem);
-                addAlert && addAlert(`Added ${lily.title} to cart!`);
+                addAlert?.(`Added ${lily.title} to cart!`);
               }}
               style={{ alignItems: "center" }}
             >

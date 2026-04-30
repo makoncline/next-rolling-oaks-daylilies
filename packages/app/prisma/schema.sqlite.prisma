@@ -1,12 +1,10 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "./generated/sqlite-client"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("TURSO_DATABASE_URL")
 }
 
 model AhsListing {

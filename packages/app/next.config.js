@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   output: "standalone",
   transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
   i18n: {
@@ -9,17 +8,22 @@ const nextConfig = {
     defaultLocale: "en",
   },
   images: {
-    domains: [
-      "www.daylilies.org",
-      "daylily-catalog-images.s3.amazonaws.com",
-      "daylily-catalog-images-stage.s3.amazonaws.com",
-      "images.daylilycatalog.com",
-      "www.daylilydatabase.org",
-      "garden.org",
+    remotePatterns: [
+      { protocol: "https", hostname: "www.daylilies.org" },
+      {
+        protocol: "https",
+        hostname: "daylily-catalog-images.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "daylily-catalog-images-stage.s3.amazonaws.com",
+      },
+      { protocol: "https", hostname: "images.daylilycatalog.com" },
+      { protocol: "https", hostname: "www.daylilydatabase.org" },
+      { protocol: "https", hostname: "garden.org" },
     ],
   },
   experimental: {
-    externalDir: true,
     scrollRestoration: true,
   },
 };

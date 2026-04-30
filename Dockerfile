@@ -43,12 +43,12 @@ RUN groupadd --system --gid 1001 nodejs \
   && chown nextjs:nodejs /app/.public-data
 
 COPY --from=builder --chown=nextjs:nodejs /app/packages/app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/packages/app/node_modules/@libsql ./packages/app/node_modules/@libsql
 COPY --from=builder --chown=nextjs:nodejs /app/packages/app/.next/static ./packages/app/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/packages/app/public ./packages/app/public
+COPY --chown=nextjs:nodejs packages/app/scripts/prestart-public-snapshot.cjs ./packages/app/scripts/prestart-public-snapshot.cjs
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "packages/app/server.js"]
+CMD ["sh", "-c", "node packages/app/scripts/prestart-public-snapshot.cjs && exec node packages/app/server.js"]

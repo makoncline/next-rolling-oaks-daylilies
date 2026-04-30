@@ -22,10 +22,12 @@ const Paginate: React.FC<{
     if (onPageChange) {
       onPageChange();
     }
-    const { catalog, ...rest } = router.query;
-    const newQuery = { ...rest, page: newPage + 1 };
+    const newQuery = { ...router.query };
+    delete newQuery.catalog;
     if (newPage === 0) {
-      delete (newQuery as { page?: number }).page;
+      delete newQuery.page;
+    } else {
+      newQuery.page = String(newPage + 1);
     }
     router.replace(
       {
