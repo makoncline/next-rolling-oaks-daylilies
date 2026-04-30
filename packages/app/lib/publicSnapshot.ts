@@ -379,10 +379,23 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       const pageCount = Math.ceil(catalog.totalCount / CATALOG_PAGE_SIZE);
       if (pageCount <= 1) return [];
 
-      return Array.from({ length: pageCount - 1 }, (_, index) => ({
-        path: `/catalog/${catalog.slug}?page=${index + 2}`,
-        lastmod: toSitemapDate(generatedAt),
-      }));
+      return Array.from({ length: pageCount - 1 }, (_, index) => {
+        const pageNumber = index + 2;
+        const pageListingIds = catalog.listingIds.slice(
+          (pageNumber - 1) * CATALOG_PAGE_SIZE,
+          pageNumber * CATALOG_PAGE_SIZE
+        );
+        const latestPageListing = pageListingIds
+          .map((id) => cardsById[id])
+          .filter(Boolean)
+          .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt))
+          .at(-1);
+
+        return {
+          path: `/catalog/${catalog.slug}?page=${pageNumber}`,
+          lastmod: toSitemapDate(latestPageListing?.updatedAt || generatedAt),
+        };
+      });
     }
   );
 

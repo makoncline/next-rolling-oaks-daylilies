@@ -40,6 +40,20 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/index.html",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/list",
+        destination: "/catalog/all",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

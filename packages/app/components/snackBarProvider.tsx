@@ -1,4 +1,3 @@
-import { Badge } from "components/ui";
 import React, {
   createContext,
   useMemo,
@@ -46,16 +45,18 @@ export const SnackBarProvider = ({
   return (
     <SnackBarContext.Provider value={value}>
       {children}
-      <div className="fixed bottom-0 z-20 flex flex-col items-start justify-center gap-2 text-ro-text-high">
+      <div
+        className="pointer-events-none fixed bottom-4 left-4 z-20 flex max-w-[calc(100vw-2rem)] flex-col items-start justify-center gap-2 text-ro-text-high"
+        role="status"
+        aria-live="polite"
+      >
         {alerts.map((alert, i) => (
-          <Badge
+          <div
             key={i}
-            className="border border-ro-success bg-ro-surface text-ro-text-high"
+            className="rounded-md border border-ro-border bg-ro-surface2 px-4 py-2 text-sm font-semibold shadow-lg shadow-black/30"
           >
-            <p className="m-0 rounded-full border border-ro-blue bg-ro-surface2 px-6 py-2 text-base">
-              {alert}
-            </p>
-          </Badge>
+            {alert}
+          </div>
         ))}
       </div>
     </SnackBarContext.Provider>

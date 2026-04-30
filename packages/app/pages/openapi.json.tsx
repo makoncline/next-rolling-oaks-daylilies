@@ -45,6 +45,27 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
               in: "query",
               schema: { type: "integer", minimum: 1, maximum: 100, default: 24 },
             },
+            ...[
+              "name",
+              "list",
+              "char",
+              "hybridizer",
+              "year",
+              "ploidy",
+              "color",
+              "form",
+              "foliageType",
+              "note",
+              "fragrance",
+              "bloomSize",
+              "scapeHeight",
+              "bloomSeason",
+              "price",
+            ].map((name) => ({
+              name,
+              in: "query",
+              schema: { type: "string" },
+            })),
           ],
           responses: {
             "200": {

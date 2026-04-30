@@ -12,6 +12,7 @@
 | 2026-04-09 | self | Upgrading Next to Netlify’s supported runtime exposed a second deploy blocker: Netlify Forms in React pages no longer count for deploy-time form detection | For this repo, keep form definitions in `packages/app/public/__forms.html` and submit live Next forms to that static file path with URL-encoded POSTs instead of relying on `data-netlify` in React components |
 | 2026-04-29 | self | Used broad `find /Users/makon ...` searches for local env files and produced huge output through protected and dependency directories | For this repo, check `/Users/makon/dev/next-rolling-oaks-daylilies/packages/app/.env` directly when the worktree lacks `packages/app/.env` |
 | 2026-04-29 | self | Included a `prefix_rule` on a destructive cleanup command for a temporary env file | Never provide `prefix_rule` for destructive commands, even narrow temporary-file cleanup; request one-off escalation without a reusable rule |
+| 2026-04-30 | self | Reran Playwright on the default port and got false failures because it reused a different app already running on port 3000 | For focused e2e in this repo, start the current worktree on a separate `PORT` and run Playwright with `CI=1 TEST_BASE_URL=http://localhost:<port>` |
 
 ## User Preferences
 
