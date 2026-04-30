@@ -20,6 +20,7 @@ import {
 const SNAPSHOT_SCHEMA_VERSION = 1;
 const HIDDEN_STATUS = "HIDDEN";
 const LISTING_BATCH_SIZE = 900;
+const CATALOG_PAGE_SIZE = 24;
 export const PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS = 60 * 60;
 export const PUBLIC_SNAPSHOT_MAX_STALE_SECONDS = 24 * 60 * 60;
 const PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS = 30 * 60 * 1000;
@@ -341,7 +342,6 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
   }
 
   const staticSitemapEntries: PublicSitemapEntry[] = [
-    "",
     "/",
     "/catalogs",
     "/catalog/all",
@@ -374,6 +374,18 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
     })
     .filter(Boolean) as PublicSitemapEntry[];
 
+  const paginatedCatalogSitemapEntries = Object.values(catalogsBySlug).flatMap(
+    (catalog) => {
+      const pageCount = Math.ceil(catalog.totalCount / CATALOG_PAGE_SIZE);
+      if (pageCount <= 1) return [];
+
+      return Array.from({ length: pageCount - 1 }, (_, index) => ({
+        path: `/catalog/${catalog.slug}?page=${index + 2}`,
+        lastmod: toSitemapDate(generatedAt),
+      }));
+    }
+  );
+
   const listingSitemapEntries = Object.values(detailsBySlug).map((listing) => ({
     path: `/${listing.slug}`,
     lastmod: toSitemapDate(listing.updatedAt),
@@ -394,6 +406,7 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
     sitemapEntries: [
       ...staticSitemapEntries,
       ...catalogSitemapEntries,
+      ...paginatedCatalogSitemapEntries,
       ...listingSitemapEntries,
     ],
     counts: {

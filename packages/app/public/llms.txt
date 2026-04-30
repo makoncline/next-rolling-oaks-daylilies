@@ -1,0 +1,37 @@
+# Rolling Oaks Daylilies
+
+Rolling Oaks Daylilies is an AHS Display Garden offering named daylilies and
+seedlings. The catalog includes more than 1,000 varieties, with a focus on
+double and white daylilies, spiders, unusual forms, doubles, and unique forms.
+
+## Primary Pages
+
+- Home: https://rollingoaksdaylilies.com/
+- Catalogs: https://rollingoaksdaylilies.com/catalogs
+- For Sale: https://rollingoaksdaylilies.com/catalog/for-sale
+- All Daylilies: https://rollingoaksdaylilies.com/catalog/all
+- Search: https://rollingoaksdaylilies.com/catalog/search
+- Sitemap: https://rollingoaksdaylilies.com/sitemap.xml
+- API Catalog: https://rollingoaksdaylilies.com/.well-known/api-catalog
+- OpenAPI: https://rollingoaksdaylilies.com/openapi.json
+
+## Ordering Notes
+
+Customers should use the catalog and cart to identify plants of interest, then
+contact Rolling Oaks Daylilies to confirm availability before payment. The site
+does not expose an agent API, OAuth flow, MCP server, or agent-native checkout
+protocol.
+
+## Agent Guidance
+
+- Use canonical listing URLs from the sitemap when citing individual daylilies.
+- Use the public catalog API when structured data is better than scraping:
+  - `GET /api/catalogs`
+  - `GET /api/catalog/{catalog}?page=1&limit=24`
+  - `GET /api/listings/{listing}`
+- Respect availability language on listing pages; a listed cultivar may be
+  display-only or require confirmation.
+- Only submit `POST /api/forms` after the user has reviewed and confirmed the
+  inquiry text and any personal contact information.
+- Prefer the `Accept: text/markdown` representation for concise summaries of
+  core site pages.

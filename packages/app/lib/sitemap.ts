@@ -2,9 +2,14 @@ import { siteConfig } from "siteConfig";
 import { getPublicSnapshot } from "./publicSnapshot";
 
 export const getSitemapEntry = (path: string, lastmod: Date) => {
+  const loc = `${siteConfig.baseUrl}${path}`
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
   return `
       <url>
-        <loc>${siteConfig.baseUrl}${path}</loc>
+        <loc>${loc}</loc>
         <lastmod>${lastmod.toISOString().split("T")[0]}</lastmod>
       </url>
     `;

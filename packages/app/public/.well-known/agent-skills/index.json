@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "availability-inquiry",
+      "type": "skill-md",
+      "description": "Help customers prepare accurate Rolling Oaks Daylilies availability and order inquiries without assuming plants are currently available.",
+      "url": "/.well-known/agent-skills/availability-inquiry/SKILL.md",
+      "digest": "sha256:a8071de31b1678cbe67fd374e69a05071e5491bfeb75cb919e1d267fcc5c672b"
+    },
+    {
+      "name": "catalog-navigation",
+      "type": "skill-md",
+      "description": "Navigate Rolling Oaks Daylilies catalog pages, find daylily listings, and guide users toward availability confirmation.",
+      "url": "/.well-known/agent-skills/catalog-navigation/SKILL.md",
+      "digest": "sha256:d3bf4d425926d16ecdfebe86ff97d8aaff52d5e1fa5e796863ea538c66f8817b"
+    },
+    {
+      "name": "cultivar-reference",
+      "type": "skill-md",
+      "description": "Use Rolling Oaks Daylilies listing pages as cultivar references while preserving visible source context and uncertainty.",
+      "url": "/.well-known/agent-skills/cultivar-reference/SKILL.md",
+      "digest": "sha256:44f5a4213c1926fb7626c935f6b55514c878a9fd8e83ff787515a8b4011a49ad"
+    },
+    {
+      "name": "site-navigation",
+      "type": "skill-md",
+      "description": "Navigate Rolling Oaks Daylilies as a customer-facing site, including catalogs, search, cart, blog, and contact paths.",
+      "url": "/.well-known/agent-skills/site-navigation/SKILL.md",
+      "digest": "sha256:6594584421eda94c97acdcf7bf956a2fdd1ca10696a96ac7165801919133e6d7"
+    }
+  ]
+}
