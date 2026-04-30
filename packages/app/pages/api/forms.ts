@@ -11,8 +11,27 @@ type FormPayload = {
   cartText: string;
 };
 
-const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || "kaymcline@gmail.com";
-const CONTACT_BCC_EMAIL = process.env.CONTACT_BCC_EMAIL || "";
+type LogFields = Record<string, boolean | number | string | null | undefined>;
+
+type SmtpConfig = {
+  smtpHost: string;
+  smtpPort: number;
+  smtpSecure: boolean;
+};
+
+const logFormEvent = (
+  level: "info" | "warn" | "error",
+  event: string,
+  fields: LogFields = {}
+) => {
+  console[level](
+    JSON.stringify({
+      scope: "forms",
+      event,
+      ...fields,
+    })
+  );
+};
 
 const getString = (value: unknown) => {
   if (Array.isArray(value)) return String(value[0] || "").trim();
@@ -39,6 +58,14 @@ const getEmailList = (value: string) =>
     .map((email) => email.trim())
     .filter(Boolean);
 
+const getSmtpConfig = (): SmtpConfig => {
+  return {
+    smtpHost: process.env.SMTP_HOST || "smtp.gmail.com",
+    smtpPort: Number.parseInt(process.env.SMTP_PORT || "587", 10),
+    smtpSecure: process.env.SMTP_SECURE === "true",
+  };
+};
+
 const parsePayload = (req: NextApiRequest): FormPayload | null => {
   const formName = getFormName(req);
   if (!formName) return null;
@@ -56,20 +83,53 @@ const parsePayload = (req: NextApiRequest): FormPayload | null => {
   return { formName, name, email, message, cartText };
 };
 
-const getMailer = () => {
+const getMailer = (smtpConfig: SmtpConfig) => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     throw new Error("SMTP_USER and SMTP_PASS are required to send mail.");
   }
 
   return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    host: smtpConfig.smtpHost,
+    port: smtpConfig.smtpPort,
+    secure: smtpConfig.smtpSecure,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
   });
+};
+
+const getRecipients = () => {
+  const recipients = getEmailList(process.env.CONTACT_TO_EMAIL || "");
+  if (!recipients.length) {
+    throw new Error("CONTACT_TO_EMAIL is required to send mail.");
+  }
+  return recipients;
+};
+
+const getBccRecipients = () => getEmailList(process.env.CONTACT_BCC_EMAIL || "");
+
+const getErrorDetails = (error: unknown): LogFields => {
+  if (!(error instanceof Error)) return { errorType: typeof error };
+
+  const details: LogFields = {
+    errorName: error.name,
+    errorMessage: error.message,
+  };
+
+  const maybeSmtpError = error as Error & {
+    code?: string;
+    command?: string;
+    responseCode?: number;
+  };
+
+  if (maybeSmtpError.code) details.errorCode = maybeSmtpError.code;
+  if (maybeSmtpError.command) details.smtpCommand = maybeSmtpError.command;
+  if (maybeSmtpError.responseCode) {
+    details.smtpResponseCode = maybeSmtpError.responseCode;
+  }
+
+  return details;
 };
 
 const getSubject = ({ formName, name }: FormPayload) =>
@@ -111,18 +171,42 @@ export default async function handler(
   }
 
   try {
-    await getMailer().sendMail({
+    const smtpConfig = getSmtpConfig();
+    const recipients = getRecipients();
+    const bccRecipients = getBccRecipients();
+
+    logFormEvent("info", "form_submit_started", {
+      formName: payload.formName,
+      recipientCount: recipients.length,
+      bccCount: bccRecipients.length,
+      hasSmtpUser: Boolean(process.env.SMTP_USER),
+      hasSmtpPass: Boolean(process.env.SMTP_PASS),
+      ...smtpConfig,
+    });
+
+    await getMailer(smtpConfig).sendMail({
       from: process.env.SMTP_USER,
-      to: getEmailList(CONTACT_TO_EMAIL),
-      bcc: getEmailList(CONTACT_BCC_EMAIL),
+      to: recipients,
+      bcc: bccRecipients,
       replyTo: payload.email,
       subject: getSubject(payload),
       text: getBodyText(payload),
     });
 
+    logFormEvent("info", "form_email_send_succeeded", {
+      formName: payload.formName,
+      recipientCount: recipients.length,
+      bccCount: bccRecipients.length,
+      ...smtpConfig,
+    });
+
     res.status(200).json({ ok: true });
   } catch (error) {
-    console.error(error);
+    logFormEvent("error", "form_email_send_failed", {
+      formName: payload.formName,
+      ...getSmtpConfig(),
+      ...getErrorDetails(error),
+    });
     res.status(500).json({ error: "Could not send message" });
   }
 }
