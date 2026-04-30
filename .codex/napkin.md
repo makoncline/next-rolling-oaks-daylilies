@@ -36,5 +36,5 @@
 - Current public listing coverage in the live DB for `userId = "3"`: `3028` visible listings total, `1599` with `cultivarReferenceId`, `1590` with both `cultivarReferenceId` and `ahsId`, `9` V2-only, and `1429` with neither.
 - For the VPS migration, contact/cart forms post to `/api/forms` and send through Nodemailer. Runtime requires `SMTP_USER` and `SMTP_PASS`; `CONTACT_TO_EMAIL` defaults to `kaymcline@gmail.com` and accepts comma-separated recipients.
 - Form spam protection is enforced in `packages/app/pages/api/forms.ts`: browser forms must include a sane `form-started-at`, empty `bot-field`/`website`/`company` traps, and no more than one link before Nodemailer runs.
-- `packages/design-system` is a git submodule. If it is uninitialized, full `tsc` and Docker builds fail before reaching app code because `@packages/design-system` cannot be resolved.
+- `packages/design-system` has been removed from this repo. Do not assume design-system submodule setup is needed when troubleshooting builds.
 - Docker deployment uses Next standalone output and should not require Turso secrets at image-build time. Keep DB-backed dynamic pages on empty `getStaticPaths` with `fallback: "blocking"` or server-side fetching so `docker build` works without `.env`.
