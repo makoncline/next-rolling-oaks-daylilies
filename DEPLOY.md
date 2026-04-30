@@ -35,6 +35,9 @@ Required secrets:
 
 Required non-secret config:
 
+- `SMTP_HOST`: SMTP server host. Defaults to `smtp.gmail.com`.
+- `SMTP_PORT`: SMTP server port. Defaults to `587`.
+- `SMTP_SECURE`: `true` for implicit TLS, `false` for STARTTLS. Defaults to `false`.
 - `CONTACT_TO_EMAIL`: comma-separated recipient list for contact/cart messages.
 
 Optional config:
