@@ -21,6 +21,7 @@ import {
 } from "components/ui";
 import type { AhsDisplay } from "../lib/cultivarDisplay";
 import { getPublicSnapshot, type PublicListingCard } from "../lib/publicSnapshot";
+import { formatCurrency, formatShortDate } from "../lib/format";
 
 const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
   hybridizer: "Hybridizer",
@@ -132,23 +133,24 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
         />
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
-      <Space center responsive gap="medium">
-        <ImageDisplay imageUrls={allImageUrls} />
+      <Space responsive gap="medium" className="items-start">
+        <div className="w-full max-w-72 justify-self-center md:max-w-none">
+          <ImageDisplay imageUrls={allImageUrls} title={name} />
+        </div>
         <Space
           direction="column"
+          className="border-b border-ro-muted pb-4"
           style={{ overflowX: "hidden", width: "100%" }}
         >
           <PropertyList divider>
             {price && (
-              <PropertyListItem label="Price">{`$${price}`}</PropertyListItem>
+              <PropertyListItem label="Price">
+                {formatCurrency(price)}
+              </PropertyListItem>
             )}
             {updatedAt && (
               <PropertyListItem label="Updated">
-                {new Date(updatedAt).toLocaleDateString("en-US", {
-                  year: "2-digit",
-                  month: "short",
-                  day: "numeric",
-                })}
+                {formatShortDate(updatedAt)}
               </PropertyListItem>
             )}
             {listName && (
@@ -167,34 +169,34 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
           {cartItem && (
             <div>
               <Button
-                aria-label="add to cart"
+                aria-label={`Add ${listing.title} to Cart`}
                 onClick={() => {
                   addOrUpdateProduct(cartItem);
-                  addAlert(`Added ${listing.title} to cart!`);
+                  addAlert(`Added ${listing.title} to Cart`);
                 }}
               >
                 <Space>
-                  Add to cart
-                  <Icon className="icon" icon={cart} />
+                  Add to Cart
+                  <Icon className="icon" icon={cart} aria-hidden="true" />
                 </Space>
               </Button>
             </div>
           )}
-          {ahsData && (
-            <div>
-              <Heading level={3}>Details</Heading>
-              <Hr />
-              <PropertyList column>
-                {getTraits(ahsData).map(([key, value]) => (
-                  <PropertyListItem inline label={key} key={key}>
-                    {value}
-                  </PropertyListItem>
-                ))}
-              </PropertyList>
-            </div>
-          )}
         </Space>
       </Space>
+      {ahsData && (
+        <div>
+          <Heading level={2}>Details</Heading>
+          <Hr />
+          <PropertyList column>
+            {getTraits(ahsData).map(([key, value]) => (
+              <PropertyListItem inline label={key} key={key}>
+                {value}
+              </PropertyListItem>
+            ))}
+          </PropertyList>
+        </div>
+      )}
       <DaylilyCatalogAd />
     </Layout>
   );

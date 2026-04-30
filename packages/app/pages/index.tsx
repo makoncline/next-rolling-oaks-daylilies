@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import Layout from "../components/layout";
 import ContactForm from "../components/contactForm";
 import type { NextPage } from "next";
@@ -12,17 +12,16 @@ import { Button, Heading, Space } from "components/ui";
 import Link from "next/link";
 
 const Home: NextPage = () => {
-  const contactFormRef = useRef<HTMLDivElement>(null);
   return (
     <Layout>
-      <div className="grid w-full items-center justify-items-start gap-8 lg:grid-cols-[16rem_1fr]">
+      <div className="grid w-full items-center justify-items-start gap-6 md:grid-cols-[12rem_1fr] lg:grid-cols-[16rem_1fr]">
         <Image
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
-          className="h-auto w-full max-w-[16rem]"
           width={256}
           height={256}
+          className="w-44 max-w-full md:w-48 lg:w-64"
         />
 
         <Space direction="column" as="section">
@@ -30,9 +29,8 @@ const Home: NextPage = () => {
           <span>
             Shop Our Stunning Collection of Named Daylilies and Seedlings.
           </span>
-          <br />
           <p>
-            Welcome to Rolling Oaks Daylilies, where you'll find a stunning
+            Welcome to Rolling Oaks Daylilies, where you’ll find a stunning
             collection of over 1000 named daylilies and unique seedlings. Our
             hybridizing focus is double and white daylilies, including a wide
             variety of forms like spiders and unusual doubles. As an AHS Display
@@ -42,11 +40,12 @@ const Home: NextPage = () => {
           <Space direction="column" block>
             <Space responsive block>
               <Button
+                as="a"
+                href="#contact"
                 styleType="primary"
-                onClick={() => contactFormRef.current?.scrollIntoView()}
                 block
               >
-                Send me a message
+                Send Me a Message
               </Button>
               <Button
                 as="a"
@@ -54,7 +53,7 @@ const Home: NextPage = () => {
                 target="_blank"
                 block
               >
-                Get directions
+                Get Directions
               </Button>
             </Space>
             <span>
@@ -81,7 +80,7 @@ const Home: NextPage = () => {
             sometimes share one root system and may have small dormant plants.
             For availability, contact us at{" "}
             <a href="mailto:kaymcline@gmail.com">kaymcline@gmail.com</a> before
-            payment or inquire about our "display only" plants. We accept checks
+            payment or inquire about our “display only” plants. We accept checks
             made payable to Kay Cline, PayPal payments, and Venmo
             (@Karen-Cline-13).
           </p>
@@ -122,42 +121,17 @@ const Home: NextPage = () => {
       />
 
       <Space direction="column" block as="section">
-        <Heading level={2}>Contact me?</Heading>
-        <div ref={contactFormRef}>
-          <ContactForm cta="Send me a message" successPath="/thanks" />
+        <Heading level={2}>Contact Me</Heading>
+        <div id="contact">
+          <ContactForm cta="Send Me a Message" successPath="/thanks" />
         </div>
       </Space>
-      <br />
-      <br />
-      <br />
-      <Space block className="justify-end">
+      <Space block className="justify-end pt-8">
         <Link href="/catalogs">View Catalogs</Link>
         <Link href="/catalog/search">Search</Link>
       </Space>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <Space>
-        <Link href="/blog">blog</Link>
+      <Space className="pt-8">
+        <Link href="/blog">Blog</Link>
       </Space>
     </Layout>
   );

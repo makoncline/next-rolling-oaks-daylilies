@@ -163,6 +163,15 @@ export function Hr(props: React.HTMLAttributes<HTMLHRElement>) {
   return <hr className={cx("ro-hr", props.className)} {...props} />;
 }
 
+export function Spinner({ className }: { className?: string }) {
+  return (
+    <span
+      className={cx("spinner", className)}
+      aria-hidden="true"
+    />
+  );
+}
+
 export function PropertyList({
   children,
   divider,
@@ -210,15 +219,37 @@ type AlertType = "success" | "danger";
 function AlertRoot({
   type,
   children,
+  className,
 }: {
   type: AlertType;
   children: React.ReactNode;
+  className?: string;
 }) {
-  return <div className={cx("alert", `alert-${type}`)}>{children}</div>;
+  return (
+    <div
+      className={cx("alert", `alert-${type}`, className)}
+      role={type === "danger" ? "alert" : "status"}
+      aria-live={type === "danger" ? "assertive" : "polite"}
+    >
+      {children}
+    </div>
+  );
 }
 
-function AlertHeading({ children }: { children: React.ReactNode }) {
-  return <Heading level={3}>{children}</Heading>;
+function AlertHeading({
+  children,
+  level = 1,
+  className,
+}: {
+  children: React.ReactNode;
+  level?: HeadingLevel;
+  className?: string;
+}) {
+  return (
+    <Heading level={level} className={className}>
+      {children}
+    </Heading>
+  );
 }
 
 function AlertBody({ children }: { children: React.ReactNode }) {
@@ -277,10 +308,26 @@ export function Field({
   [key: string]: unknown;
 }) {
   const fieldId = name || children.replace(/\s+/g, "-").toLowerCase();
+  const inferredType = name === "email" && type === "text" ? "email" : type;
+  const inferredAutoComplete =
+    props.autoComplete ??
+    (name === "email"
+      ? "email"
+      : name === "name"
+      ? "name"
+      : textarea
+      ? "off"
+      : undefined);
+  const inferredSpellCheck =
+    props.spellCheck ?? (name === "email" ? false : undefined);
   return (
     <div className={cx("field", hidden && "hidden")}>
       <label htmlFor={fieldId} hidden={!showLabel}>
-        {required ? "*" : null}
+        {required ? (
+          <span className="required-marker" aria-hidden="true">
+            *
+          </span>
+        ) : null}
         {children}
       </label>
       {textarea ? (
@@ -288,17 +335,22 @@ export function Field({
           id={fieldId}
           name={fieldId}
           placeholder={placeholder}
+          autoComplete={inferredAutoComplete as string | undefined}
           rows={rows}
           required={required}
+          aria-required={required || undefined}
           {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       ) : (
         <input
           id={fieldId}
           name={fieldId}
-          type={type}
+          type={inferredType}
           placeholder={placeholder}
+          autoComplete={inferredAutoComplete as string | undefined}
+          spellCheck={inferredSpellCheck as boolean | undefined}
           required={required}
+          aria-required={required || undefined}
           {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
         />
       )}
@@ -307,7 +359,11 @@ export function Field({
 }
 
 export function FormError({ children }: { children: React.ReactNode }) {
-  return <div className="text-ro-danger">{children}</div>;
+  return (
+    <div className="text-ro-danger" role="alert" aria-live="polite">
+      {children}
+    </div>
+  );
 }
 
 export function Nav({
@@ -318,9 +374,13 @@ export function Nav({
   children: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const navMenuId = React.useId();
 
   React.useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [isOpen]);
 
   React.useEffect(() => {
@@ -330,8 +390,8 @@ export function Nav({
   }, []);
 
   return (
-    <nav className="w-full py-4">
-      <div className="flex w-full items-center justify-between py-2">
+    <nav className="w-full py-2">
+      <div className="flex min-h-10 w-full items-center justify-between">
         <div className="mr-auto">{logo}</div>
         <ul className="m-0 hidden list-none flex-row items-center gap-3 p-0 md:flex">
           {React.Children.map(children, (child, index) => (
@@ -345,12 +405,14 @@ export function Nav({
           className="inline-flex h-10 w-10 items-center justify-center border border-transparent bg-transparent text-ro-text-high md:hidden"
           onClick={() => setIsOpen((value) => !value)}
           aria-label="Toggle navigation"
+          aria-controls={navMenuId}
+          aria-expanded={isOpen}
         >
           {isOpen ? "✕" : "☰"}
         </button>
       </div>
       {isOpen && (
-        <div className="md:hidden">
+        <div id={navMenuId} className="overscroll-contain md:hidden">
           <ul className="flex h-screen list-none flex-col gap-3 p-0">
             {React.Children.map(children, (child, index) => (
               <li key={index} className="px-3 py-2">

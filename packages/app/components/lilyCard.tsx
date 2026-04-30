@@ -9,8 +9,15 @@ import { Button, Heading, Space } from "components/ui";
 import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import Image from "next/image";
 import { getImageUrls } from "./Image";
+import { formatCurrency } from "../lib/format";
 
-const LilyCard = ({ lily }: { lily: ListingType }) => {
+const LilyCard = ({
+  lily,
+  priority = false,
+}: {
+  lily: ListingType;
+  priority?: boolean;
+}) => {
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
 
@@ -35,6 +42,8 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
             src={images.full}
             alt={lily.title + " image"}
             fill
+            priority={priority}
+            loading={priority ? undefined : "lazy"}
             sizes="600px"
             style={{
               objectFit: "cover",
@@ -46,23 +55,22 @@ const LilyCard = ({ lily }: { lily: ListingType }) => {
         <div style={{ height: "100%" }} />
       )}
       <Space direction="column">
-        <Heading level={4}>{lily.title}</Heading>
-        <p>{lily.price ? `$${lily.price}` : "display only"}</p>
+        <Heading level={2}>{lily.title}</Heading>
+        <p>{lily.price ? formatCurrency(lily.price) : "Display Only"}</p>
         <Space block>
           <Space block>
-            <Link href={`/${lily.slug}`}>View listing</Link>
+            <Link href={`/${lily.slug}`}>View {lily.title}</Link>
           </Space>
           {cartItem && (
             <Button
               className="iconbutton"
-              aria-label="add to cart"
+              aria-label={`Add ${lily.title} to Cart`}
               onClick={() => {
                 addOrUpdateProduct(cartItem);
-                addAlert?.(`Added ${lily.title} to cart!`);
+                addAlert(`Added ${lily.title} to Cart`);
               }}
-              style={{ alignItems: "center" }}
             >
-              <Icon className="icon" icon={cart} />
+              <Icon className="icon" icon={cart} aria-hidden="true" />
             </Button>
           )}
         </Space>

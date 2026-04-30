@@ -12,7 +12,8 @@ const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
   return (
     <Layout>
       <Heading level={1}>Catalogs</Heading>
-      {catalogs.map((node) => (
+      {catalogs.length === 0 && <p>No Catalogs Available.</p>}
+      {catalogs.map((node, index) => (
         <CatalogCard
           key={node.slug}
           image={node.image || PLACEHOLDER_IMAGE_URL}
@@ -20,6 +21,7 @@ const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
           intro={node.intro}
           numListings={node.totalCount}
           slug={node.slug}
+          priority={index === 0}
         />
       ))}
     </Layout>

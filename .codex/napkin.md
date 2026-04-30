@@ -14,6 +14,8 @@
 | 2026-04-29 | self | Included a `prefix_rule` on a destructive cleanup command for a temporary env file | Never provide `prefix_rule` for destructive commands, even narrow temporary-file cleanup; request one-off escalation without a reusable rule |
 | 2026-04-30 | self | Reran Playwright on the default port and got false failures because it reused a different app already running on port 3000 | For focused e2e in this repo, start the current worktree on a separate `PORT` and run Playwright with `CI=1 TEST_BASE_URL=http://localhost:<port>` |
 | 2026-04-30 | self | Treated `npm run build`/raw `tsc` as clean verification targets, but the repo currently has unrelated blockers: public/page `sitemap.xml` conflict and TS 6 deprecation errors for `target=ES5`/`baseUrl` | For unrelated app changes, run lint and focused runtime/e2e checks; only expect full build/typecheck to pass after those repo-level blockers are fixed |
+| 2026-04-30 | self | Initially read only part of the Browser Use skill even though it explicitly requires a full-file read before browser actions | When Browser Use is requested, `cat` the full skill file in one read before the first browser API call |
+| 2026-04-30 | self | Reviewed the cart empty state by accident after a browser click missed the Add to Cart button | For cart UI review in this app, add a product from a visible catalog/search card first, then verify `/cart` contains line items before judging the populated cart layout |
 
 ## User Preferences
 
@@ -25,10 +27,15 @@
 - The live Turso DB for `packages/app` already contains `CultivarReference` and `V2AhsCultivar`; inspect that DB directly before changing `prisma/schema.sqlite.prisma`.
 - `npm run test:e2e` works on this machine once `npx playwright install chromium` has populated `~/Library/Caches/ms-playwright/chromium-1134`.
 - For temporary public scanner checks, `rolling-oaks-agent-test.makon.dev` can route to the local named Cloudflare tunnel and serve `packages/app` on `localhost:3000`; verify the emitted `tunnelID` because `cloudflared tunnel route dns` may use the default config tunnel.
+- The first `/catalog/*` request in a fresh dev worktree can spend ~35s building `.public-data/public-snapshot.*.json`; wait for `public_snapshot_build_succeeded` in the dev log before treating browser navigation timeouts as page failures.
 
 ## Patterns That Don't Work
 
 - Assuming a repo-root `AGENTS.md` or `.codex/napkin.md` exists in this project; check first.
+
+## Session Notes
+
+- 2026-04-30: Enumerated `packages/app/pages` UI routes: index, catalogs, `catalog/[catalog]` (includes `/catalog/search`), dynamic `[listing]`, cart, thanks, blog index, `blog/dorothy-and-toto`, custom `404`. Non-UI: `/api/*`, `sitemap.xml.tsx`, `openapi.json.tsx`, `/sitemap` redirect to API.
 
 ## Domain Notes
 

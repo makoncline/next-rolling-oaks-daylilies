@@ -5,19 +5,15 @@ import { Button, Space } from "components/ui";
 const Paginate: React.FC<{
   page: number;
   pages: number;
-  paginate: {
-    limit: number;
-    page: number;
-  };
-  setPaginate: ({ limit, page }: { limit: number; page: number }) => void;
-
   onPageChange?: () => void;
-}> = ({ page, pages, paginate, setPaginate, onPageChange }) => {
+  label?: string;
+}> = ({
+  page,
+  pages,
+  onPageChange,
+  label = "Catalog Pagination",
+}) => {
   const router = useRouter();
-  const pageArray = [];
-  for (let i = 0; i <= pages; i++) {
-    pageArray.push(i);
-  }
 
   const getPageHref = (newPage: number) => {
     const newQuery = { ...router.query };
@@ -44,15 +40,16 @@ const Paginate: React.FC<{
   };
 
   const handlePageChange = (newPage: number) => {
+    const clampedPage = Math.min(Math.max(newPage, 0), pages);
     if (onPageChange) {
       onPageChange();
     }
     const newQuery = { ...router.query };
     delete newQuery.catalog;
-    if (newPage === 0) {
+    if (clampedPage === 0) {
       delete newQuery.page;
     } else {
-      newQuery.page = String(newPage + 1);
+      newQuery.page = String(clampedPage + 1);
     }
     router.replace(
       {
@@ -64,23 +61,29 @@ const Paginate: React.FC<{
         shallow: true,
       }
     );
-    setPaginate({
-      ...paginate,
-      page: newPage,
-    });
   };
+
+  const handlePageSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const requestedPage = Number(formData.get("page"));
+    if (Number.isFinite(requestedPage)) {
+      handlePageChange(requestedPage - 1);
+    }
+  };
+
   const previousPage = page > 0 ? page - 1 : 0;
   const nextPage = page + 1 <= pages ? page + 1 : pages;
 
   return (
-    <nav aria-label="Catalog pagination">
+    <nav aria-label={label}>
       <Space block center className="justify-between">
         <Button
           as="a"
           href={getPageHref(previousPage)}
           rel={page > 0 ? "prev" : undefined}
           className="shrink-0"
-          aria-label="previous page"
+          aria-label={`${label} Previous Page`}
           onClick={(event) => {
             event.preventDefault();
             handlePageChange(previousPage);
@@ -88,30 +91,33 @@ const Paginate: React.FC<{
         >
           ⬅
         </Button>
-        <Space center gap="xsmall" className="min-w-0 flex-1 sm:flex-none">
+        <form
+          className="flex min-w-0 flex-1 items-center justify-center gap-2 sm:flex-none"
+          onSubmit={handlePageSubmit}
+        >
           <span className="shrink-0">Page</span>
-          <select
-            aria-label="page select"
-            className="w-24 min-w-0 sm:w-28"
-            onChange={(e) => handlePageChange(parseInt(e.target.value))}
-            value={page}
-          >
-            {pageArray &&
-              pageArray.length &&
-              pageArray.map((i) => (
-                <option key={i} value={i}>
-                  {i + 1}
-                </option>
-              ))}
-          </select>
+          <input
+            key={page}
+            aria-label={`${label} Page Number`}
+            className="w-20 min-w-0"
+            defaultValue={page + 1}
+            inputMode="numeric"
+            max={pages + 1}
+            min={1}
+            name="page"
+            type="number"
+          />
           <span className="shrink-0">of {pages + 1}</span>
-        </Space>
+          <Button type="submit" className="shrink-0">
+            Go
+          </Button>
+        </form>
         <Button
           as="a"
           href={getPageHref(nextPage)}
           rel={page < pages ? "next" : undefined}
           className="shrink-0"
-          aria-label="next forward"
+          aria-label={`${label} Next Page`}
           onClick={(event) => {
             event.preventDefault();
             handlePageChange(nextPage);
