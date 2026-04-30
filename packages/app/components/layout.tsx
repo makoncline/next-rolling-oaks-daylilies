@@ -51,8 +51,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           name="twitter:image:alt"
           content={`${title} logo`}
         />
+        <meta key="theme-color" name="theme-color" content="#1b2733" />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
+      <a className="skip-link" href="#main-content">
+        Skip to Main Content
+      </a>
       <div className="sticky top-0 z-10 bg-ro-bg/90">
         <header className="mx-auto w-full max-w-content px-5 sm:px-8">
           <Nav
@@ -60,14 +64,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <Link href="/">
                 <Image
                   src={logo}
-                  alt="logo"
+                  alt="Rolling Oaks Daylilies"
                   placeholder="blur"
                   width={64}
                   height={64}
-                  style={{
-                    maxWidth: "100%",
-                    height: "auto",
-                  }}
+                  style={{ width: "auto", height: "auto" }}
                 />
               </Link>
             }
@@ -80,7 +81,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </Nav>
         </header>
       </div>
-      <main className="mx-auto flex w-full max-w-content flex-col items-stretch gap-4 px-5 py-6 text-left sm:px-8">
+      <main
+        id="main-content"
+        className="mx-auto flex w-full max-w-content flex-col items-stretch gap-4 px-5 py-6 text-left sm:px-8"
+      >
         {children}
       </main>
     </>

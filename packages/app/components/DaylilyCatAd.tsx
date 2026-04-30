@@ -5,7 +5,7 @@ export const DaylilyCatalogAd = () => {
   return (
     <div className="mt-12 flex w-full justify-center">
       <Alert type="success">
-        <Alert.Heading>Build Your Own Daylily Website!</Alert.Heading>
+        <Alert.Heading level={2}>Build Your Own Daylily Website</Alert.Heading>
         <p>
           With DaylilyCatalog.com, you can build your own daylily website and
           share your flowers with the world. With our easy-to-use tools, you can
@@ -19,7 +19,7 @@ export const DaylilyCatalogAd = () => {
           styleType="primary"
           block
         >
-          Get Started For Free!
+          Get Started for Free
         </Button>
       </Alert>
     </div>

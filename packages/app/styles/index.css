@@ -19,6 +19,7 @@
   html {
     background: var(--ro-bg);
     color: var(--ro-text);
+    color-scheme: dark;
     scroll-behavior: smooth;
   }
 
@@ -50,6 +51,10 @@
     overflow-wrap: anywhere;
   }
 
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
   h1 {
     font-size: 3rem;
   }
@@ -74,6 +79,7 @@
   a[href] {
     color: #8dbcf5;
     text-decoration: none;
+    touch-action: manipulation;
   }
 
   a[href]:hover {
@@ -92,15 +98,30 @@
     padding: 0.5rem 0.75rem;
   }
 
-  input:focus,
-  textarea:focus,
-  select:focus {
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  button:focus-visible,
+  a[href]:focus-visible {
     outline: 2px solid var(--ro-blue);
     outline-offset: 2px;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   table {
     border-collapse: collapse;
+  }
+
+  button,
+  select,
+  input,
+  textarea {
+    touch-action: manipulation;
   }
 
   th,
@@ -157,6 +178,23 @@
     color: var(--ro-text-high);
   }
 
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    z-index: 50;
+    transform: translateY(calc(-100% - 2rem));
+    border: 1px solid var(--ro-blue);
+    border-radius: 0.375rem;
+    background: var(--ro-surface-2);
+    color: var(--ro-text-high);
+    padding: 0.5rem 0.75rem;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
   .badge {
     display: inline-flex;
     width: max-content;
@@ -173,6 +211,28 @@
     height: 1px;
     border: 0;
     background: linear-gradient(135deg, var(--ro-blue), var(--ro-violet));
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 9999px;
+    animation: spinner-rotate 0.75s linear infinite;
+  }
+
+  @keyframes spinner-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner {
+      animation: none;
+    }
   }
 
   .fancy-heading {

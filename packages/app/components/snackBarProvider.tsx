@@ -27,17 +27,18 @@ export const SnackBarProvider = ({
   useEffect(() => {
     if (activeAlertIds.length > 0) {
       const timer = setTimeout(
-        () => setAlerts(() => alerts.slice(0, alerts.length - 1)),
+        () => setAlerts((currentAlerts) => currentAlerts.slice(0, -1)),
         AUTO_DISMISS
       );
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [activeAlertIds, alerts]);
+  }, [activeAlertIds]);
 
   const addAlert = useCallback(
-    (content: string) => setAlerts(() => [content, ...alerts]),
-    [alerts]
+    (content: string) =>
+      setAlerts((currentAlerts) => [content, ...currentAlerts]),
+    []
   );
 
   const value = useMemo(() => ({ addAlert }), [addAlert]);

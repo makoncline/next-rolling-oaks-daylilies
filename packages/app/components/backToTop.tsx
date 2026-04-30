@@ -1,40 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React from "react";
 
-function useScrollPosition(): number {
-  const [percent, setPercent] = useState(0);
+function useHasScrolledPastThreshold(): boolean {
+  const [hasScrolled, setHasScrolled] = React.useState(false);
 
-  function handleScroll(): void {
-    if (
-      document.scrollingElement?.scrollHeight &&
-      document.documentElement.clientHeight
-    ) {
-      const scrollTop =
-        document.scrollingElement.scrollHeight -
+  React.useEffect(() => {
+    let frameId = 0;
+
+    const update = () => {
+      frameId = 0;
+      const scrollableHeight =
+        document.documentElement.scrollHeight -
         document.documentElement.clientHeight;
-      const howFar = document.documentElement.scrollTop / scrollTop;
-      setPercent(howFar);
-    }
-  }
-
-  useEffect(() => {
-    // listen for window scroll event
-    document.addEventListener('scroll', handleScroll);
-    return (): void => {
-      document.removeEventListener('scroll', handleScroll);
+      if (scrollableHeight <= 0) {
+        setHasScrolled(false);
+        return;
+      }
+      setHasScrolled(document.documentElement.scrollTop / scrollableHeight > 0.1);
     };
-  });
 
-  return percent;
+    const handleScroll = () => {
+      if (!frameId) {
+        frameId = window.requestAnimationFrame(update);
+      }
+    };
+
+    update();
+    document.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
+  }, []);
+
+  return hasScrolled;
 }
 
 const BackToTop: React.FC = () => {
-  const percent = useScrollPosition();
+  const hasScrolled = useHasScrolledPastThreshold();
   return (
     <a
-      href="#top"
+      href="#main-content"
+      aria-label="Back to Top"
       title="Back To Top"
       className={`fixed bottom-[1%] right-[1%] hidden cursor-pointer rounded bg-black/50 p-4 text-white no-underline transition-opacity sm:block ${
-        percent > 0.1 ? "opacity-100" : "opacity-0"
+        hasScrolled
+          ? "opacity-100"
+          : "pointer-events-none invisible opacity-0"
       }`}
     >
       &uarr;

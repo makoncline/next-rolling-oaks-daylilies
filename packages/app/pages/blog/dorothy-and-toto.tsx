@@ -19,7 +19,7 @@ const Blog = () => {
           and reblooms. It grows up to 30 inches tall and has 22 buds on 5
           branches. The 6-inch double blooms are fragrant and a mix of rose,
           peach, and cream. The green throat of the flower provides an excellent
-          contrast to the blooms' colors.
+          contrast to the blooms’ colors.
         </p>
         <figure>
           <Image
@@ -36,7 +36,7 @@ const Blog = () => {
 
         <h2>Background History</h2>
         <p>
-          Dorothy and Toto is a hybrid of Night Embers and (Victoria's Secret X
+          Dorothy and Toto is a hybrid of Night Embers and (Victoria’s Secret X
           sdlg). It has earned several awards from the American Hemerocallis
           Society, including the Stout Silver Medal in 2015, the Award of Merit
           in 2012, and the Honorable Mention in 2009.
@@ -73,8 +73,8 @@ const Blog = () => {
         <p>
           The Dorothy and Toto daylily is a must-have for any daylily
           enthusiast. Its beautiful blooms, pleasant fragrance, and multiple
-          awards make it an excellent addition to any garden. If you're looking
-          for a daylily that is both beautiful and easy to care for, you can't
+          awards make it an excellent addition to any garden. If you’re looking
+          for a daylily that is both beautiful and easy to care for, you can’t
           go wrong with Dorothy and Toto.
         </p>
       </article>

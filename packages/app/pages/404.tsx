@@ -6,9 +6,9 @@ const Page404: React.FC = () => {
   return (
     <Layout>
       <Alert type="danger">
-        <Alert.Heading>Uh-Oh!</Alert.Heading>
+        <Alert.Heading>Page Not Found</Alert.Heading>
         <Alert.Body>
-          <p>This page does not exist!</p>
+          <p>This page does not exist.</p>
         </Alert.Body>
       </Alert>
     </Layout>

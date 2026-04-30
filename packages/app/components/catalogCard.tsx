@@ -8,6 +8,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getImageUrls } from "./Image";
+import { formatNumber } from "../lib/format";
 
 export const CatalogCard = ({
   slug,
@@ -15,12 +16,14 @@ export const CatalogCard = ({
   name,
   intro,
   numListings,
+  priority = false,
 }: {
   slug: string;
   image: string;
   name: string;
   intro?: string | null;
   numListings: number;
+  priority?: boolean;
 }) => {
   const images = getImageUrls(image);
   return (
@@ -28,22 +31,23 @@ export const CatalogCard = ({
       <Image
         src={images.full}
         alt={`${name} catalog image`}
-        priority
         width={288}
         height={288}
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
         className="h-72 w-72 object-cover"
         unoptimized
       />
       <Space block direction="column" className="items-start p-4">
-        <Heading level={3}>{name}</Heading>
+        <Heading level={2}>{name}</Heading>
         <PropertyList divider>
           <PropertyListItem label="# Listings">
-            {numListings.toLocaleString()}
+            {formatNumber(numListings)}
           </PropertyListItem>
         </PropertyList>
         {intro && <p>{intro}</p>}
         <Link href={`/catalog/${slug}`} passHref>
-          View Catalog
+          View {name} Catalog
         </Link>
       </Space>
     </article>

@@ -7,7 +7,7 @@ const Blog = () => {
       title: "Dorothy and Toto",
       slug: "dorothy-and-toto",
       description:
-        '"Dorothy and Toto" is a stunning daylily that has won numerous awards, including the Stout Silver Medal, the highest award for a daylily. This semi-evergreen plant produces big, fluffy double blooms that are a beautiful mix of rose, peach, and cream. In this blog post, we\'ll explore the background history of this daylily, its characteristics, and its accolades. We\'ll also include some stunning photos of "Dorothy and Toto" from various gardens around the world.',
+        "“Dorothy and Toto” is a stunning daylily that has won numerous awards, including the Stout Silver Medal, the highest award for a daylily. This semi-evergreen plant produces big, fluffy double blooms that are a beautiful mix of rose, peach, and cream. In this blog post, we’ll explore the background history of this daylily, its characteristics, and its accolades. We’ll also include some stunning photos of “Dorothy and Toto” from various gardens around the world.",
     },
   ];
   return (
