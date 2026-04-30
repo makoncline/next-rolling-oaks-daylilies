@@ -9,11 +9,5 @@
   },
   "workspaces": [
     "packages/app"
-  ],
-  "dependencies": {
-    "@libsql/client": "^0.8.1",
-    "@prisma/adapter-libsql": "^6.5.0",
-    "@prisma/client": "^6.5.0",
-    "prisma": "^6.5.0"
-  }
+  ]
 }

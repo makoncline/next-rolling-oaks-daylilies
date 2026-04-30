@@ -14,7 +14,7 @@ export const getImageUrls = (inputSrc: string) => {
     full: inputSrc,
   };
   try {
-    let isPlaceholder = inputSrc.includes(PLACEHOLDER_URL);
+    const isPlaceholder = inputSrc.includes(PLACEHOLDER_URL);
     const inputSrcUrl = new URL(inputSrc);
     const { hostname, pathname } = inputSrcUrl;
     const shouldUseResizedImage = S3_BUCKET_HOST_NAMES.includes(hostname);

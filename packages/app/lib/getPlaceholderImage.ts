@@ -1,2 +1,1 @@
-export const getPlaceholderImageUrl = (seed?: string | null) =>
-  "/assets/placeholder.png";
+export const PLACEHOLDER_IMAGE_URL = "/assets/placeholder.png";

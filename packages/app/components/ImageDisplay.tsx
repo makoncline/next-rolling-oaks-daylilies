@@ -1,11 +1,11 @@
 import React from "react";
 import Image from "next/image";
-import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
+import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import { getImageUrls } from "./Image";
 
 function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
   const [imageIndex, setImageIndex] = React.useState(0);
-  const imageUrl = imageUrls[imageIndex] || getPlaceholderImageUrl();
+  const imageUrl = imageUrls[imageIndex] || PLACEHOLDER_IMAGE_URL;
   const images = getImageUrls(imageUrl);
   return (
     <div

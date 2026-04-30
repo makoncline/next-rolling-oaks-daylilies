@@ -10,7 +10,7 @@ type SpaceProps = {
   center?: boolean;
   responsive?: boolean;
   block?: boolean;
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
   className?: string;
 } & React.HTMLAttributes<HTMLElement>;
 
@@ -108,7 +108,7 @@ type ButtonProps = {
   block?: boolean;
   styleType?: "primary" | "default";
   danger?: boolean;
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
   className?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement> &
   React.AnchorHTMLAttributes<HTMLAnchorElement>;
@@ -133,7 +133,7 @@ export const Button = React.forwardRef<HTMLElement, ButtonProps>(
         ...props,
         ref,
         type: as === "button" ? type || "button" : undefined,
-          className: cx(
+        className: cx(
           "btn",
           styleType === "primary" && "btn-primary",
           danger && "btn-danger",

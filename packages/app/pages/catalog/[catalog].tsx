@@ -5,7 +5,7 @@ import BackToTop from "../../components/backToTop";
 import download from "../../lib/download";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
-import { GetStaticProps, NextPage } from "next";
+import type { GetStaticProps, NextPage } from "next";
 import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
 import { sortTitlesLettersBeforeNumbers } from "../../lib/sort";
@@ -16,14 +16,13 @@ import {
   Heading,
   Space,
 } from "components/ui";
-import { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { parseLeadingNumber } from "../../lib/cultivarDisplay";
 import {
   getCatalogListings,
   getPublicSnapshot,
-  PublicListRef,
-  PublicListingCard,
+  type PublicListRef,
+  type PublicListingCard,
 } from "../../lib/publicSnapshot";
 
 type Props = {
@@ -32,32 +31,32 @@ type Props = {
   listings: DisplayListing[];
 };
 
-const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  title,
-  description,
-  listings,
-}) => {
-  const defaultFilters = {
-    name: "",
-    list: "",
-    char: "",
-    hybridizer: "",
-    year: "",
-    ploidy: "",
-    color: "",
-    form: "",
-    foliageType: "",
-    note: "",
-    fragrance: "",
-    bloomSize: "",
-    scapeHeight: "",
-    bloomSeason: "",
-    price: "",
-    page: 0,
-  };
+const defaultFilters = {
+  name: "",
+  list: "",
+  char: "",
+  hybridizer: "",
+  year: "",
+  ploidy: "",
+  color: "",
+  form: "",
+  foliageType: "",
+  note: "",
+  fragrance: "",
+  bloomSize: "",
+  scapeHeight: "",
+  bloomSeason: "",
+  price: "",
+  page: 0,
+};
+
+type Filters = typeof defaultFilters;
+
+const SearchPage: NextPage<Props> = ({ title, description, listings }) => {
   const router = useRouter();
   const { query, pathname, isReady } = router;
   const [filters, setFilters] = useState(defaultFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     if (isReady) {
@@ -82,12 +81,11 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       }));
     }
     if (isReady) {
-      const { catalog, page, ...rest } = query;
-      const queryKeys = Object.keys(rest);
-      setShowFilters(queryKeys.length > 0);
+      setShowFilters(
+        Object.keys(query).some((key) => key !== "catalog" && key !== "page")
+      );
     }
   }, [query, pathname, isReady]);
-  const [showFilters, setShowFilters] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -889,9 +887,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               page={filters.page}
               pages={pages || 0}
               paginate={{ page: filters.page, limit: pageLimit }}
-              setPaginate={({ page, limit }) =>
-                setFilters({ ...filters, page })
-              }
+              setPaginate={({ page }) => setFilters({ ...filters, page })}
               onPageChange={handlePageChange}
             />
           )}
@@ -912,7 +908,7 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             page={filters.page}
             pages={pages || 0}
             paginate={{ page: filters.page, limit: pageLimit }}
-            setPaginate={({ page, limit }) => setFilters({ ...filters, page })}
+            setPaginate={({ page }) => setFilters({ ...filters, page })}
             onPageChange={handlePageChange}
           />
         )}
@@ -926,12 +922,12 @@ const SearchPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 };
 export default SearchPage;
 
-const useSearchChange = (numResults: number, filters: any) => {
+const useSearchChange = (numResults: number, filters: Filters) => {
   const [prevNum, setPrevNum] = React.useState(numResults);
   const addAlert = useSnackBar().addAlert;
   useEffect(() => {
     if (numResults !== prevNum) {
-      addAlert && addAlert(`${numResults.toLocaleString()} results`);
+      addAlert?.(`${numResults.toLocaleString()} results`);
       setPrevNum(numResults);
     }
   }, [addAlert, filters, numResults, prevNum]);
@@ -948,8 +944,17 @@ type DisplayListing = PublicListingCard;
 
 export type ListingType = DisplayListing;
 
-export const getStaticProps: GetStaticProps<Props> = async (context: any) => {
-  const catalog = context.params.catalog;
+export const getStaticProps: GetStaticProps<
+  Props,
+  { catalog: string }
+> = async (context) => {
+  const catalog = context.params?.catalog;
+  if (!catalog) {
+    return {
+      notFound: true,
+    };
+  }
+
   const snapshot = await getPublicSnapshot();
   const list = snapshot.catalogsBySlug[catalog];
 

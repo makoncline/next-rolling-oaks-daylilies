@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { formatDistanceToNow } from "date-fns";
+import type { GetStaticProps } from "next";
 import Head from "next/head";
 import cart from "@iconify/icons-ic/round-shopping-cart";
 import Layout from "../components/layout";
@@ -18,8 +19,8 @@ import {
   PropertyListItem,
   Space,
 } from "components/ui";
-import { AhsDisplay } from "../lib/cultivarDisplay";
-import { getPublicSnapshot, PublicListingCard } from "../lib/publicSnapshot";
+import type { AhsDisplay } from "../lib/cultivarDisplay";
+import { getPublicSnapshot, type PublicListingCard } from "../lib/publicSnapshot";
 
 const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
   hybridizer: "Hybridizer",
@@ -44,7 +45,7 @@ const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
 
 const getKeyValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
 
-function objectKeys<T extends {}>(obj: T): Array<keyof T> {
+function objectKeys<T extends object>(obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>;
 }
 
@@ -214,8 +215,17 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(context: any) {
-  const slug = context.params.listing;
+export const getStaticProps: GetStaticProps<
+  { listing: DisplayListing },
+  { listing: string }
+> = async (context) => {
+  const slug = context.params?.listing;
+  if (!slug) {
+    return {
+      notFound: true,
+    };
+  }
+
   const snapshot = await getPublicSnapshot();
   const listing = snapshot.detailsBySlug[slug];
 
@@ -231,4 +241,4 @@ export async function getStaticProps(context: any) {
     },
     revalidate: 900,
   };
-}
+};

@@ -11,6 +11,7 @@ import {
 
 const SNAPSHOT_SCHEMA_VERSION = 1;
 const HIDDEN_STATUS = "HIDDEN";
+const LISTING_BATCH_SIZE = 900;
 export const PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS = 60 * 60;
 export const PUBLIC_SNAPSHOT_MAX_STALE_SECONDS = 24 * 60 * 60;
 
@@ -119,6 +120,34 @@ const visibleListingWhere = {
   OR: [{ status: null }, { NOT: { status: HIDDEN_STATUS } }],
 };
 
+const fetchVisibleListings = async () => {
+  const listings = [];
+
+  for (let skip = 0; ; skip += LISTING_BATCH_SIZE) {
+    const batch = await prisma.listing.findMany({
+      where: visibleListingWhere,
+      include: {
+        cultivarReference: {
+          include: fullCultivarReferenceInclude,
+        },
+        images: {
+          orderBy: { order: "asc" },
+        },
+        lists: true,
+      },
+      orderBy: { id: "asc" },
+      skip,
+      take: LISTING_BATCH_SIZE,
+    });
+
+    listings.push(...batch);
+
+    if (batch.length < LISTING_BATCH_SIZE) {
+      return listings;
+    }
+  }
+};
+
 const toPublicImage = (image: { id: string; url: string; order: number }) => ({
   id: image.id,
   url: image.url,
@@ -190,18 +219,7 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       where: { userId: siteConfig.userId },
       orderBy: { title: "asc" },
     }),
-    prisma.listing.findMany({
-      where: visibleListingWhere,
-      include: {
-        cultivarReference: {
-          include: fullCultivarReferenceInclude,
-        },
-        images: {
-          orderBy: { order: "asc" },
-        },
-        lists: true,
-      },
-    }),
+    fetchVisibleListings(),
   ]);
 
   const listRefsById = Object.fromEntries(

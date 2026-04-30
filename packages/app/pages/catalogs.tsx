@@ -3,7 +3,7 @@ import Layout from "../components/layout";
 import { CatalogCard } from "../components/catalogCard";
 import { NextPage } from "next";
 import { Heading } from "components/ui";
-import { getPlaceholderImageUrl } from "lib/getPlaceholderImage";
+import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import { getPublicSnapshot, PublicCatalogSummary } from "../lib/publicSnapshot";
 
 const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
@@ -15,7 +15,7 @@ const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
       {catalogs.map((node) => (
         <CatalogCard
           key={node.slug}
-          image={node.image || getPlaceholderImageUrl(node.slug)}
+          image={node.image || PLACEHOLDER_IMAGE_URL}
           name={node.name}
           intro={node.intro}
           numListings={node.totalCount}
