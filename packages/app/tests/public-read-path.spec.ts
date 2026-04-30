@@ -24,5 +24,6 @@ test("catalog search surfaces v2 hybridizer and image data", async ({ page }) =>
     page.getByRole("heading", { name: "Carbon Black" }).first()
   ).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('img[src*="Carbon_Black"]').first()).toBeVisible();
+  await page.getByRole("button", { name: "Show Search and Filters" }).click();
   await expect(page.locator('select option[value="Reimer"]')).toHaveCount(1);
 });
