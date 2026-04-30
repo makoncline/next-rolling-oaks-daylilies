@@ -20,11 +20,7 @@ type ContactFormProps = {
 const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
   const router = useRouter();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const [formStartedAt, setFormStartedAt] = React.useState("");
-
-  React.useEffect(() => {
-    setFormStartedAt(String(Date.now()));
-  }, []);
+  const formStartedAt = React.useRef(String(Date.now()));
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -66,7 +62,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
         <input
           type="hidden"
           name="form-started-at"
-          value={formStartedAt}
+          value={formStartedAt.current}
           readOnly
         />
         <Field name="name" required>

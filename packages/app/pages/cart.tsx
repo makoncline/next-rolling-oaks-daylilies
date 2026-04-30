@@ -87,11 +87,7 @@ const CartForm = () => {
   const { numItems, shipping, cart, total } = useCart();
   const router = useRouter();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const [formStartedAt, setFormStartedAt] = React.useState("");
-
-  React.useEffect(() => {
-    setFormStartedAt(String(Date.now()));
-  }, []);
+  const formStartedAt = React.useRef(String(Date.now()));
 
   const cartText = () => {
     if (!numItems) return null;
@@ -149,7 +145,7 @@ const CartForm = () => {
         <input
           type="hidden"
           name="form-started-at"
-          value={formStartedAt}
+          value={formStartedAt.current}
           readOnly
         />
         <Field name="name" required>
