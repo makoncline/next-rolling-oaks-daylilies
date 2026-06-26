@@ -4,6 +4,7 @@ import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import type { PublicImage } from "lib/publicSnapshot";
 import {
   getBlurPlaceholderStyle,
+  getDevImageRevealClassName,
   getImageUrls,
   type ImageSource,
 } from "./Image";
@@ -38,6 +39,7 @@ function ImageDisplay({
             priority
             fill
             sizes="600px"
+            className={getDevImageRevealClassName(imageSource)}
             style={{
               objectFit: "cover",
             }}
@@ -72,6 +74,7 @@ function ImageDisplay({
                 aria-hidden="true"
                 fill
                 sizes="200px"
+                className={getDevImageRevealClassName(source)}
                 style={{
                   objectFit: "cover",
                 }}

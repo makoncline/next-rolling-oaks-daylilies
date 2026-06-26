@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   getBlurPlaceholderStyle,
+  getDevImageRevealClassName,
   getImageUrls,
   type ImageSource,
 } from "./Image";
@@ -54,7 +55,7 @@ export const CatalogCard = ({
           priority={priority}
           loading={priority ? undefined : "lazy"}
           sizes="288px"
-          className="object-cover"
+          className={`object-cover ${getDevImageRevealClassName(image) || ""}`}
           unoptimized
         />
       </div>

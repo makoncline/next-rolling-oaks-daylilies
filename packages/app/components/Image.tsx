@@ -45,3 +45,13 @@ export const getBlurPlaceholderStyle = (
     backgroundSize: "cover",
   };
 };
+
+export const getDevImageRevealClassName = (inputSrc: ImageSource) => {
+  const source = toImageSource(inputSrc);
+
+  if (process.env.NODE_ENV !== "development" || !source.blurUrl) {
+    return undefined;
+  }
+
+  return "ro-dev-image-reveal";
+};

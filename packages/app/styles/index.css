@@ -343,3 +343,16 @@
     font-weight: 700;
   }
 }
+
+@layer utilities {
+  @keyframes ro-dev-image-reveal {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .ro-dev-image-reveal {
+    opacity: 0;
+    animation: ro-dev-image-reveal 1ms linear 1s forwards;
+  }
+}

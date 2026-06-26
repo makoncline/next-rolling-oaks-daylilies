@@ -10,6 +10,7 @@ import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import Image from "next/image";
 import {
   getBlurPlaceholderStyle,
+  getDevImageRevealClassName,
   getImageUrls,
   type ImageSource,
 } from "./Image";
@@ -57,6 +58,7 @@ const LilyCard = ({
             priority={priority}
             loading={priority ? undefined : "lazy"}
             sizes="600px"
+            className={getDevImageRevealClassName(imageSource)}
             style={{
               objectFit: "cover",
             }}
