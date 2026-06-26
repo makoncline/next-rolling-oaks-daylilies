@@ -1,4 +1,4 @@
-import type { ImageProps } from "next/image";
+import type { CSSProperties } from "react";
 
 export type ImageSource =
   | string
@@ -30,17 +30,18 @@ export const getImageUrls = (inputSrc: ImageSource) => {
   };
 };
 
-export const getBlurImageProps = (
+export const getBlurPlaceholderStyle = (
   inputSrc: ImageSource
-): Pick<ImageProps, "placeholder" | "blurDataURL"> => {
+): CSSProperties | undefined => {
   const source = toImageSource(inputSrc);
 
   if (!source.blurUrl) {
-    return {};
+    return undefined;
   }
 
   return {
-    placeholder: "blur",
-    blurDataURL: source.blurUrl,
+    backgroundImage: `url("${source.blurUrl}")`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
   };
 };

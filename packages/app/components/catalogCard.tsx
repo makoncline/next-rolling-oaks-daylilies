@@ -7,7 +7,11 @@ import {
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getBlurImageProps, getImageUrls, type ImageSource } from "./Image";
+import {
+  getBlurPlaceholderStyle,
+  getImageUrls,
+  type ImageSource,
+} from "./Image";
 import { formatNumber } from "../lib/format";
 
 export const CatalogCard = ({
@@ -26,6 +30,7 @@ export const CatalogCard = ({
   priority?: boolean;
 }) => {
   const images = getImageUrls(image);
+  const blurStyle = getBlurPlaceholderStyle(image);
   const introCopy = intro
     ?.replace(/Daylillies/g, "Daylilies")
     .replace(/daylillies/g, "daylilies")
@@ -34,17 +39,25 @@ export const CatalogCard = ({
 
   return (
     <article className="grid w-full grid-cols-1 gap-4 border-b border-ro-muted pb-6 md:grid-cols-[14rem_1fr]">
-      <Image
-        src={images.thumb}
-        alt={`${name} catalog image`}
-        width={288}
-        height={288}
-        priority={priority}
-        loading={priority ? undefined : "lazy"}
-        className="aspect-square w-full max-w-72 justify-self-center object-cover md:max-w-56"
-        unoptimized
-        {...getBlurImageProps(image)}
-      />
+      <div className="relative aspect-square w-full max-w-72 justify-self-center overflow-hidden md:max-w-56">
+        {blurStyle && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 scale-110 blur-lg"
+            style={blurStyle}
+          />
+        )}
+        <Image
+          src={images.thumb}
+          alt={`${name} catalog image`}
+          fill
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
+          sizes="288px"
+          className="object-cover"
+          unoptimized
+        />
+      </div>
       <Space block direction="column" className="items-start">
         <Heading level={2}>{name}</Heading>
         <PropertyList divider>
