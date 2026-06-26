@@ -23,6 +23,8 @@ export default async function handler(
       name: catalog.name,
       intro: catalog.intro,
       image: catalog.image,
+      imageThumbUrl: catalog.imageThumbUrl,
+      imageBlurUrl: catalog.imageBlurUrl,
       totalCount: catalog.totalCount,
       url: `/catalog/${catalog.slug}`,
       apiUrl: `/api/catalog/${catalog.slug}`,

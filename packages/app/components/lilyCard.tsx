@@ -8,7 +8,7 @@ import { useCart } from "./cart";
 import { Button, Heading, Space } from "components/ui";
 import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import Image from "next/image";
-import { getImageUrls } from "./Image";
+import { getBlurImageProps, getImageUrls, type ImageSource } from "./Image";
 import { formatCurrency } from "../lib/format";
 
 const LilyCard = ({
@@ -21,12 +21,12 @@ const LilyCard = ({
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
 
-  const imageUrl =
+  const imageSource: ImageSource =
     lily.images?.length > 0
-      ? lily.images[0].url
+      ? lily.images[0]
       : lily.ahsListing?.ahsImageUrl || PLACEHOLDER_IMAGE_URL;
 
-  const images = getImageUrls(imageUrl);
+  const images = getImageUrls(imageSource);
 
   const cartItem = lily.price && {
     id: lily.id,
@@ -36,7 +36,7 @@ const LilyCard = ({
 
   return (
     <article className="flex w-full max-w-[300px] flex-col gap-4">
-      {imageUrl ? (
+      {imageSource ? (
         <div className="relative aspect-square w-full">
           <Image
             src={images.full}
@@ -49,6 +49,7 @@ const LilyCard = ({
               objectFit: "cover",
             }}
             unoptimized
+            {...getBlurImageProps(imageSource)}
           />
         </div>
       ) : (

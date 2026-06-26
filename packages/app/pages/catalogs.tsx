@@ -16,7 +16,15 @@ const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
       {catalogs.map((node, index) => (
         <CatalogCard
           key={node.slug}
-          image={node.image || PLACEHOLDER_IMAGE_URL}
+          image={
+            node.image
+              ? {
+                  url: node.image,
+                  thumbUrl: node.imageThumbUrl,
+                  blurUrl: node.imageBlurUrl,
+                }
+              : PLACEHOLDER_IMAGE_URL
+          }
           name={node.name}
           intro={node.intro}
           numListings={node.totalCount}

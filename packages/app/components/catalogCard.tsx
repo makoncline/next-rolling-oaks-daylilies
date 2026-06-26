@@ -7,7 +7,7 @@ import {
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getImageUrls } from "./Image";
+import { getBlurImageProps, getImageUrls, type ImageSource } from "./Image";
 import { formatNumber } from "../lib/format";
 
 export const CatalogCard = ({
@@ -19,7 +19,7 @@ export const CatalogCard = ({
   priority = false,
 }: {
   slug: string;
-  image: string;
+  image: ImageSource;
   name: string;
   intro?: string | null;
   numListings: number;
@@ -35,7 +35,7 @@ export const CatalogCard = ({
   return (
     <article className="grid w-full grid-cols-1 gap-4 border-b border-ro-muted pb-6 md:grid-cols-[14rem_1fr]">
       <Image
-        src={images.full}
+        src={images.thumb}
         alt={`${name} catalog image`}
         width={288}
         height={288}
@@ -43,6 +43,7 @@ export const CatalogCard = ({
         loading={priority ? undefined : "lazy"}
         className="aspect-square w-full max-w-72 justify-self-center object-cover md:max-w-56"
         unoptimized
+        {...getBlurImageProps(image)}
       />
       <Space block direction="column" className="items-start">
         <Heading level={2}>{name}</Heading>

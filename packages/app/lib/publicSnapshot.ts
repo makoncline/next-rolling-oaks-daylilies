@@ -22,7 +22,7 @@ import {
   resolveListingPublicImages,
 } from "./imageAssets";
 
-const SNAPSHOT_SCHEMA_VERSION = 2;
+const SNAPSHOT_SCHEMA_VERSION = 3;
 const HIDDEN_STATUS = "HIDDEN";
 const LISTING_BATCH_SIZE = 900;
 const CATALOG_PAGE_SIZE = 24;
@@ -33,6 +33,8 @@ const PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS = 30 * 60 * 1000;
 export type PublicImage = {
   id: string;
   url: string;
+  thumbUrl?: string | null;
+  blurUrl?: string | null;
   order: number;
 };
 
@@ -48,6 +50,8 @@ export type PublicCatalogSummary = {
   name: string;
   intro: string | null;
   image: string | null;
+  imageThumbUrl: string | null;
+  imageBlurUrl: string | null;
   totalCount: number;
   listingIds: string[];
 };
@@ -199,20 +203,25 @@ const pickCatalogImage = (
   slug: string,
   listingIds: string[],
   cardsById: Record<string, PublicListingCard>
-) => {
-  const imageUrls = listingIds
-    .map((listingId) => cardsById[listingId]?.images[0]?.url)
-    .filter(Boolean) as string[];
+): PublicImage | null => {
+  const images = listingIds
+    .map((listingId) => cardsById[listingId]?.images[0])
+    .filter(Boolean) as PublicImage[];
 
-  if (imageUrls.length === 0) {
+  if (images.length === 0) {
     return null;
   }
 
   const imageIndex =
-    hashStringToNumber(`${seed}:${slug}:${imageUrls.length}`) %
-    imageUrls.length;
-  return imageUrls[imageIndex];
+    hashStringToNumber(`${seed}:${slug}:${images.length}`) % images.length;
+  return images[imageIndex];
 };
+
+const catalogImageFields = (image: PublicImage | null) => ({
+  image: image?.url ?? null,
+  imageThumbUrl: image?.thumbUrl ?? null,
+  imageBlurUrl: image?.blurUrl ?? null,
+});
 
 const assertPublicSnapshot = (snapshot: PublicSnapshot) => {
   const listings = Object.values(snapshot.detailsBySlug);
@@ -326,11 +335,8 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       name: "For Sale",
       intro:
         "Daylilies available for purchase. Send me a message to check availability",
-      image: pickCatalogImage(
-        generatedAt,
-        "for-sale",
-        forSaleListingIds,
-        cardsById
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, "for-sale", forSaleListingIds, cardsById)
       ),
       totalCount: forSaleListingIds.length,
       listingIds: forSaleListingIds,
@@ -340,7 +346,9 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       name: "All Rolling Oaks Daylilies",
       intro:
         "View all of my daylilies in a single list. This is a great place to start if you're searching for something specific.",
-      image: pickCatalogImage(generatedAt, "all", allListingIds, cardsById),
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, "all", allListingIds, cardsById)
+      ),
       totalCount: allListingIds.length,
       listingIds: allListingIds,
     },
@@ -348,7 +356,9 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       slug: "search",
       name: "Search",
       intro: "",
-      image: pickCatalogImage(generatedAt, "search", allListingIds, cardsById),
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, "search", allListingIds, cardsById)
+      ),
       totalCount: allListingIds.length,
       listingIds: allListingIds,
     },
@@ -361,7 +371,9 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       slug,
       name: list.title,
       intro: list.description,
-      image: pickCatalogImage(generatedAt, slug, listingIds, cardsById),
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, slug, listingIds, cardsById)
+      ),
       totalCount: listingIds.length,
       listingIds,
     };

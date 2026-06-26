@@ -27,18 +27,34 @@ export type ResolvableImageAsset = {
   id: string;
   legacyImageId: string | null;
   displayUrl: string | null;
-  originalUrl: string | null;
+  thumbUrl: string | null;
+  blurUrl: string | null;
   order: number;
 };
 
 export type ResolvedPublicImage = {
   id: string;
   url: string;
+  thumbUrl?: string | null;
+  blurUrl?: string | null;
   order: number;
 };
 
-const assetUrl = (asset: Pick<ResolvableImageAsset, "displayUrl" | "originalUrl">) =>
-  asset.displayUrl ?? asset.originalUrl;
+const assetToPublicImage = (
+  asset: ResolvableImageAsset,
+  id = asset.id,
+  order = asset.order
+): ResolvedPublicImage | null => {
+  if (!asset.displayUrl) return null;
+
+  return {
+    id,
+    url: asset.displayUrl,
+    thumbUrl: asset.thumbUrl ?? asset.displayUrl,
+    blurUrl: asset.blurUrl,
+    order,
+  };
+};
 
 export const resolveUploadedListingImages = (
   images: ResolvableListingImage[],
@@ -52,27 +68,24 @@ export const resolveUploadedListingImages = (
 
   const legacyImages = images.map((image) => {
     const asset = assetsByLegacyImageId.get(image.id);
+    const assetImage = asset
+      ? assetToPublicImage(asset, image.id, image.order)
+      : null;
+
+    if (assetImage) {
+      return assetImage;
+    }
 
     return {
       id: image.id,
-      url: asset ? assetUrl(asset) ?? image.url : image.url,
+      url: image.url,
       order: image.order,
     };
   });
 
   const directAssetImages = imageAssets
     .filter((asset) => !asset.legacyImageId)
-    .map((asset) => {
-      const url = assetUrl(asset);
-
-      return url
-        ? {
-            id: asset.id,
-            url,
-            order: asset.order,
-          }
-        : null;
-    })
+    .map((asset) => assetToPublicImage(asset))
     .filter(Boolean) as ResolvedPublicImage[];
 
   return [...legacyImages, ...directAssetImages].sort(
@@ -86,12 +99,13 @@ export const resolveCultivarFallbackImage = (
   fallbackUrl?: string | null
 ): ResolvedPublicImage | null => {
   const generatedAsset = generatedAssets[0];
-  const generatedUrl = generatedAsset ? assetUrl(generatedAsset) : null;
+  const generatedImage = generatedAsset
+    ? assetToPublicImage(generatedAsset)
+    : null;
 
-  if (generatedAsset && generatedUrl) {
+  if (generatedImage) {
     return {
-      id: generatedAsset.id,
-      url: generatedUrl,
+      ...generatedImage,
       order: 0,
     };
   }

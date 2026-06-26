@@ -4,6 +4,8 @@ const forbiddenLegacyTransforms = [
   "daylily-wordpress-dev",
   "daylilydatabase",
   "images.daylilycatalog.com",
+  "/original",
+  "original-",
 ];
 
 const getImageSrcs = async (page: import("@playwright/test").Page) =>
@@ -51,10 +53,12 @@ test("listing detail uses generated R2 cultivar image before v2/v1 fallbacks", a
     page,
     "media.daylilycatalog.com/cultivars/cr-ahs-162674"
   );
+  await expectSomeImageSrc(page, "/display-800.webp");
+  await expect(await page.content()).toContain("/blur-");
   await expectNoForbiddenImageSrc(page);
 });
 
-test("catalog search uses the same generated R2 cultivar image", async ({
+test("catalog search uses generated R2 display, thumb, and blur image variants", async ({
   page,
 }) => {
   test.slow();
@@ -71,7 +75,24 @@ test("catalog search uses the same generated R2 cultivar image", async ({
     page,
     "media.daylilycatalog.com/cultivars/cr-ahs-162674"
   );
+  await expectSomeImageSrc(page, "/display-800.webp");
+  await expect(await page.content()).toContain("/blur-");
   await expectNoForbiddenImageSrc(page);
+
+  const response = await page.request.get(
+    "/api/catalog/search?name=A%20Few%20Good%20Men"
+  );
+  expect(response.ok()).toBe(true);
+  const data = await response.json();
+  const listing = data.listings.find(
+    (item: { title: string }) => item.title === "A Few Good Men"
+  );
+  const image = listing?.images?.[0];
+
+  expect(image?.url).toContain("/display-800.webp");
+  expect(image?.thumbUrl).toContain("/thumb-200.webp");
+  expect(image?.blurUrl).toContain("/blur-");
+  expect(JSON.stringify(image)).not.toContain("original");
 });
 
 test("listing detail prefers uploaded listing R2 image asset", async ({
@@ -86,6 +107,8 @@ test("listing detail prefers uploaded listing R2 image asset", async ({
     page,
     "media.daylilycatalog.com/users/3/listing-images/"
   );
+  await expectSomeImageSrc(page, "/display-800.webp");
+  await expect(await page.content()).toContain("/blur-");
   await expectNoForbiddenImageSrc(page);
 });
 
