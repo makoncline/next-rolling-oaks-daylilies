@@ -40,6 +40,14 @@ export type ResolvedPublicImage = {
   order: number;
 };
 
+const isPublicDisplayUrl = (url: string) => {
+  try {
+    return new URL(url).hostname === "media.daylilycatalog.com";
+  } catch {
+    return false;
+  }
+};
+
 const assetToPublicImage = (
   asset: ResolvableImageAsset,
   id = asset.id,
@@ -66,22 +74,28 @@ export const resolveUploadedListingImages = (
       .map((asset) => [asset.legacyImageId, asset])
   );
 
-  const legacyImages = images.map((image) => {
-    const asset = assetsByLegacyImageId.get(image.id);
-    const assetImage = asset
-      ? assetToPublicImage(asset, image.id, image.order)
-      : null;
+  const legacyImages = images
+    .map((image) => {
+      const asset = assetsByLegacyImageId.get(image.id);
+      const assetImage = asset
+        ? assetToPublicImage(asset, image.id, image.order)
+        : null;
 
-    if (assetImage) {
-      return assetImage;
-    }
+      if (assetImage) {
+        return assetImage;
+      }
 
-    return {
-      id: image.id,
-      url: image.url,
-      order: image.order,
-    };
-  });
+      if (!isPublicDisplayUrl(image.url)) {
+        return null;
+      }
+
+      return {
+        id: image.id,
+        url: image.url,
+        order: image.order,
+      };
+    })
+    .filter(Boolean) as ResolvedPublicImage[];
 
   const directAssetImages = imageAssets
     .filter((asset) => !asset.legacyImageId)
