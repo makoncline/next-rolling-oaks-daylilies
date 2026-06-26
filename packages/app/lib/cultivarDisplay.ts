@@ -46,8 +46,32 @@ type V2CultivarDisplaySource = {
   image_url?: string | null;
 };
 
+type LegacyAhsDisplaySource = {
+  name?: string | null;
+  hybridizer?: string | null;
+  year?: string | null;
+  scapeHeight?: string | null;
+  bloomSize?: string | null;
+  bloomSeason?: string | null;
+  ploidy?: string | null;
+  foliageType?: string | null;
+  bloomHabit?: string | null;
+  seedlingNum?: string | null;
+  color?: string | null;
+  form?: string | null;
+  parentage?: string | null;
+  ahsImageUrl?: string | null;
+  fragrance?: string | null;
+  budcount?: string | null;
+  branches?: string | null;
+  sculpting?: string | null;
+  foliage?: string | null;
+  flower?: string | null;
+};
+
 type CultivarReferenceSource = {
   v2AhsCultivar?: V2CultivarDisplaySource | null;
+  ahsListing?: LegacyAhsDisplaySource | null;
 } | null | undefined;
 
 type ListingWithCultivarReference = {
@@ -121,6 +145,29 @@ export const fullCultivarDisplaySelect = {
   image_url: true,
 } satisfies Prisma.V2AhsCultivarSelect;
 
+export const fullLegacyAhsDisplaySelect = {
+  name: true,
+  hybridizer: true,
+  year: true,
+  scapeHeight: true,
+  bloomSize: true,
+  bloomSeason: true,
+  ploidy: true,
+  foliageType: true,
+  bloomHabit: true,
+  seedlingNum: true,
+  color: true,
+  form: true,
+  parentage: true,
+  ahsImageUrl: true,
+  fragrance: true,
+  budcount: true,
+  branches: true,
+  sculpting: true,
+  foliage: true,
+  flower: true,
+} satisfies Prisma.AhsListingSelect;
+
 export const hybridizerCultivarDisplaySelect = {
   primary_hybridizer_name: true,
   additional_hybridizers_names: true,
@@ -130,6 +177,9 @@ export const hybridizerCultivarDisplaySelect = {
 export const fullCultivarReferenceInclude = {
   v2AhsCultivar: {
     select: fullCultivarDisplaySelect,
+  },
+  ahsListing: {
+    select: fullLegacyAhsDisplaySelect,
   },
 } satisfies Prisma.CultivarReferenceInclude;
 
@@ -145,10 +195,11 @@ export function parseLeadingNumber(value?: string | null) {
 }
 
 export function mapV2CultivarToAhsDisplay(
-  cultivar?: V2CultivarDisplaySource | null
+  cultivar?: V2CultivarDisplaySource | null,
+  legacyAhsListing?: LegacyAhsDisplaySource | null
 ): AhsDisplay | null {
   if (!cultivar) {
-    return null;
+    return mapLegacyAhsListingToAhsDisplay(legacyAhsListing);
   }
 
   const unusualForm = trimToNull(cultivar.unusual_forms_names);
@@ -168,13 +219,47 @@ export function mapV2CultivarToAhsDisplay(
     color: trimToNull(cultivar.color),
     form: unusualForm ?? flowerForm,
     parentage: trimToNull(cultivar.parentage),
-    ahsImageUrl: trimToNull(cultivar.image_url),
+    ahsImageUrl:
+      trimToNull(cultivar.image_url) ?? trimToNull(legacyAhsListing?.ahsImageUrl),
     fragrance: trimToNull(cultivar.fragrance_names),
     budcount: formatNumber(cultivar.bud_count),
     branches: formatNumber(cultivar.branches),
     sculpting: null,
     foliage: null,
     flower: unusualForm ? flowerForm : null,
+  };
+
+  return Object.values(display).some(Boolean) ? display : null;
+}
+
+export function mapLegacyAhsListingToAhsDisplay(
+  listing?: LegacyAhsDisplaySource | null
+): AhsDisplay | null {
+  if (!listing) {
+    return null;
+  }
+
+  const display: AhsDisplay = {
+    name: trimToNull(listing.name),
+    hybridizer: trimToNull(listing.hybridizer),
+    year: trimToNull(listing.year),
+    scapeHeight: trimToNull(listing.scapeHeight),
+    bloomSize: trimToNull(listing.bloomSize),
+    bloomSeason: trimToNull(listing.bloomSeason),
+    ploidy: trimToNull(listing.ploidy),
+    foliageType: trimToNull(listing.foliageType),
+    bloomHabit: trimToNull(listing.bloomHabit),
+    seedlingNum: trimToNull(listing.seedlingNum),
+    color: trimToNull(listing.color),
+    form: trimToNull(listing.form),
+    parentage: trimToNull(listing.parentage),
+    ahsImageUrl: trimToNull(listing.ahsImageUrl),
+    fragrance: trimToNull(listing.fragrance),
+    budcount: trimToNull(listing.budcount),
+    branches: trimToNull(listing.branches),
+    sculpting: trimToNull(listing.sculpting),
+    foliage: trimToNull(listing.foliage),
+    flower: trimToNull(listing.flower),
   };
 
   return Object.values(display).some(Boolean) ? display : null;
@@ -187,7 +272,10 @@ export function mapListingCultivarDisplay<T extends ListingWithCultivarReference
 
   return {
     ...rest,
-    ahsListing: mapV2CultivarToAhsDisplay(cultivarReference?.v2AhsCultivar),
+    ahsListing: mapV2CultivarToAhsDisplay(
+      cultivarReference?.v2AhsCultivar,
+      cultivarReference?.ahsListing
+    ),
   } as Omit<T, "cultivarReference"> & {
     ahsListing: AhsDisplay | null;
   };

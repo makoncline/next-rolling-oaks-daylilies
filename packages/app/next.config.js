@@ -19,6 +19,7 @@ const nextConfig = {
         hostname: "daylily-catalog-images-stage.s3.amazonaws.com",
       },
       { protocol: "https", hostname: "images.daylilycatalog.com" },
+      { protocol: "https", hostname: "media.daylilycatalog.com" },
       { protocol: "https", hostname: "www.daylilydatabase.org" },
       { protocol: "https", hostname: "garden.org" },
     ],
