@@ -20,7 +20,11 @@ import {
   Space,
 } from "components/ui";
 import type { AhsDisplay } from "../lib/cultivarDisplay";
-import { getPublicSnapshot, type PublicListingCard } from "../lib/publicSnapshot";
+import {
+  getPublicSnapshot,
+  type PublicImage,
+  type PublicListingCard,
+} from "../lib/publicSnapshot";
 import { formatCurrency, formatShortDate } from "../lib/format";
 
 const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
@@ -90,14 +94,20 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
   const { addOrUpdateProduct } = useCart();
   const addAlert = useSnackBar().addAlert;
 
-  const allImageUrls =
+  const allImages: PublicImage[] =
     images.length > 0
-      ? images.map((img) => img.url)
+      ? images
       : ahsData?.ahsImageUrl
-      ? [ahsData.ahsImageUrl]
+      ? [
+          {
+            id: `${listing.id}:ahs-fallback`,
+            url: ahsData.ahsImageUrl,
+            order: 0,
+          },
+        ]
       : [];
 
-  const image = allImageUrls.length > 0 ? allImageUrls[0] : "";
+  const image = allImages.length > 0 ? allImages[0].url : "";
 
   return (
     <Layout>
@@ -135,7 +145,7 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
       <FancyHeading level={1}>{name}</FancyHeading>
       <Space responsive gap="medium" className="items-start">
         <div className="w-full max-w-72 justify-self-center md:max-w-none">
-          <ImageDisplay imageUrls={allImageUrls} title={name} />
+          <ImageDisplay images={allImages} title={name} />
         </div>
         <Space
           direction="column"

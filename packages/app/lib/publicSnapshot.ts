@@ -16,8 +16,13 @@ import {
   fullCultivarReferenceInclude,
   mapListingCultivarDisplay,
 } from "./cultivarDisplay";
+import {
+  generatedCultivarImageAssetInclude,
+  listingImageAssetInclude,
+  resolveListingPublicImages,
+} from "./imageAssets";
 
-const SNAPSHOT_SCHEMA_VERSION = 1;
+const SNAPSHOT_SCHEMA_VERSION = 3;
 const HIDDEN_STATUS = "HIDDEN";
 const LISTING_BATCH_SIZE = 900;
 const CATALOG_PAGE_SIZE = 24;
@@ -28,6 +33,8 @@ const PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS = 30 * 60 * 1000;
 export type PublicImage = {
   id: string;
   url: string;
+  thumbUrl?: string | null;
+  blurUrl?: string | null;
   order: number;
 };
 
@@ -43,6 +50,8 @@ export type PublicCatalogSummary = {
   name: string;
   intro: string | null;
   image: string | null;
+  imageThumbUrl: string | null;
+  imageBlurUrl: string | null;
   totalCount: number;
   listingIds: string[];
 };
@@ -130,6 +139,15 @@ const isMissingFileError = (error: unknown) =>
 const isFileExistsError = (error: unknown) =>
   error instanceof Error && "code" in error && error.code === "EEXIST";
 
+class PublicSnapshotSchemaVersionError extends Error {
+  constructor() {
+    super("Public snapshot schema version is stale.");
+  }
+}
+
+const isSnapshotSchemaVersionError = (error: unknown) =>
+  error instanceof PublicSnapshotSchemaVersionError;
+
 const visibleListingWhere = {
   userId: siteConfig.userId,
   OR: [{ status: null }, { NOT: { status: HIDDEN_STATUS } }],
@@ -143,8 +161,12 @@ const fetchVisibleListings = async () => {
       where: visibleListingWhere,
       include: {
         cultivarReference: {
-          include: fullCultivarReferenceInclude,
+          include: {
+            ...fullCultivarReferenceInclude,
+            imageAssets: generatedCultivarImageAssetInclude,
+          },
         },
+        imageAssets: listingImageAssetInclude,
         images: {
           orderBy: { order: "asc" },
         },
@@ -162,12 +184,6 @@ const fetchVisibleListings = async () => {
     }
   }
 };
-
-const toPublicImage = (image: { id: string; url: string; order: number }) => ({
-  id: image.id,
-  url: image.url,
-  order: image.order,
-});
 
 const toSitemapDate = (value: string | Date) =>
   new Date(value).toISOString().split("T")[0];
@@ -187,20 +203,25 @@ const pickCatalogImage = (
   slug: string,
   listingIds: string[],
   cardsById: Record<string, PublicListingCard>
-) => {
-  const imageUrls = listingIds
-    .map((listingId) => cardsById[listingId]?.images[0]?.url)
-    .filter(Boolean) as string[];
+): PublicImage | null => {
+  const images = listingIds
+    .map((listingId) => cardsById[listingId]?.images[0])
+    .filter(Boolean) as PublicImage[];
 
-  if (imageUrls.length === 0) {
+  if (images.length === 0) {
     return null;
   }
 
   const imageIndex =
-    hashStringToNumber(`${seed}:${slug}:${imageUrls.length}`) %
-    imageUrls.length;
-  return imageUrls[imageIndex];
+    hashStringToNumber(`${seed}:${slug}:${images.length}`) % images.length;
+  return images[imageIndex];
 };
+
+const catalogImageFields = (image: PublicImage | null) => ({
+  image: image?.url ?? null,
+  imageThumbUrl: image?.thumbUrl ?? null,
+  imageBlurUrl: image?.blurUrl ?? null,
+});
 
 const assertPublicSnapshot = (snapshot: PublicSnapshot) => {
   const listings = Object.values(snapshot.detailsBySlug);
@@ -249,7 +270,21 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
     ])
   );
 
-  const mappedListings = rawListings.map(mapListingCultivarDisplay);
+  const mappedListings = rawListings.map((rawListing) => {
+    const listing = mapListingCultivarDisplay(rawListing);
+
+    return {
+      ...listing,
+      resolvedImages: resolveListingPublicImages({
+        listingId: rawListing.id,
+        images: rawListing.images,
+        imageAssets: rawListing.imageAssets,
+        cultivarImageAssets:
+          rawListing.cultivarReference?.imageAssets ?? [],
+        cultivarFallbackUrl: listing.ahsListing?.ahsImageUrl,
+      }),
+    };
+  });
   const cardsById: Record<string, PublicListingCard> = {};
   const detailsBySlug: Record<string, PublicListingCard> = {};
 
@@ -257,7 +292,7 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
     const listsForListing = listing.lists
       .map((list) => listRefsById[list.id])
       .filter(Boolean);
-    const images = listing.images.map(toPublicImage);
+    const images = listing.resolvedImages;
     const base = {
       id: listing.id,
       userId: listing.userId,
@@ -300,11 +335,8 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       name: "For Sale",
       intro:
         "Daylilies available for purchase. Send me a message to check availability",
-      image: pickCatalogImage(
-        generatedAt,
-        "for-sale",
-        forSaleListingIds,
-        cardsById
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, "for-sale", forSaleListingIds, cardsById)
       ),
       totalCount: forSaleListingIds.length,
       listingIds: forSaleListingIds,
@@ -314,7 +346,9 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       name: "All Rolling Oaks Daylilies",
       intro:
         "View all of my daylilies in a single list. This is a great place to start if you're searching for something specific.",
-      image: pickCatalogImage(generatedAt, "all", allListingIds, cardsById),
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, "all", allListingIds, cardsById)
+      ),
       totalCount: allListingIds.length,
       listingIds: allListingIds,
     },
@@ -322,7 +356,9 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       slug: "search",
       name: "Search",
       intro: "",
-      image: pickCatalogImage(generatedAt, "search", allListingIds, cardsById),
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, "search", allListingIds, cardsById)
+      ),
       totalCount: allListingIds.length,
       listingIds: allListingIds,
     },
@@ -335,7 +371,9 @@ export async function buildPublicSnapshot(): Promise<PublicSnapshot> {
       slug,
       name: list.title,
       intro: list.description,
-      image: pickCatalogImage(generatedAt, slug, listingIds, cardsById),
+      ...catalogImageFields(
+        pickCatalogImage(generatedAt, slug, listingIds, cardsById)
+      ),
       totalCount: listingIds.length,
       listingIds,
     };
@@ -588,7 +626,12 @@ async function readPublicSnapshot() {
 
   if (
     manifest.schemaVersion !== SNAPSHOT_SCHEMA_VERSION ||
-    snapshot.schemaVersion !== SNAPSHOT_SCHEMA_VERSION ||
+    snapshot.schemaVersion !== SNAPSHOT_SCHEMA_VERSION
+  ) {
+    throw new PublicSnapshotSchemaVersionError();
+  }
+
+  if (
     snapshot.version !== manifest.version ||
     snapshot.generatedAt !== manifest.generatedAt ||
     Number.isNaN(new Date(snapshot.generatedAt).getTime())
@@ -610,7 +653,7 @@ export async function getExistingPublicSnapshot() {
   try {
     return await readPublicSnapshot();
   } catch (error) {
-    if (isMissingFileError(error)) {
+    if (isMissingFileError(error) || isSnapshotSchemaVersionError(error)) {
       return null;
     }
 
@@ -631,7 +674,7 @@ export async function getPublicSnapshot(): Promise<PublicSnapshot> {
 
     return snapshot;
   } catch (error) {
-    if (!isMissingFileError(error)) {
+    if (!isMissingFileError(error) && !isSnapshotSchemaVersionError(error)) {
       throw error;
     }
 

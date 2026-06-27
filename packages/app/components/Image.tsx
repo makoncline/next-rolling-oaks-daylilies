@@ -1,36 +1,57 @@
-import { env } from "../env";
+import type { CSSProperties } from "react";
 
-const S3_BUCKET_HOST_NAMES = [
-  "daylily-catalog-images-stage.s3.amazonaws.com",
-  "daylily-catalog-images.s3.amazonaws.com",
-];
-
-const PLACEHOLDER_URL = "boringavatars";
-
-export const getImageUrls = (inputSrc: string) => {
-  const fallback = {
-    blur: "/assets/placeholder.png",
-    thumb: inputSrc,
-    full: inputSrc,
-  };
-  try {
-    const isPlaceholder = inputSrc.includes(PLACEHOLDER_URL);
-    const inputSrcUrl = new URL(inputSrc);
-    const { hostname, pathname } = inputSrcUrl;
-    const shouldUseResizedImage = S3_BUCKET_HOST_NAMES.includes(hostname);
-    if (isPlaceholder || !shouldUseResizedImage) {
-      return fallback;
-    }
-    const filePathNoExt =
-      pathname.substring(0, pathname.lastIndexOf(".")) || pathname;
-    const resizedImagesBaseUrl = `https://${env.NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET}${filePathNoExt}`;
-    const resizedImagesExt = `.webp`;
-    return {
-      blur: `${resizedImagesBaseUrl}-placeholder${resizedImagesExt}`,
-      thumb: `${resizedImagesBaseUrl}-thumb${resizedImagesExt}`,
-      full: `${resizedImagesBaseUrl}${resizedImagesExt}`,
+export type ImageSource =
+  | string
+  | {
+      url: string;
+      thumbUrl?: string | null;
+      blurUrl?: string | null;
     };
-  } catch {
-    return fallback;
+
+const toImageSource = (inputSrc: ImageSource) => {
+  if (typeof inputSrc === "string") {
+    return {
+      url: inputSrc,
+      thumbUrl: null,
+      blurUrl: null,
+    };
   }
+
+  return inputSrc;
+};
+
+export const getImageUrls = (inputSrc: ImageSource) => {
+  const source = toImageSource(inputSrc);
+
+  return {
+    blur: source.blurUrl || "/assets/placeholder.png",
+    thumb: source.thumbUrl || source.url,
+    full: source.url,
+  };
+};
+
+export const getBlurPlaceholderStyle = (
+  inputSrc: ImageSource
+): CSSProperties | undefined => {
+  const source = toImageSource(inputSrc);
+
+  if (!source.blurUrl) {
+    return undefined;
+  }
+
+  return {
+    backgroundImage: `url("${source.blurUrl}")`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+  };
+};
+
+export const getDevImageRevealClassName = (inputSrc: ImageSource) => {
+  const source = toImageSource(inputSrc);
+
+  if (process.env.NODE_ENV !== "development" || !source.blurUrl) {
+    return undefined;
+  }
+
+  return "ro-dev-image-reveal";
 };

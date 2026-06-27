@@ -1,29 +1,124 @@
 import { expect, test } from "@playwright/test";
 
-test("listing detail uses cultivar reference display data for a v2-only listing", async ({
+const forbiddenLegacyTransforms = [
+  "daylily-wordpress-dev",
+  "daylilydatabase",
+  "images.daylilycatalog.com",
+  "/original",
+  "original-",
+];
+
+const getImageSrcs = async (page: import("@playwright/test").Page) =>
+  page.locator("img").evaluateAll((images) =>
+    images.map((image) => {
+      const element = image as HTMLImageElement;
+      return element.currentSrc || element.src || "";
+    })
+  );
+
+const expectSomeImageSrc = async (
+  page: import("@playwright/test").Page,
+  expected: string
+) => {
+  const imageSrcs = await getImageSrcs(page);
+
+  expect(
+    imageSrcs.some((src) => src.includes(expected)),
+    `Expected one image src to include ${expected}. Saw: ${imageSrcs.join(", ")}`
+  ).toBe(true);
+};
+
+const expectNoForbiddenImageSrc = async (
+  page: import("@playwright/test").Page
+) => {
+  const imageSrcs = await getImageSrcs(page);
+
+  for (const forbidden of forbiddenLegacyTransforms) {
+    expect(
+      imageSrcs.some((src) => src.includes(forbidden)),
+      `Expected no image src to include ${forbidden}. Saw: ${imageSrcs.join(", ")}`
+    ).toBe(false);
+  }
+};
+
+test("listing detail uses generated R2 cultivar image before v2/v1 fallbacks", async ({
   page,
 }) => {
   test.slow();
 
-  await page.goto("/carbon-black");
+  await page.goto("/a-few-good-men");
 
-  await expect(page).toHaveTitle(/Carbon Black Daylily/);
-  await expect(page.getByText("Reimer")).toBeVisible();
-  await expect(page.locator('img[src*="Carbon_Black"]').first()).toBeVisible();
+  await expect(page).toHaveTitle(/A Few Good Men Daylily/);
+  await expectSomeImageSrc(
+    page,
+    "media.daylilycatalog.com/cultivars/cr-ahs-162674"
+  );
+  await expectSomeImageSrc(page, "/display-800.webp");
+  await expect(await page.content()).toContain("/blur-");
+  await expectNoForbiddenImageSrc(page);
 });
 
-test("catalog search surfaces v2 hybridizer and image data", async ({ page }) => {
+test("catalog search uses generated R2 display, thumb, and blur image variants", async ({
+  page,
+}) => {
   test.slow();
 
-  await page.goto("/catalog/search?name=Carbon%20Black");
+  await page.goto("/catalog/search?name=A%20Few%20Good%20Men");
 
   await expect(
     page.getByRole("heading", { level: 1, name: "Search", exact: true })
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Carbon Black" }).first()
+    page.getByRole("heading", { name: "A Few Good Men" }).first()
   ).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator('img[src*="Carbon_Black"]').first()).toBeVisible();
-  await page.getByRole("button", { name: "Show Search and Filters" }).click();
-  await expect(page.locator('select option[value="Reimer"]')).toHaveCount(1);
+  await expectSomeImageSrc(
+    page,
+    "media.daylilycatalog.com/cultivars/cr-ahs-162674"
+  );
+  await expectSomeImageSrc(page, "/display-800.webp");
+  await expect(await page.content()).toContain("/blur-");
+  await expectNoForbiddenImageSrc(page);
+
+  const response = await page.request.get(
+    "/api/catalog/search?name=A%20Few%20Good%20Men"
+  );
+  expect(response.ok()).toBe(true);
+  const data = await response.json();
+  const listing = data.listings.find(
+    (item: { title: string }) => item.title === "A Few Good Men"
+  );
+  const image = listing?.images?.[0];
+
+  expect(image?.url).toContain("/display-800.webp");
+  expect(image?.thumbUrl).toContain("/thumb-200.webp");
+  expect(image?.blurUrl).toContain("/blur-");
+  expect(JSON.stringify(image)).not.toContain("original");
+});
+
+test("listing detail prefers uploaded listing R2 image asset", async ({
+  page,
+}) => {
+  test.slow();
+
+  await page.goto("/16-080");
+
+  await expect(page).toHaveTitle(/16-080 Daylily/);
+  await expectSomeImageSrc(
+    page,
+    "media.daylilycatalog.com/users/3/listing-images/"
+  );
+  await expectSomeImageSrc(page, "/display-800.webp");
+  await expect(await page.content()).toContain("/blur-");
+  await expectNoForbiddenImageSrc(page);
+});
+
+test("listing detail falls back to legacy v1 AHS image when no R2 or v2 image exists", async ({
+  page,
+}) => {
+  test.slow();
+
+  await page.goto("/master-and-bold-ruler");
+
+  await expect(page).toHaveTitle(/Master and Bold Ruler Daylily/);
+  await expectSomeImageSrc(page, "www.daylilydatabase.org");
 });
