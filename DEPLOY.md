@@ -12,7 +12,7 @@ This app deploys as a Docker image on a single VPS. Public traffic reaches the c
 - GHCR image: `ghcr.io/makoncline/rolling-oaks-daylilies`
 - Persistent volumes: public snapshot cache at `/app/.public-data`
 
-The container runs the Next.js standalone server from the image. The source repo is not required on the VPS at runtime. Public catalog pages render from a local public-data snapshot stored in persistent storage, not in the immutable image. On startup, the container validates `/app/.public-data/manifest.json`; if it points to an existing snapshot file, Next starts immediately from that snapshot and a refresh runs in the background after `/api/health` responds. If the manifest or snapshot file is missing, startup performs a one-time bootstrap build before Next starts so the first deployment has data.
+The container runs the Next.js standalone server from the image. The source repo is not required on the VPS at runtime. Public catalog pages render from a local public-data snapshot stored in persistent storage, not in the immutable image. On startup, the container validates `/app/.public-data/manifest.json`; if it points to an existing fresh snapshot file, Next starts immediately from that snapshot and the startup background refresh is skipped. If the snapshot is stale, a refresh is requested in the background after `/api/health` responds. If the manifest or snapshot file is missing, startup performs a one-time bootstrap build before Next starts so the first deployment has data.
 
 ## External Services
 
@@ -94,7 +94,7 @@ To verify startup reuse locally:
 1. Remove and recreate an empty test volume: `rm -rf /tmp/rolling-oaks-public-data && mkdir -p /tmp/rolling-oaks-public-data`.
 2. Start the container with `-v /tmp/rolling-oaks-public-data:/app/.public-data`; the logs should include `public_snapshot_missing`, then `public_snapshot_build_succeeded`, then `public_snapshot_manifest_updated`.
 3. Stop the container and start it again with the same volume; the logs should include `public_snapshot_existing_loaded` before Next starts, not a blocking rebuild.
-4. After `/api/health` responds, the logs should include `public_snapshot_background_refresh_started`; `/api/health` reports `publicSnapshot.version`, `generatedAt`, `ageSeconds`, and `refreshing`.
+4. After `/api/health` responds, a fresh snapshot should log `public_snapshot_refresh_skipped` with `reason: "fresh_snapshot"`; a stale snapshot should log `public_snapshot_background_refresh_requested`. `/api/health` reports `publicSnapshot.version`, `generatedAt`, `ageSeconds`, and `refreshing`.
 
 ## VPS Compose
 
@@ -105,8 +105,12 @@ services:
   rolling-oaks-daylilies:
     image: ghcr.io/makoncline/rolling-oaks-daylilies:${IMAGE_TAG}
     restart: unless-stopped
+    mem_limit: 700m
+    memswap_limit: 700m
     env_file:
       - .env
+    environment:
+      NODE_OPTIONS: --max-old-space-size=512
     volumes:
       - ./public-data:/app/.public-data
     networks:
@@ -135,11 +139,11 @@ curl --fail-with-body \
   "http://rolling-oaks-daylilies:3000/api/public-snapshot/refresh?token=${PUBLIC_SNAPSHOT_REFRESH_TOKEN}"
 ```
 
-The app also self-refreshes: every normal container start launches a background refresh after Next is listening, snapshots are fresh for 1 hour, and stale snapshots are served while a background refresh runs. Refreshes take a lock in `PUBLIC_SNAPSHOT_DIR`, write a new snapshot file first, then atomically replace `manifest.json`. If a refresh fails, the app keeps serving the previous snapshot from the `public-data` mount and `/api/health` reports the snapshot age/status.
+The app also self-refreshes: snapshots are fresh for 1 hour, stale snapshot reads request a background refresh, and stale snapshots are served while a background refresh runs. Refreshes take a lock in `PUBLIC_SNAPSHOT_DIR`, write a new snapshot file first, then atomically replace `manifest.json`. If a fetch/network/DNS refresh failure repeats, the app records retry backoff in `refresh-state.json` next to the manifest and keeps serving the previous snapshot from the `public-data` mount. `/api/health` reports the snapshot age/status.
 
 Only one refresh should run at a time across the server process and the startup helper process. If another refresh is already running, the app keeps using the current snapshot.
 
-Snapshot refreshes emit structured JSON logs with `component: "public-snapshot"` and events such as `public_snapshot_existing_loaded`, `public_snapshot_missing`, `public_snapshot_background_refresh_started`, `public_snapshot_build_started`, `public_snapshot_build_succeeded`, `public_snapshot_build_failed`, `public_snapshot_manifest_updated`, `public_snapshot_written`, and `public_snapshot_manual_refresh_requested`. These are intended for VPS log inspection.
+Snapshot refreshes emit structured JSON logs with `component: "public-snapshot"` and events such as `public_snapshot_existing_loaded`, `public_snapshot_missing`, `public_snapshot_background_refresh_requested`, `public_snapshot_refresh_skipped`, `public_snapshot_build_started`, `public_snapshot_build_retry_scheduled`, `public_snapshot_build_succeeded`, `public_snapshot_build_failed`, `public_snapshot_refresh_backoff_updated`, `public_snapshot_manifest_updated`, `public_snapshot_written`, and `public_snapshot_manual_refresh_requested`. These are intended for VPS log inspection.
 
 ## Caddy Route
 
