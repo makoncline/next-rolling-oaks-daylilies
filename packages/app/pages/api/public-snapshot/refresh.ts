@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { refreshPublicSnapshot } from "../../../lib/publicSnapshot";
+import { refreshPublicSnapshotWithResult } from "../../../lib/publicSnapshot";
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,18 +29,37 @@ export default async function handler(
     return;
   }
 
+  const requestedTrigger = Array.isArray(req.query.trigger)
+    ? req.query.trigger[0]
+    : req.query.trigger;
+  const trigger =
+    requestedTrigger === "background" || requestedTrigger === "missing"
+      ? requestedTrigger
+      : "manual";
+  const requestEvents = {
+    background: "public_snapshot_background_refresh_requested",
+    manual: "public_snapshot_manual_refresh_requested",
+    missing: "public_snapshot_missing_refresh_requested",
+  } as const;
+
   console.log(
     JSON.stringify({
-      event: "public_snapshot_manual_refresh_requested",
+      event: requestEvents[trigger],
       service: "rolling-oaks-daylilies",
       component: "public-snapshot",
       timestamp: new Date().toISOString(),
     })
   );
 
-  const snapshot = await refreshPublicSnapshot();
+  const result = await refreshPublicSnapshotWithResult({
+    trigger,
+    force: trigger !== "background",
+  });
+  const { snapshot } = result;
   res.status(200).json({
     ok: true,
+    refreshed: result.status === "built",
+    skippedReason: result.reason,
     version: snapshot.version,
     generatedAt: snapshot.generatedAt,
     counts: snapshot.counts,

@@ -5,6 +5,7 @@ const path = require("path");
 const service = "rolling-oaks-daylilies";
 const component = "public-snapshot";
 const schemaVersion = 3;
+const freshForSeconds = 60 * 60;
 const refreshToken =
   process.env.PUBLIC_SNAPSHOT_REFRESH_TOKEN || "container-startup";
 
@@ -67,12 +68,20 @@ async function getExistingSnapshotManifest() {
   };
 }
 
+function getSnapshotAgeSeconds(manifest) {
+  return Math.max(
+    0,
+    Math.floor((Date.now() - new Date(manifest.generatedAt).getTime()) / 1000)
+  );
+}
+
 async function hasExistingSnapshot() {
   try {
     const manifest = await getExistingSnapshotManifest();
     logPublicSnapshot("public_snapshot_existing_loaded", {
       version: manifest.version,
       generatedAt: manifest.generatedAt,
+      ageSeconds: getSnapshotAgeSeconds(manifest),
       manifestPath: getManifestPath(),
       path: manifest.path,
     });
@@ -86,7 +95,7 @@ async function hasExistingSnapshot() {
   }
 }
 
-async function refreshPublicSnapshot() {
+async function refreshPublicSnapshot(trigger = "manual") {
   let statusCode = 200;
   let body;
 
@@ -94,6 +103,7 @@ async function refreshPublicSnapshot() {
     method: "GET",
     query: {
       token: refreshToken,
+      trigger,
     },
   };
 
@@ -167,13 +177,36 @@ async function bootstrap() {
     return;
   }
 
-  await refreshPublicSnapshot();
+  await refreshPublicSnapshot("missing");
 }
 
 async function backgroundRefresh() {
   await waitForServer();
-  logPublicSnapshot("public_snapshot_background_refresh_started");
-  await refreshPublicSnapshot();
+
+  const manifest = await getExistingSnapshotManifest().catch((error) => {
+    logPublicSnapshot("public_snapshot_missing", {
+      manifestPath: getManifestPath(),
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  });
+
+  if (manifest) {
+    const ageSeconds = getSnapshotAgeSeconds(manifest);
+    if (ageSeconds < freshForSeconds) {
+      logPublicSnapshot("public_snapshot_refresh_skipped", {
+        trigger: "background",
+        reason: "fresh_snapshot",
+        version: manifest.version,
+        generatedAt: manifest.generatedAt,
+        ageSeconds,
+      });
+      return;
+    }
+  }
+
+  logPublicSnapshot("public_snapshot_background_refresh_requested");
+  await refreshPublicSnapshot("background");
 }
 
 const mode = process.argv[2] || "bootstrap";

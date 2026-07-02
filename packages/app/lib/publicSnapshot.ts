@@ -29,6 +29,22 @@ const CATALOG_PAGE_SIZE = 24;
 export const PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS = 60 * 60;
 export const PUBLIC_SNAPSHOT_MAX_STALE_SECONDS = 24 * 60 * 60;
 const PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS = 30 * 60 * 1000;
+const DEFAULT_PUBLIC_SNAPSHOT_BUILD_ATTEMPTS = 3;
+const DEFAULT_PUBLIC_SNAPSHOT_RETRY_INITIAL_DELAY_MS = 5_000;
+const DEFAULT_PUBLIC_SNAPSHOT_RETRY_MAX_DELAY_MS = 60_000;
+const DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_INITIAL_MS = 60_000;
+const DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_MAX_MS = 15 * 60 * 1000;
+const DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_JITTER_RATIO = 0.2;
+const RETRYABLE_PUBLIC_SNAPSHOT_ERROR_CODES = new Set([
+  "EAI_AGAIN",
+  "ENOTFOUND",
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ETIMEDOUT",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_HEADERS_TIMEOUT",
+  "UND_ERR_SOCKET",
+]);
 
 export type PublicImage = {
   id: string;
@@ -100,6 +116,37 @@ type SnapshotManifest = {
   counts: PublicSnapshot["counts"];
 };
 
+type SnapshotRefreshState = {
+  consecutiveFailures: number;
+  lastFailureAt: string;
+  lastError: string;
+  nextAttemptAt: string;
+};
+
+export type PublicSnapshotRefreshTrigger =
+  | "background"
+  | "manual"
+  | "missing"
+  | "script";
+
+export type PublicSnapshotRefreshSkipReason =
+  | "already_refreshing"
+  | "fresh_snapshot"
+  | "backoff_active";
+
+export type PublicSnapshotRefreshResult = {
+  snapshot: PublicSnapshot;
+  status: "built" | "skipped";
+  reason?: PublicSnapshotRefreshSkipReason;
+  attempts?: number;
+  nextAttemptAt?: string;
+};
+
+type PublicSnapshotRefreshOptions = {
+  trigger?: PublicSnapshotRefreshTrigger;
+  force?: boolean;
+};
+
 const logPublicSnapshot = (
   event: string,
   payload: Record<string, unknown> = {}
@@ -121,7 +168,7 @@ let memo:
       snapshot: PublicSnapshot;
     }
   | undefined;
-let refreshInFlight: Promise<PublicSnapshot> | undefined;
+let refreshInFlight: Promise<PublicSnapshotRefreshResult> | undefined;
 
 export const getCatalogSlug = (title: string) =>
   title.toLowerCase().replace(/\s+/g, "-");
@@ -132,6 +179,9 @@ const getSnapshotDir = () =>
 const getManifestPath = () => path.join(getSnapshotDir(), "manifest.json");
 
 const getRefreshLockPath = () => path.join(getSnapshotDir(), "refresh.lock");
+
+const getRefreshStatePath = () =>
+  path.join(getSnapshotDir(), "refresh-state.json");
 
 const isMissingFileError = (error: unknown) =>
   error instanceof Error && "code" in error && error.code === "ENOENT";
@@ -147,6 +197,210 @@ class PublicSnapshotSchemaVersionError extends Error {
 
 const isSnapshotSchemaVersionError = (error: unknown) =>
   error instanceof PublicSnapshotSchemaVersionError;
+
+const parsePositiveInteger = (value: string | undefined, fallback: number) => {
+  const parsed = Number.parseInt(value || "", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const parseNonNegativeNumber = (
+  value: string | undefined,
+  fallback: number
+) => {
+  const parsed = Number.parseFloat(value || "");
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+};
+
+const getRefreshRetryConfig = () => ({
+  buildAttempts: parsePositiveInteger(
+    process.env.PUBLIC_SNAPSHOT_BUILD_ATTEMPTS,
+    DEFAULT_PUBLIC_SNAPSHOT_BUILD_ATTEMPTS
+  ),
+  retryInitialDelayMs: parsePositiveInteger(
+    process.env.PUBLIC_SNAPSHOT_RETRY_INITIAL_DELAY_MS,
+    DEFAULT_PUBLIC_SNAPSHOT_RETRY_INITIAL_DELAY_MS
+  ),
+  retryMaxDelayMs: parsePositiveInteger(
+    process.env.PUBLIC_SNAPSHOT_RETRY_MAX_DELAY_MS,
+    DEFAULT_PUBLIC_SNAPSHOT_RETRY_MAX_DELAY_MS
+  ),
+  backoffInitialMs: parsePositiveInteger(
+    process.env.PUBLIC_SNAPSHOT_BACKOFF_INITIAL_MS,
+    DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_INITIAL_MS
+  ),
+  backoffMaxMs: parsePositiveInteger(
+    process.env.PUBLIC_SNAPSHOT_BACKOFF_MAX_MS,
+    DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_MAX_MS
+  ),
+  backoffJitterRatio: Math.min(
+    1,
+    parseNonNegativeNumber(
+      process.env.PUBLIC_SNAPSHOT_BACKOFF_JITTER_RATIO,
+      DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_JITTER_RATIO
+    )
+  ),
+});
+
+const wait = (delayMs: number) =>
+  new Promise((resolve) => setTimeout(resolve, delayMs));
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+
+const getErrorCode = (error: unknown) => {
+  if (!error || typeof error !== "object" || !("code" in error)) {
+    return null;
+  }
+
+  const code = (error as { code?: unknown }).code;
+  return typeof code === "string" ? code : null;
+};
+
+const getErrorCause = (error: unknown) => {
+  if (!error || typeof error !== "object" || !("cause" in error)) {
+    return null;
+  }
+
+  return (error as { cause?: unknown }).cause ?? null;
+};
+
+const isRetryablePublicSnapshotError = (error: unknown): boolean => {
+  for (
+    let current: unknown = error;
+    current;
+    current = getErrorCause(current)
+  ) {
+    const code = getErrorCode(current);
+    if (code && RETRYABLE_PUBLIC_SNAPSHOT_ERROR_CODES.has(code)) {
+      return true;
+    }
+
+    const message = getErrorMessage(current).toLowerCase();
+    if (
+      message.includes("fetch failed") ||
+      message.includes("getaddrinfo") ||
+      message.includes("network") ||
+      message.includes("dns")
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const getRetryDelayMs = (attempt: number) => {
+  const config = getRefreshRetryConfig();
+  const delay = config.retryInitialDelayMs * 2 ** Math.max(0, attempt - 1);
+  return Math.min(delay, config.retryMaxDelayMs);
+};
+
+const withJitter = (delayMs: number) => {
+  const { backoffJitterRatio } = getRefreshRetryConfig();
+  if (backoffJitterRatio === 0) {
+    return delayMs;
+  }
+
+  const jitterWindow = delayMs * backoffJitterRatio;
+  const jitter = Math.round((Math.random() * 2 - 1) * jitterWindow);
+  return Math.max(1, delayMs + jitter);
+};
+
+const readRefreshState = async (): Promise<SnapshotRefreshState | null> => {
+  try {
+    const state = JSON.parse(
+      await readFile(getRefreshStatePath(), "utf8")
+    ) as SnapshotRefreshState;
+
+    if (
+      typeof state.consecutiveFailures !== "number" ||
+      typeof state.nextAttemptAt !== "string" ||
+      Number.isNaN(new Date(state.nextAttemptAt).getTime())
+    ) {
+      return null;
+    }
+
+    return state;
+  } catch (error) {
+    if (isMissingFileError(error)) {
+      return null;
+    }
+
+    logPublicSnapshot("public_snapshot_refresh_state_ignored", {
+      error: getErrorMessage(error),
+    });
+    return null;
+  }
+};
+
+const writeRefreshState = async (state: SnapshotRefreshState) => {
+  const snapshotDir = getSnapshotDir();
+  await mkdir(snapshotDir, { recursive: true });
+
+  const statePath = getRefreshStatePath();
+  const tmpPath = `${statePath}.tmp`;
+  await writeFile(tmpPath, JSON.stringify(state), "utf8");
+  await rename(tmpPath, statePath);
+};
+
+const clearRefreshState = async () => {
+  await unlink(getRefreshStatePath()).catch((error) => {
+    if (!isMissingFileError(error)) {
+      throw error;
+    }
+  });
+};
+
+const recordRetryableRefreshFailure = async (
+  error: unknown,
+  trigger: PublicSnapshotRefreshTrigger
+) => {
+  const previousState = await readRefreshState();
+  const config = getRefreshRetryConfig();
+  const consecutiveFailures = (previousState?.consecutiveFailures || 0) + 1;
+  const baseDelay = Math.min(
+    config.backoffInitialMs * 2 ** Math.max(0, consecutiveFailures - 1),
+    config.backoffMaxMs
+  );
+  const nextAttemptAt = new Date(Date.now() + withJitter(baseDelay));
+  const state: SnapshotRefreshState = {
+    consecutiveFailures,
+    lastFailureAt: new Date().toISOString(),
+    lastError: getErrorMessage(error),
+    nextAttemptAt: nextAttemptAt.toISOString(),
+  };
+
+  await writeRefreshState(state);
+  logPublicSnapshot("public_snapshot_refresh_backoff_updated", {
+    trigger,
+    consecutiveFailures,
+    nextAttemptAt: state.nextAttemptAt,
+    error: state.lastError,
+  });
+};
+
+const getActiveBackoffState = async () => {
+  const state = await readRefreshState();
+  if (!state) {
+    return null;
+  }
+
+  return Date.now() < new Date(state.nextAttemptAt).getTime() ? state : null;
+};
+
+const getExistingPublicSnapshotForRefresh = async (
+  trigger: PublicSnapshotRefreshTrigger
+) => {
+  try {
+    return await getExistingPublicSnapshot();
+  } catch (error) {
+    logPublicSnapshot("public_snapshot_existing_ignored", {
+      trigger,
+      reason: getErrorMessage(error),
+    });
+    return null;
+  }
+};
 
 const visibleListingWhere = {
   userId: siteConfig.userId,
@@ -570,44 +824,185 @@ async function acquireRefreshLock() {
   };
 }
 
-export async function refreshPublicSnapshot() {
-  if (!refreshInFlight) {
-    refreshInFlight = (async () => {
-      let releaseLock: (() => Promise<void>) | undefined;
+const skippedRefreshResult = (
+  reason: PublicSnapshotRefreshSkipReason,
+  trigger: PublicSnapshotRefreshTrigger,
+  snapshot: PublicSnapshot,
+  payload: Record<string, unknown> = {}
+): PublicSnapshotRefreshResult => {
+  logPublicSnapshot("public_snapshot_refresh_skipped", {
+    trigger,
+    reason,
+    version: snapshot.version,
+    generatedAt: snapshot.generatedAt,
+    ageSeconds: getPublicSnapshotAgeSeconds(snapshot),
+    ...payload,
+  });
 
-      try {
-        releaseLock = await acquireRefreshLock();
-        const snapshot = await buildPublicSnapshot();
-        await writePublicSnapshot(snapshot);
-        return snapshot;
-      } catch (error) {
-        if (isFileExistsError(error)) {
-          const existingSnapshot = await getExistingPublicSnapshot();
-          if (existingSnapshot) {
-            return existingSnapshot;
-          }
-        }
+  return {
+    snapshot,
+    status: "skipped",
+    reason,
+    nextAttemptAt:
+      typeof payload.nextAttemptAt === "string"
+        ? payload.nextAttemptAt
+        : undefined,
+  };
+};
 
-        logPublicSnapshot("public_snapshot_build_failed", {
-          error: error instanceof Error ? error.message : String(error),
+const runPublicSnapshotBuildWithRetries = async (
+  trigger: PublicSnapshotRefreshTrigger
+): Promise<PublicSnapshotRefreshResult> => {
+  const { buildAttempts } = getRefreshRetryConfig();
+
+  for (let attempt = 1; attempt <= buildAttempts; attempt += 1) {
+    try {
+      const snapshot = await buildPublicSnapshot();
+      await writePublicSnapshot(snapshot);
+      await clearRefreshState();
+      return { snapshot, status: "built", attempts: attempt };
+    } catch (error) {
+      const retryable = isRetryablePublicSnapshotError(error);
+      if (retryable && attempt < buildAttempts) {
+        const retryDelayMs = getRetryDelayMs(attempt);
+        logPublicSnapshot("public_snapshot_build_retry_scheduled", {
+          trigger,
+          attempt,
+          maxAttempts: buildAttempts,
+          retryDelayMs,
+          error: getErrorMessage(error),
         });
-        throw error;
-      } finally {
-        if (releaseLock) {
-          await releaseLock();
-        }
+        await wait(retryDelayMs);
+        continue;
       }
-    })().finally(() => {
-      refreshInFlight = undefined;
-    });
+
+      logPublicSnapshot("public_snapshot_build_failed", {
+        trigger,
+        attempt,
+        maxAttempts: buildAttempts,
+        retryable,
+        error: getErrorMessage(error),
+      });
+
+      if (retryable) {
+        await recordRetryableRefreshFailure(error, trigger);
+      }
+
+      throw error;
+    }
   }
 
+  throw new Error("Public snapshot refresh did not complete.");
+};
+
+const startPublicSnapshotRefresh = (
+  trigger: PublicSnapshotRefreshTrigger,
+  force: boolean
+) => {
+  refreshInFlight = (async () => {
+    let releaseLock: (() => Promise<void>) | undefined;
+
+    try {
+      releaseLock = await acquireRefreshLock();
+
+      const latestSnapshot = await getExistingPublicSnapshotForRefresh(trigger);
+      if (!force && latestSnapshot) {
+        const ageSeconds = getPublicSnapshotAgeSeconds(latestSnapshot);
+        if (ageSeconds < PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS) {
+          return skippedRefreshResult(
+            "fresh_snapshot",
+            trigger,
+            latestSnapshot
+          );
+        }
+      }
+
+      return await runPublicSnapshotBuildWithRetries(trigger);
+    } catch (error) {
+      if (isFileExistsError(error)) {
+        const existingSnapshot =
+          await getExistingPublicSnapshotForRefresh(trigger);
+        if (existingSnapshot) {
+          return skippedRefreshResult(
+            "already_refreshing",
+            trigger,
+            existingSnapshot
+          );
+        }
+      }
+
+      throw error;
+    } finally {
+      if (releaseLock) {
+        await releaseLock();
+      }
+    }
+  })().finally(() => {
+    refreshInFlight = undefined;
+  });
+
   return refreshInFlight;
+};
+
+export async function refreshPublicSnapshotWithResult(
+  options: PublicSnapshotRefreshOptions = {}
+): Promise<PublicSnapshotRefreshResult> {
+  const trigger = options.trigger ?? "script";
+  const force = options.force ?? true;
+  const existingSnapshot = await getExistingPublicSnapshotForRefresh(trigger);
+
+  if (refreshInFlight) {
+    if (existingSnapshot) {
+      return skippedRefreshResult(
+        "already_refreshing",
+        trigger,
+        existingSnapshot
+      );
+    }
+
+    return refreshInFlight;
+  }
+
+  if (!force && existingSnapshot) {
+    const ageSeconds = getPublicSnapshotAgeSeconds(existingSnapshot);
+    if (ageSeconds < PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS) {
+      return skippedRefreshResult("fresh_snapshot", trigger, existingSnapshot);
+    }
+  }
+
+  const activeBackoff = await getActiveBackoffState();
+  if (activeBackoff) {
+    if (existingSnapshot) {
+      return skippedRefreshResult("backoff_active", trigger, existingSnapshot, {
+        nextAttemptAt: activeBackoff.nextAttemptAt,
+        consecutiveFailures: activeBackoff.consecutiveFailures,
+        lastError: activeBackoff.lastError,
+      });
+    }
+
+    const error = new Error(
+      `Public snapshot refresh backoff is active until ${activeBackoff.nextAttemptAt}.`
+    );
+    (error as Error & { code?: string }).code = "PUBLIC_SNAPSHOT_BACKOFF_ACTIVE";
+    throw error;
+  }
+
+  return startPublicSnapshotRefresh(trigger, force);
+}
+
+export async function refreshPublicSnapshot(
+  options: PublicSnapshotRefreshOptions = {}
+) {
+  const result = await refreshPublicSnapshotWithResult(options);
+  return result.snapshot;
 }
 
 function refreshPublicSnapshotInBackground() {
-  logPublicSnapshot("public_snapshot_background_refresh_started");
-  return refreshPublicSnapshot();
+  logPublicSnapshot("public_snapshot_background_refresh_requested");
+  return refreshPublicSnapshot({
+    trigger: "background",
+    force: false,
+  });
 }
 
 async function readPublicSnapshot() {
@@ -678,7 +1073,10 @@ export async function getPublicSnapshot(): Promise<PublicSnapshot> {
       throw error;
     }
 
-    return refreshPublicSnapshot();
+    return refreshPublicSnapshot({
+      trigger: "missing",
+      force: true,
+    });
   }
 }
 
@@ -704,6 +1102,11 @@ export async function isPublicSnapshotRefreshing() {
 
     throw error;
   }
+}
+
+export function resetPublicSnapshotStateForTests() {
+  memo = undefined;
+  refreshInFlight = undefined;
 }
 
 export function getPublicSnapshotStatus(snapshot: PublicSnapshot) {
