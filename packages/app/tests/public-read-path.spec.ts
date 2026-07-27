@@ -41,7 +41,7 @@ const expectNoForbiddenImageSrc = async (
   }
 };
 
-test("listing detail uses generated R2 cultivar image before v2/v1 fallbacks", async ({
+test("listing detail uses generated R2 cultivar image before the v2 fallback", async ({
   page,
 }) => {
   test.slow();
@@ -110,15 +110,4 @@ test("listing detail prefers uploaded listing R2 image asset", async ({
   await expectSomeImageSrc(page, "/display-800.webp");
   await expect(await page.content()).toContain("/blur-");
   await expectNoForbiddenImageSrc(page);
-});
-
-test("listing detail falls back to legacy v1 AHS image when no R2 or v2 image exists", async ({
-  page,
-}) => {
-  test.slow();
-
-  await page.goto("/master-and-bold-ruler");
-
-  await expect(page).toHaveTitle(/Master and Bold Ruler Daylily/);
-  await expectSomeImageSrc(page, "www.daylilydatabase.org");
 });

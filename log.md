@@ -1,1 +1,2 @@
 - [2026-07-27] Public snapshot retention: Snapshot publication must atomically replace `manifest.json` before cleanup, preserve the manifest-selected file, and prune only exact lowercase 16-character hash filenames. When changing snapshot writes, keep cleanup non-fatal and retain a bounded rollback set.
+- [2026-07-27] Legacy V1 image retirement: The live public snapshot has no legacy `daylilydatabase.org` images, and V1 AHS image URLs are deprecated. Keep legacy cultivar metadata, but do not select `AhsListing.ahsImageUrl`; preserve only supported V2 and R2 image paths.
