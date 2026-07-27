@@ -20,7 +20,6 @@ const nextConfig = {
       },
       { protocol: "https", hostname: "images.daylilycatalog.com" },
       { protocol: "https", hostname: "media.daylilycatalog.com" },
-      { protocol: "https", hostname: "www.daylilydatabase.org" },
       { protocol: "https", hostname: "garden.org" },
     ],
   },

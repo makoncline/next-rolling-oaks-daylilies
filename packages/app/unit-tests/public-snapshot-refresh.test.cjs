@@ -231,3 +231,76 @@ test("forced refresh rebuilds when the persisted manifest is corrupt", async (t)
   const repairedSnapshot = await publicSnapshot.getExistingPublicSnapshot();
   assert.equal(repairedSnapshot.version, result.snapshot.version);
 });
+
+test("publishing a manifest retains 48 exact snapshot files and preserves unrelated files", async (t) => {
+  const snapshotDir = await setupTestSnapshotDir(t);
+  const rollbackVersions = Array.from({ length: 52 }, (_, index) =>
+    index.toString(16).padStart(16, "0")
+  );
+
+  for (const [index, version] of rollbackVersions.entries()) {
+    const snapshotPath = path.join(
+      snapshotDir,
+      `public-snapshot.${version}.json`
+    );
+    await fs.writeFile(snapshotPath, "rollback", "utf8");
+    const modifiedAt = new Date(Date.UTC(2026, 0, 1, 0, 0, index));
+    await fs.utimes(snapshotPath, modifiedAt, modifiedAt);
+  }
+
+  const unrelatedNames = [
+    "public-snapshot.000000000000000g.json",
+    "public-snapshot.000000000000000.json",
+    "public-snapshot.00000000000000000.json",
+    "public-snapshot.0000000000000000.json.bak",
+    "public-snapshot.json",
+  ];
+  for (const name of unrelatedNames) {
+    await fs.writeFile(path.join(snapshotDir, name), "unrelated", "utf8");
+  }
+
+  const activeVersion = "ffffffffffffffff";
+  await publicSnapshot.writePublicSnapshot(
+    createSnapshot({
+      version: activeVersion,
+      generatedAt: new Date().toISOString(),
+    })
+  );
+
+  const entries = await fs.readdir(snapshotDir, { withFileTypes: true });
+  const retainedSnapshotNames = entries
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        /^public-snapshot\.[a-f0-9]{16}\.json$/.test(entry.name)
+    )
+    .map((entry) => entry.name);
+
+  assert.equal(retainedSnapshotNames.length, 48);
+  assert.ok(
+    retainedSnapshotNames.includes(
+      `public-snapshot.${activeVersion}.json`
+    )
+  );
+
+  for (const version of rollbackVersions.slice(0, 5)) {
+    await assert.rejects(
+      fs.stat(path.join(snapshotDir, `public-snapshot.${version}.json`)),
+      { code: "ENOENT" }
+    );
+  }
+  for (const version of rollbackVersions.slice(5)) {
+    await fs.stat(
+      path.join(snapshotDir, `public-snapshot.${version}.json`)
+    );
+  }
+  for (const name of unrelatedNames) {
+    await fs.stat(path.join(snapshotDir, name));
+  }
+
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(snapshotDir, "manifest.json"), "utf8")
+  );
+  assert.equal(manifest.version, activeVersion);
+  await fs.stat(manifest.path);
+});

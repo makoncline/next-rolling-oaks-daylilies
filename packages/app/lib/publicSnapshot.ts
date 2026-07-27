@@ -3,6 +3,7 @@ import {
   mkdir,
   open,
   readFile,
+  readdir,
   rename,
   stat,
   unlink,
@@ -35,6 +36,9 @@ const DEFAULT_PUBLIC_SNAPSHOT_RETRY_MAX_DELAY_MS = 60_000;
 const DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_INITIAL_MS = 60_000;
 const DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_MAX_MS = 15 * 60 * 1000;
 const DEFAULT_PUBLIC_SNAPSHOT_BACKOFF_JITTER_RATIO = 0.2;
+const PUBLIC_SNAPSHOT_RETAIN_COUNT = 48;
+const PUBLIC_SNAPSHOT_FILE_PATTERN =
+  /^public-snapshot\.[a-f0-9]{16}\.json$/;
 const RETRYABLE_PUBLIC_SNAPSHOT_ERROR_CODES = new Set([
   "EAI_AGAIN",
   "ENOTFOUND",
@@ -775,6 +779,8 @@ export async function writePublicSnapshot(snapshot: PublicSnapshot) {
     manifestPath,
   });
 
+  await prunePublicSnapshots(manifest);
+
   logPublicSnapshot("public_snapshot_written", {
     version: snapshot.version,
     path: finalPath,
@@ -782,6 +788,110 @@ export async function writePublicSnapshot(snapshot: PublicSnapshot) {
   });
 
   memo = undefined;
+}
+
+async function prunePublicSnapshots(manifest: SnapshotManifest) {
+  const snapshotDir = getSnapshotDir();
+  const activePath = path.resolve(manifest.path);
+
+  try {
+    const entries = await readdir(snapshotDir, { withFileTypes: true });
+    const snapshotPaths = entries
+      .filter(
+        (entry) =>
+          entry.isFile() && PUBLIC_SNAPSHOT_FILE_PATTERN.test(entry.name)
+      )
+      .map((entry) => path.join(snapshotDir, entry.name));
+
+    const metadataFailures: Array<{ path: string; error: string }> = [];
+    const candidates = (
+      await Promise.all(
+        snapshotPaths.map(async (snapshotPath) => {
+          try {
+            const snapshotStat = await stat(snapshotPath);
+            return {
+              path: snapshotPath,
+              mtimeMs: snapshotStat.mtimeMs,
+            };
+          } catch (error) {
+            metadataFailures.push({
+              path: snapshotPath,
+              error: getErrorMessage(error),
+            });
+            return null;
+          }
+        })
+      )
+    )
+      .filter(
+        (
+          candidate
+        ): candidate is {
+          path: string;
+          mtimeMs: number;
+        } => candidate !== null
+      )
+      .sort(
+        (left, right) =>
+          right.mtimeMs - left.mtimeMs ||
+          right.path.localeCompare(left.path)
+      );
+
+    const retainedPaths = new Set<string>([activePath]);
+    for (const candidate of candidates) {
+      if (
+        retainedPaths.size >= PUBLIC_SNAPSHOT_RETAIN_COUNT ||
+        path.resolve(candidate.path) === activePath
+      ) {
+        continue;
+      }
+
+      retainedPaths.add(path.resolve(candidate.path));
+    }
+
+    const deleteFailures: Array<{ path: string; error: string }> = [];
+    let deletedCount = 0;
+    for (const candidate of candidates) {
+      if (retainedPaths.has(path.resolve(candidate.path))) {
+        continue;
+      }
+
+      try {
+        await unlink(candidate.path);
+        deletedCount += 1;
+      } catch (error) {
+        deleteFailures.push({
+          path: candidate.path,
+          error: getErrorMessage(error),
+        });
+      }
+    }
+
+    const failures = [...metadataFailures, ...deleteFailures];
+    logPublicSnapshot(
+      failures.length === 0
+        ? "public_snapshot_cleanup_completed"
+        : "public_snapshot_cleanup_incomplete",
+      {
+        activeVersion: manifest.version,
+        matchedCount: snapshotPaths.length,
+        retainedCount: Math.min(
+          candidates.length,
+          PUBLIC_SNAPSHOT_RETAIN_COUNT
+        ),
+        deletedCount,
+        failedCount: failures.length,
+        failures: failures.slice(0, 5),
+        retentionLimit: PUBLIC_SNAPSHOT_RETAIN_COUNT,
+      }
+    );
+  } catch (error) {
+    logPublicSnapshot("public_snapshot_cleanup_failed", {
+      activeVersion: manifest.version,
+      retentionLimit: PUBLIC_SNAPSHOT_RETAIN_COUNT,
+      error: getErrorMessage(error),
+    });
+  }
 }
 
 async function acquireRefreshLock() {

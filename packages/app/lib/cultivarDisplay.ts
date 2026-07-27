@@ -60,7 +60,6 @@ type LegacyAhsDisplaySource = {
   color?: string | null;
   form?: string | null;
   parentage?: string | null;
-  ahsImageUrl?: string | null;
   fragrance?: string | null;
   budcount?: string | null;
   branches?: string | null;
@@ -159,7 +158,6 @@ export const fullLegacyAhsDisplaySelect = {
   color: true,
   form: true,
   parentage: true,
-  ahsImageUrl: true,
   fragrance: true,
   budcount: true,
   branches: true,
@@ -219,8 +217,7 @@ export function mapV2CultivarToAhsDisplay(
     color: trimToNull(cultivar.color),
     form: unusualForm ?? flowerForm,
     parentage: trimToNull(cultivar.parentage),
-    ahsImageUrl:
-      trimToNull(cultivar.image_url) ?? trimToNull(legacyAhsListing?.ahsImageUrl),
+    ahsImageUrl: trimToNull(cultivar.image_url),
     fragrance: trimToNull(cultivar.fragrance_names),
     budcount: formatNumber(cultivar.bud_count),
     branches: formatNumber(cultivar.branches),
@@ -253,7 +250,7 @@ export function mapLegacyAhsListingToAhsDisplay(
     color: trimToNull(listing.color),
     form: trimToNull(listing.form),
     parentage: trimToNull(listing.parentage),
-    ahsImageUrl: trimToNull(listing.ahsImageUrl),
+    ahsImageUrl: null,
     fragrance: trimToNull(listing.fragrance),
     budcount: trimToNull(listing.budcount),
     branches: trimToNull(listing.branches),
