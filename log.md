@@ -1,0 +1,1 @@
+- [2026-07-27] Public snapshot retention: Snapshot publication must atomically replace `manifest.json` before cleanup, preserve the manifest-selected file, and prune only exact lowercase 16-character hash filenames. When changing snapshot writes, keep cleanup non-fatal and retain a bounded rollback set.
