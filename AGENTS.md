@@ -1,3 +1,13 @@
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+
 - [2026-04-08] packages/app Turso V2 schema: `packages/app/.env` points the app at a live Turso DB that already contains `CultivarReference` and `V2AhsCultivar` alongside legacy `AhsListing`. When changing `packages/app/prisma/schema.sqlite.prisma` or public cultivar reads, source `packages/app/.env` and inspect the live DB shape first instead of assuming the checked-in schema is current.
 - [2026-04-09] packages/app Prisma dev reload: After regenerating the SQLite Prisma client, restart any already-running `packages/app` `next dev` process before browser verification. Otherwise Next can keep a stale client in memory and throw runtime errors like `Unknown field cultivarReference`.
 - [2026-04-09] packages/app Netlify image runtime: This app’s Netlify previews can rewrite `/_next/image` to `/_ipx`, and that runtime can fail with `IPX Error` if `sharp` is unavailable. When preview images break with `libvips-cpp.so.42` or similar `sharp` errors, inspect one failing `/_next/image` URL directly first; `images.unoptimized = true` in `packages/app/next.config.js` is only a short-term fallback if a supported Next runtime upgrade is not feasible.

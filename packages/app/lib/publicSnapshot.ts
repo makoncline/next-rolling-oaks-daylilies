@@ -795,13 +795,17 @@ async function prunePublicSnapshots(manifest: SnapshotManifest) {
   const activePath = path.resolve(manifest.path);
 
   try {
-    const entries = await readdir(snapshotDir, { withFileTypes: true });
+    const entries = await readdir(/* turbopackIgnore: true */ snapshotDir, {
+      withFileTypes: true,
+    });
     const snapshotPaths = entries
       .filter(
         (entry) =>
           entry.isFile() && PUBLIC_SNAPSHOT_FILE_PATTERN.test(entry.name)
       )
-      .map((entry) => path.join(snapshotDir, entry.name));
+      .map((entry) =>
+        path.join(/* turbopackIgnore: true */ snapshotDir, entry.name)
+      );
 
     const metadataFailures: Array<{ path: string; error: string }> = [];
     const candidates = (
