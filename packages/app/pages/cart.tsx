@@ -21,14 +21,6 @@ import { formatCurrency } from "../lib/format";
 
 const CartTable = () => {
   const { addOne, removeOne, numItems, shipping, cart, total } = useCart();
-  const confirmAndRemove = (item: { id: string; name: string; quantity: number }) => {
-    if (
-      item.quantity > 1 ||
-      window.confirm(`Remove ${item.name} from your cart?`)
-    ) {
-      removeOne(item.id);
-    }
-  };
 
   return (
     <>
@@ -51,7 +43,7 @@ const CartTable = () => {
                   <Space gap="xsmall">
                     <Button
                       aria-label={`Remove One ${item.name}`}
-                      onClick={() => confirmAndRemove(item)}
+                      onClick={() => removeOne(item.id)}
                     >
                       -
                     </Button>
@@ -104,7 +96,7 @@ const CartTable = () => {
                     <td>
                       <Button
                         aria-label={`Remove One ${item.name}`}
-                        onClick={() => confirmAndRemove(item)}
+                        onClick={() => removeOne(item.id)}
                       >
                         -
                       </Button>
@@ -253,14 +245,7 @@ const ClearButton = () => {
   return (
     <>
       {numItems > 0 && (
-        <Button
-          onClick={() => {
-            if (window.confirm("Empty all items from your cart?")) {
-              clear();
-            }
-          }}
-          danger
-        >
+        <Button onClick={clear} danger>
           Empty Cart
         </Button>
       )}
