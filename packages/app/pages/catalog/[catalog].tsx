@@ -133,20 +133,29 @@ const SearchPage: NextPage<Props> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     filterKey: string
   ) => {
-    const newValue = e.target.value;
+    const newValue =
+      e.target.type === "checkbox" && "checked" in e.target
+        ? e.target.checked
+        : e.target.value;
     setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: newValue }));
     if (textFilterTimeoutRef.current) {
       clearTimeout(textFilterTimeoutRef.current);
     }
 
     const replaceQuery = () => {
-      const newQuery = { ...router.query, [filterKey]: newValue };
-      if (!newValue) {
+      const queryValue =
+        typeof newValue === "boolean"
+          ? newValue
+            ? "true"
+            : ""
+          : newValue;
+      const newQuery = { ...router.query, [filterKey]: queryValue };
+      if (!queryValue) {
         delete newQuery[filterKey];
       }
       if (
         filterKey === "page" &&
-        parseInt(newValue) - 1 === defaultCatalogFilters.page
+        parseInt(queryValue) - 1 === defaultCatalogFilters.page
       ) {
         delete newQuery[filterKey];
       } else {
@@ -528,6 +537,20 @@ const SearchPage: NextPage<Props> = ({
                     ))}
                   </FullWidthSelect>
                 </Space>
+                <label
+                  htmlFor="rebloom"
+                  className="flex cursor-pointer items-center gap-3 text-ro-text-high"
+                >
+                  <input
+                    id="rebloom"
+                    name="rebloom"
+                    type="checkbox"
+                    checked={filters.rebloom}
+                    onChange={(e) => handleChange(e, "rebloom")}
+                    className="h-5 w-5 accent-ro-blue"
+                  />
+                  <span>Rebloomers only</span>
+                </label>
                 {/* Price filter */}
                 <Space block direction="column" gap="xsmall">
                   <label htmlFor="price">Price is:</label>

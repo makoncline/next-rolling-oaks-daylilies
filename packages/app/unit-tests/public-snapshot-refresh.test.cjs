@@ -25,7 +25,7 @@ const waitFor = async (predicate, message) => {
 };
 
 const createSnapshot = ({ generatedAt, version }) => ({
-  schemaVersion: 3,
+  schemaVersion: 4,
   version,
   generatedAt,
   userId: "3",

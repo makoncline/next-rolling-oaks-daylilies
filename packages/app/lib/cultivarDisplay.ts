@@ -7,6 +7,7 @@ export type AhsDisplay = {
   scapeHeight: string | null;
   bloomSize: string | null;
   bloomSeason: string | null;
+  rebloom: boolean | null;
   ploidy: string | null;
   foliageType: string | null;
   bloomHabit: string | null;
@@ -31,6 +32,7 @@ type V2CultivarDisplaySource = {
   hybridizer_code_legacy?: string | null;
   seedling_number?: string | null;
   bloom_season_names?: string | null;
+  rebloom?: number | null;
   fragrance_names?: string | null;
   bloom_habit_names?: string | null;
   foliage_names?: string | null;
@@ -129,6 +131,7 @@ export const fullCultivarDisplaySelect = {
   hybridizer_code_legacy: true,
   seedling_number: true,
   bloom_season_names: true,
+  rebloom: true,
   fragrance_names: true,
   bloom_habit_names: true,
   foliage_names: true,
@@ -210,6 +213,7 @@ export function mapV2CultivarToAhsDisplay(
     scapeHeight: formatInches(cultivar.scape_height_in),
     bloomSize: formatInches(cultivar.bloom_size_in),
     bloomSeason: trimToNull(cultivar.bloom_season_names),
+    rebloom: cultivar.rebloom == null ? null : Boolean(cultivar.rebloom),
     ploidy: trimToNull(cultivar.ploidy_names),
     foliageType: trimToNull(cultivar.foliage_names),
     bloomHabit: trimToNull(cultivar.bloom_habit_names),
@@ -243,6 +247,7 @@ export function mapLegacyAhsListingToAhsDisplay(
     scapeHeight: trimToNull(listing.scapeHeight),
     bloomSize: trimToNull(listing.bloomSize),
     bloomSeason: trimToNull(listing.bloomSeason),
+    rebloom: null,
     ploidy: trimToNull(listing.ploidy),
     foliageType: trimToNull(listing.foliageType),
     bloomHabit: trimToNull(listing.bloomHabit),

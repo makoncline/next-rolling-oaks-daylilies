@@ -4,7 +4,7 @@ const path = require("path");
 
 const service = "rolling-oaks-daylilies";
 const component = "public-snapshot";
-const schemaVersion = 3;
+const schemaVersion = 4;
 const freshForSeconds = 60 * 60;
 const refreshToken =
   process.env.PUBLIC_SNAPSHOT_REFRESH_TOKEN || "container-startup";
