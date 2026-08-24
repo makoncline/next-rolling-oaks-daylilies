@@ -20,6 +20,7 @@ export const defaultCatalogFilters = {
   bloomSize: "",
   scapeHeight: "",
   bloomSeason: "",
+  rebloom: false,
   price: "",
   page: 0,
 };
@@ -65,6 +66,7 @@ export const getCatalogFiltersFromQuery = (
   bloomSize: getQueryString(query.bloomSize) || "",
   scapeHeight: getQueryString(query.scapeHeight) || "",
   bloomSeason: getQueryString(query.bloomSeason) || "",
+  rebloom: getQueryString(query.rebloom) === "true",
   price: getQueryString(query.price) || "",
   page: getPageFromQuery(query.page),
 });
@@ -211,6 +213,12 @@ export const filterCatalogListings = (
       (listing) =>
         listing.ahsListing?.bloomSeason?.toLowerCase() ===
         filters.bloomSeason.toLowerCase()
+    );
+  }
+
+  if (filters.rebloom) {
+    filtered = filtered.filter(
+      (listing) => listing.ahsListing?.rebloom === true
     );
   }
 

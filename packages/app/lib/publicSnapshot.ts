@@ -23,7 +23,7 @@ import {
   resolveListingPublicImages,
 } from "./imageAssets";
 
-const SNAPSHOT_SCHEMA_VERSION = 3;
+const SNAPSHOT_SCHEMA_VERSION = 4;
 const HIDDEN_STATUS = "HIDDEN";
 const LISTING_BATCH_SIZE = 900;
 const CATALOG_PAGE_SIZE = 24;
