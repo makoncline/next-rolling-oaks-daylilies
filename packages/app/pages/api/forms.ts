@@ -20,8 +20,6 @@ type SmtpConfig = {
 };
 
 const BOT_TRAP_FIELDS = ["bot-field", "website", "company"];
-const FORM_STARTED_AT_FIELD = "form-started-at";
-const MAX_SUBMIT_AGE_SECONDS = 60 * 60 * 2;
 const MAX_LINK_COUNT = 1;
 
 const logFormEvent = (
@@ -109,23 +107,6 @@ const getBotBlock = (
     return { reason: "honeypot_filled", trapField };
   }
 
-  const formStartedAt = Number.parseInt(
-    getString(body[FORM_STARTED_AT_FIELD]),
-    10
-  );
-  const now = Date.now();
-  if (!Number.isFinite(formStartedAt)) {
-    return { reason: "missing_form_started_at" };
-  }
-
-  const submitAgeSeconds = Math.round((now - formStartedAt) / 1000);
-  if (submitAgeSeconds < 0 || submitAgeSeconds > MAX_SUBMIT_AGE_SECONDS) {
-    return {
-      reason: "invalid_form_started_at",
-      submitAgeSeconds,
-    };
-  }
-
   const linkCount = countLinks(`${payload.message}\n${payload.cartText}`);
   if (linkCount > MAX_LINK_COUNT) {
     return { reason: "too_many_links", linkCount };
@@ -159,29 +140,6 @@ const getRecipients = () => {
 };
 
 const getBccRecipients = () => getEmailList(process.env.CONTACT_BCC_EMAIL || "");
-
-const getErrorDetails = (error: unknown): LogFields => {
-  if (!(error instanceof Error)) return { errorType: typeof error };
-
-  const details: LogFields = {
-    errorName: error.name,
-    errorMessage: error.message,
-  };
-
-  const maybeSmtpError = error as Error & {
-    code?: string;
-    command?: string;
-    responseCode?: number;
-  };
-
-  if (maybeSmtpError.code) details.errorCode = maybeSmtpError.code;
-  if (maybeSmtpError.command) details.smtpCommand = maybeSmtpError.command;
-  if (maybeSmtpError.responseCode) {
-    details.smtpResponseCode = maybeSmtpError.responseCode;
-  }
-
-  return details;
-};
 
 const getSubject = ({ formName, name }: FormPayload) =>
   formName === "cart"
@@ -258,10 +216,16 @@ export default async function handler(
 
     res.status(200).json({ ok: true });
   } catch (error) {
+    const smtpResponseCode =
+      error instanceof Error &&
+      "responseCode" in error &&
+      typeof error.responseCode === "number"
+        ? error.responseCode
+        : undefined;
     logFormEvent("error", "form_email_send_failed", {
       formName: payload.formName,
       ...getSmtpConfig(),
-      ...getErrorDetails(error),
+      smtpResponseCode,
     });
     res.status(500).json({ error: "Could not send message" });
   }
