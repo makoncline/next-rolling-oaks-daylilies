@@ -141,7 +141,6 @@ const CartForm = () => {
   const router = useRouter();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const formStartedAt = React.useRef(String(Date.now()));
 
   const cartText = () => {
     if (!numItems) return null;
@@ -204,12 +203,6 @@ const CartForm = () => {
           <input name="website" tabIndex={-1} autoComplete="off" />
           <input name="company" tabIndex={-1} autoComplete="off" />
         </div>
-        <input
-          type="hidden"
-          name="form-started-at"
-          value={formStartedAt.current}
-          readOnly
-        />
         <Field name="name" required>
           Your name
         </Field>
