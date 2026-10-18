@@ -1,3 +1,5 @@
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { FormVerification } from "./formVerification";
 import {
   Button,
   Field,
@@ -24,10 +26,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
   const { clear } = useCart();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const verification = React.useRef<TurnstileInstance>(null);
+  const [isVerified, setIsVerified] = React.useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || !isVerified) return;
     setSubmitError(null);
     setIsSubmitting(true);
 
@@ -39,6 +43,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
       console.error(error);
       setSubmitError("Could not send your message. Please try again.");
     } finally {
+      setIsVerified(false);
+      verification.current?.reset();
       setIsSubmitting(false);
     }
   };
@@ -77,7 +83,17 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
         <Field name="message" required textarea autoComplete="off">
           Your message
         </Field>
-        <Button type="submit" styleType="primary" block disabled={isSubmitting}>
+        <FormVerification
+          ref={verification}
+          action="contact"
+          onVerifiedChange={setIsVerified}
+        />
+        <Button
+          type="submit"
+          styleType="primary"
+          block
+          disabled={isSubmitting || !isVerified}
+        >
           {isSubmitting ? (
             <>
               <Spinner />

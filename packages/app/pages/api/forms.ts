@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import nodemailer from "nodemailer";
+import { z } from "zod";
 
 type FormName = "contact" | "cart";
 
@@ -158,6 +159,46 @@ const getBodyText = ({ formName, name, email, message, cartText }: FormPayload) 
     .filter(Boolean)
     .join("\n");
 
+const verificationSchema = z.object({
+  success: z.boolean(),
+  hostname: z.string().optional(),
+  action: z.string().optional(),
+});
+
+async function verifyTurnstile(
+  token: unknown,
+  action: FormName,
+  host: string | undefined
+) {
+  if (typeof token !== "string" || !token.trim() || token.length > 2048 || !host) {
+    return false;
+  }
+
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    throw new Error("TURNSTILE_SECRET_KEY is required to verify forms.");
+  }
+
+  const hostname = new URL(`https://${host}`).hostname;
+  const response = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret, response: token }),
+      signal: AbortSignal.timeout(10_000),
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Turnstile verification is unavailable.");
+  }
+
+  const result = verificationSchema.parse(await response.json());
+  return (
+    result.success && result.hostname === hostname && result.action === action
+  );
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -181,6 +222,27 @@ export default async function handler(
       ...botBlock,
     });
     res.status(200).json({ ok: true });
+    return;
+  }
+
+  try {
+    const verified = await verifyTurnstile(
+      getBody(req)["cf-turnstile-response"],
+      payload.formName,
+      req.headers.host
+    );
+    if (!verified) {
+      logFormEvent("warn", "form_verification_rejected", {
+        formName: payload.formName,
+      });
+      res.status(403).json({ error: "Please complete verification and try again." });
+      return;
+    }
+  } catch {
+    logFormEvent("error", "form_verification_unavailable", {
+      formName: payload.formName,
+    });
+    res.status(503).json({ error: "Could not verify your request. Please try again." });
     return;
   }
 

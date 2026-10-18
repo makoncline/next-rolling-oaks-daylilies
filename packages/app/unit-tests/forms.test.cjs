@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const handler = createJiti(__filename)("../pages/api/forms.ts").default;
 const payload = {
   "form-name": "cart",
+  "cf-turnstile-response": "cart-token",
   name: "Test Customer",
   email: "customer@example.test",
   message: "Please check availability.",
@@ -14,6 +15,10 @@ const payload = {
 let sent;
 let logs;
 let smtpError;
+let verificationResult;
+let verificationError;
+let verificationStatus;
+let verificationCalls;
 
 beforeEach((t) => {
   const originalEnv = { ...process.env };
@@ -21,6 +26,7 @@ beforeEach((t) => {
     process.env = originalEnv;
   });
   Object.assign(process.env, {
+    TURNSTILE_SECRET_KEY: "test-secret",
     SMTP_USER: "sender@example.test",
     SMTP_PASS: "test-password",
     CONTACT_TO_EMAIL: "owner@example.test",
@@ -29,6 +35,24 @@ beforeEach((t) => {
   sent = [];
   logs = [];
   smtpError = null;
+  verificationResult = null;
+  verificationError = null;
+  verificationStatus = 200;
+  verificationCalls = [];
+  t.mock.method(globalThis, "fetch", async (url, options) => {
+    const body = JSON.parse(options.body);
+    verificationCalls.push(body);
+    assert.equal(url, "https://challenges.cloudflare.com/turnstile/v0/siteverify");
+    assert.equal(options.method, "POST");
+    assert.equal(body.secret, "test-secret");
+    assert.ok(options.signal instanceof AbortSignal);
+    if (verificationError) throw verificationError;
+    return Response.json(verificationResult ?? {
+      success: true,
+      hostname: "rollingoaksdaylilies.com",
+      action: body.response.split("-")[0],
+    }, { status: verificationStatus });
+  });
   t.mock.method(nodemailer, "createTransport", () => ({
     async sendMail(mail) {
       if (smtpError) throw smtpError;
@@ -50,29 +74,29 @@ async function submit(body) {
       this.body = value;
     },
   };
-  await handler({ method: "POST", body }, response);
+  await handler({ method: "POST", headers: { host: "rollingoaksdaylilies.com" }, body }, response);
   return response;
 }
 
-test("cart and contact submissions reach SMTP without a timestamp or after three hours", async () => {
+test("verified cart and contact submissions reach SMTP with the customer details", async () => {
   for (const formName of ["cart", "contact"]) {
-    for (const timestamp of [undefined, String(Date.now() - 3 * 60 * 60 * 1000)]) {
-      const body = { ...payload, "form-name": formName };
-      if (timestamp !== undefined) body["form-started-at"] = timestamp;
-      const response = await submit(body);
-      assert.equal(response.statusCode, 200);
-      assert.deepEqual(response.body, { ok: true });
-      const mail = sent.at(-1);
-      assert.equal(mail.replyTo, payload.email);
-      assert.match(mail.text, /Test Daylily/);
-      assert.match(mail.text, /Please check availability/);
-    }
+    const token = `${formName}-token`;
+    const response = await submit({
+      ...payload,
+      "form-name": formName,
+      "cf-turnstile-response": token,
+    });
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.body, { ok: true });
+    assert.equal(verificationCalls.at(-1).response, token);
+    const mail = sent.at(-1);
+    assert.equal(mail.replyTo, payload.email);
+    assert.match(mail.text, /Test Daylily/);
+    assert.match(mail.text, /Please check availability/);
+    assert.ok(!mail.text.includes(token));
   }
-  assert.equal(sent.length, 4);
-  assert.equal(
-    logs.filter((entry) => entry.event === "form_email_send_succeeded").length,
-    4
-  );
+  assert.equal(sent.length, 2);
+  assert.equal(verificationCalls.length, 2);
   assert.ok(!JSON.stringify(logs).includes(payload.email));
   assert.ok(!JSON.stringify(logs).includes(payload.name));
 });
@@ -114,6 +138,60 @@ test("SMTP failures return an API error without logging personal data", async ()
   assert.equal(logs.at(-1).smtpResponseCode, 550);
   const output = JSON.stringify(logs);
   for (const value of [payload.name, payload.email, payload.message, payload.cartText]) {
+    assert.ok(!output.includes(value));
+  }
+});
+
+test("both forms reject missing, forged, expired, and incorrectly scoped tokens", async () => {
+  for (const formName of ["contact", "cart"]) {
+    const body = { ...payload, "form-name": formName };
+    const callsBefore = verificationCalls.length;
+    for (const token of [undefined, "", "x".repeat(2049)]) {
+      const response = await submit({ ...body, "cf-turnstile-response": token });
+      assert.equal(response.statusCode, 403);
+    }
+    assert.equal(verificationCalls.length, callsBefore);
+    for (const result of [
+      { success: false, "error-codes": ["invalid-input-response"] },
+      { success: false, "error-codes": ["timeout-or-duplicate"] },
+      { success: true, hostname: "other.example", action: formName },
+      { success: true, hostname: "rollingoaksdaylilies.com", action: "other" },
+    ]) {
+      verificationResult = result;
+      const response = await submit(body);
+      assert.equal(response.statusCode, 403);
+      assert.match(response.body.error, /verification/);
+    }
+  }
+  assert.equal(sent.length, 0);
+});
+
+test("a used token is verified again and cannot send a second email", async () => {
+  assert.equal((await submit(payload)).statusCode, 200);
+  verificationResult = { success: false, "error-codes": ["timeout-or-duplicate"] };
+  assert.equal((await submit(payload)).statusCode, 403);
+  assert.equal(verificationCalls.length, 2);
+  assert.equal(sent.length, 1);
+});
+
+test("configuration and verification service failures never send email", async () => {
+  delete process.env.TURNSTILE_SECRET_KEY;
+  assert.equal((await submit(payload)).statusCode, 503);
+  assert.equal(verificationCalls.length, 0);
+  process.env.TURNSTILE_SECRET_KEY = "test-secret";
+
+  verificationStatus = 500;
+  assert.equal((await submit(payload)).statusCode, 503);
+  verificationStatus = 200;
+  verificationResult = { unexpected: "response" };
+  assert.equal((await submit(payload)).statusCode, 503);
+  for (const error of [new Error("network failed"), new DOMException("timed out", "TimeoutError")]) {
+    verificationError = error;
+    assert.equal((await submit(payload)).statusCode, 503);
+  }
+  assert.equal(sent.length, 0);
+  const output = JSON.stringify(logs);
+  for (const value of ["test-secret", payload["cf-turnstile-response"], payload.email, payload.message]) {
     assert.ok(!output.includes(value));
   }
 });

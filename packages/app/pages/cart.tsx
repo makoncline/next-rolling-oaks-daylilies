@@ -1,3 +1,5 @@
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { FormVerification } from "../components/formVerification";
 import React from "react";
 import Layout from "../components/layout";
 import { useCart } from "components/cart";
@@ -141,6 +143,8 @@ const CartForm = () => {
   const router = useRouter();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const verification = React.useRef<TurnstileInstance>(null);
+  const [isVerified, setIsVerified] = React.useState(false);
 
   const cartText = () => {
     if (!numItems) return null;
@@ -159,7 +163,7 @@ const CartForm = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || !isVerified) return;
     setSubmitError(null);
     setIsSubmitting(true);
 
@@ -173,6 +177,8 @@ const CartForm = () => {
         "Could not submit your availability request. Please try again."
       );
     } finally {
+      setIsVerified(false);
+      verification.current?.reset();
       setIsSubmitting(false);
     }
   };
@@ -217,7 +223,19 @@ const CartForm = () => {
         <Field name="message" textarea autoComplete="off">
           Your message
         </Field>
-        <Button type="submit" styleType="primary" block disabled={isSubmitting}>
+        {numItems > 0 ? (
+          <FormVerification
+            ref={verification}
+            action="cart"
+            onVerifiedChange={setIsVerified}
+          />
+        ) : null}
+        <Button
+          type="submit"
+          styleType="primary"
+          block
+          disabled={isSubmitting || !isVerified}
+        >
           {isSubmitting ? (
             <>
               <Spinner />
