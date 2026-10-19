@@ -34,7 +34,6 @@ export function FormVerification({
         onTimeout={() => onVerifiedChange(false)}
         onError={handleError}
         onUnsupported={handleError}
-        scriptOptions={{ onError: handleError }}
       />
       {hasError ? (
         <FormError>
