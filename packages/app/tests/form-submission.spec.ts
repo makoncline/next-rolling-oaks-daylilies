@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // Replace only the external widget. Exercise the real form and token encoding.
 const turnstileScript = `
   const callback = new URL(document.currentScript.src).searchParams.get("onload");
-  if (typeof window[callback] !== "function") {
+  if (callback && typeof window[callback] !== "function") {
     throw new Error("Turnstile load callback is missing");
   }
   const widgets = new Map();
@@ -37,7 +37,7 @@ const turnstileScript = `
     getResponse(id) { return widgets.get(id).input.value; },
     isExpired(id) { return !widgets.get(id).input.value; }
   };
-  window[callback]();
+  if (callback) window[callback]();
 `;
 
 test.beforeEach(async ({ page }) => {

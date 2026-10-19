@@ -1,4 +1,11 @@
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import {
+  DEFAULT_ONLOAD_NAME,
+  DEFAULT_SCRIPT_ID,
+  SCRIPT_URL,
+  Turnstile,
+  type TurnstileInstance,
+} from "@marsidev/react-turnstile";
+import Script from "next/script";
 import { useState, type Ref } from "react";
 import { env } from "../env";
 import { FormError } from "./ui";
@@ -22,7 +29,13 @@ export function FormVerification({
 
   return (
     <div className="my-4">
+      <Script
+        id={DEFAULT_SCRIPT_ID}
+        src={`${SCRIPT_URL}?onload=${DEFAULT_ONLOAD_NAME}&render=explicit`}
+        onError={handleError}
+      />
       <Turnstile
+        injectScript={false}
         ref={ref}
         siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
         options={{ action, size: "flexible" }}
