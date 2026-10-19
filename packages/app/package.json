@@ -16,6 +16,7 @@
     "@iconify/icons-ic": "^1.2.13",
     "@iconify/icons-si-glyph": "^1.2.6",
     "@iconify/react": "^6.0.2",
+    "@marsidev/react-turnstile": "1.6.2",
     "@prisma/adapter-libsql": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@t3-oss/env-nextjs": "^0.13.11",

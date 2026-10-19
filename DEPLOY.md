@@ -18,6 +18,7 @@ The container runs the Next.js standalone server from the image. The source repo
 
 - Turso/libSQL database
 - Gmail SMTP for contact and cart emails
+- Cloudflare Turnstile for contact and cart form verification
 - Resized image CDN at `images.daylilycatalog.com`
 
 `/api/health` reports public snapshot status and performs a lightweight Turso database check with `SELECT 1`. SMTP is intentionally not checked because a probe would need to log in to Gmail on every request and can be slow or rate-limited; successful contact/cart form submissions exercise SMTP separately.
@@ -32,6 +33,7 @@ Required secrets:
 - `TURSO_DATABASE_AUTH_TOKEN`
 - `SMTP_USER`
 - `SMTP_PASS`
+- `TURNSTILE_SECRET_KEY`: runtime secret from the Turnstile widget.
 
 Required non-secret config:
 
@@ -48,9 +50,19 @@ Optional config:
 
 Build-time-only variables:
 
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`: required public site key. Set the GitHub Actions repository variable with this name. The Docker build passes it to Next.js. Use the site key from the same widget as the runtime secret.
+
 - `NEXT_PUBLIC_S3_RESIZED_IMAGE_BUCKET`: optional image bucket host override used by `packages/app/components/Image.tsx`. The Dockerfile defaults it to `images.daylilycatalog.com` during image build and Next.js bakes it into the client bundle, so setting it only in the VPS runtime `.env` will not affect browser-rendered image URLs.
 
 Build-time environment is validated with T3 Env before `next build`; missing or blank build variables fail the image build before Next.js compiles.
+
+## Turnstile Setup
+
+Create a Managed Turnstile widget in Cloudflare. Allow `rollingoaksdaylilies.com` and `rolling-oaks-daylilies.makon.dev`; Cloudflare also permits subdomains of an allowed hostname. Keep local test hosts out of the production widget.
+
+Pull request image builds use Cloudflare's public test site key and never deploy. Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` as a GitHub Actions repository variable before the production image build. Set `TURNSTILE_SECRET_KEY` in the VPS runtime `.env` before deploying that image. Do not put the secret key in a build argument or a public environment variable. Rebuild the image after a site key change. The server checks the token, form action, and request hostname before it sends email. Missing configuration or failed verification blocks email.
+
+For local browser checks, use Cloudflare's public test site key `1x00000000000000000000AA`. For tests that call Siteverify, use its public test secret `1x0000000000000000000000000000000AA`. Never use these test keys in production. The form integration tests mock Siteverify and SMTP. The browser tests replace the widget script and form response, so they send no email.
 
 ## Build Image
 
@@ -58,7 +70,7 @@ Build locally:
 
 ```sh
 git submodule update --init --recursive
-docker build -t rolling-oaks-daylilies:local .
+docker build --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY -t rolling-oaks-daylilies:local .
 ```
 
 During PR testing, GitHub Actions builds the image once, pushes it to GHCR with the full commit SHA tag, then pulls that same image back down for both `GET /api/health` and end-to-end verification. Pull requests do not deploy. Pushes to `main` build and verify the merge commit image, then deploy that immutable SHA tag through the VPS webhook.
@@ -68,7 +80,7 @@ During PR testing, GitHub Actions builds the image once, pushes it to GHCR with 
 Test a locally built image:
 
 ```sh
-docker build -t rolling-oaks-daylilies:local .
+docker build --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY -t rolling-oaks-daylilies:local .
 mkdir -p /tmp/rolling-oaks-public-data
 docker run --rm --env-file .env.local \
   -v /tmp/rolling-oaks-public-data:/app/.public-data \
