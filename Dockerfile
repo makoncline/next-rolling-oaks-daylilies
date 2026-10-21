@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/app/package.json packages/app/package.json
 
-RUN npm ci
+RUN npm install --global npm@11.21.1 && npm ci
 
 FROM base AS builder
 
