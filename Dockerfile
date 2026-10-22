@@ -53,6 +53,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/packages/app/.next/static ./packa
 COPY --from=builder --chown=nextjs:nodejs /app/packages/app/public ./packages/app/public
 COPY --chown=nextjs:nodejs packages/app/scripts/prestart-public-snapshot.cjs ./packages/app/scripts/prestart-public-snapshot.cjs
 
+RUN --mount=type=bind,source=packages/app/unit-tests/image-runtime.test.cjs,target=/app/packages/app/unit-tests/image-runtime.test.cjs \
+    node --test packages/app/unit-tests/image-runtime.test.cjs
+
 USER nextjs
 
 EXPOSE 3000
