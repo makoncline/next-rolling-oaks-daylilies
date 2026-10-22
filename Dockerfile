@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS base
+FROM node:22.23.4-bookworm-slim AS base
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates openssl \
@@ -31,6 +31,9 @@ COPY . .
 RUN npm run build -w @packages/app
 
 FROM base AS runner
+
+RUN --mount=type=bind,source=packages/app/unit-tests/node-runtime.test.cjs,target=/tmp/node-runtime.test.cjs \
+    node --test /tmp/node-runtime.test.cjs
 
 WORKDIR /app
 
