@@ -111,7 +111,7 @@ jobs:
 
   playwright:
     name: End-to-End Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     timeout-minutes: 60
     permissions:
