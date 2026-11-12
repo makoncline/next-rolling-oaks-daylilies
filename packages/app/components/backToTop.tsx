@@ -1,4 +1,5 @@
 import React from "react";
+import { ChevronUp } from "lucide-react";
 
 function useHasScrolledPastThreshold(): boolean {
   const [hasScrolled, setHasScrolled] = React.useState(false);
@@ -42,13 +43,13 @@ const BackToTop: React.FC = () => {
       href="#main-content"
       aria-label="Back to Top"
       title="Back To Top"
-      className={`fixed bottom-3 right-4 hidden cursor-pointer rounded-sm bg-overlay/50 p-4 text-overlay-foreground no-underline transition-opacity sm:block ${
+      className={`fixed bottom-4 right-4 hidden cursor-pointer rounded-full border-stroke border-card-border bg-popover p-2.5 text-popover-foreground shadow-toast transition-opacity hover:bg-secondary-hover sm:block ${
         hasScrolled
           ? "opacity-100"
           : "pointer-events-none invisible opacity-0"
       }`}
     >
-      &uarr;
+      <ChevronUp aria-hidden="true" className="shrink-0 size-5" />
     </a>
   );
 };

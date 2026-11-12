@@ -13,26 +13,34 @@ const Blog = () => {
   ];
   return (
     <Layout>
-      <h1>Blog</h1>
-      <ul className="grid list-none gap-6 p-0">
+      <h1 className="m-0">Blog</h1>
+      <ul className="m-0 grid max-w-prose list-none gap-6 p-0">
         {posts.map((post) => (
-          <li className="border-b border-current pb-6" key={post.slug}>
-            <div className="grid gap-4 sm:grid-cols-media">
+          <li
+            className="relative"
+            key={post.slug}
+          >
+            <div className="grid gap-4 sm:grid-cols-media sm:gap-6">
               <Image
                 src="https://garden.org/pics/2022-02-23/floota/4f618a-250.jpg"
                 alt=""
                 aria-hidden="true"
-                className="aspect-4/3 w-full object-cover sm:aspect-square sm:w-40"
+                className="aspect-4/3 w-full rounded-md object-cover sm:aspect-square sm:w-44"
                 width={250}
                 height={250}
                 priority
                 unoptimized
               />
-            <div>
-              <h2 className="mt-0 text-2xl">
-                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+            <div className="flex flex-col gap-2">
+              <h2 className="m-0 text-heading-3">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="text-foreground-emphasis no-underline after:absolute after:inset-0 hover:text-primary-hover hover:underline"
+                >
+                  {post.title}
+                </Link>
               </h2>
-              <p>{post.description}</p>
+              <p className="m-0 text-muted-foreground">{post.description}</p>
             </div>
             </div>
           </li>

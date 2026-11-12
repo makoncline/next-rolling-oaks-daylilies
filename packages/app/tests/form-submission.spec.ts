@@ -145,7 +145,11 @@ test("an expired check disables submission until verification succeeds again", a
   await expect(submit).toBeEnabled();
 });
 
-test("the contact form includes its verification token", async ({ page }) => {
+test("the contact form includes its verification token and preserves the cart", async ({ page }) => {
+  const before = await page.evaluate(() => ({
+    items: localStorage.getItem("cartItems"),
+    products: localStorage.getItem("cartProducts"),
+  }));
   await page.goto("/");
   const form = page.locator("#contact-form");
   await form.getByRole("textbox", { name: "Your name", exact: true }).fill("Test Customer");
@@ -163,4 +167,10 @@ test("the contact form includes its verification token", async ({ page }) => {
   });
   await submit.click();
   await expect(page).toHaveURL(/\/thanks$/);
+  expect(await page.evaluate(() => ({
+    items: localStorage.getItem("cartItems"),
+    products: localStorage.getItem("cartProducts"),
+  }))).toEqual(before);
+  await page.goto("/cart");
+  await expect(page.getByText("Test Daylily", { exact: true })).toBeVisible();
 });

@@ -4,6 +4,7 @@ export const siteConfig = {
   description:
     "My catalog includes over 1,000 varieties in many forms. Spiders, unusual, doubles and unique forms. Double and white daylily specialist. AHS Display Garden.",
   baseUrl: "https://rollingoaksdaylilies.com",
+  minimumOrder: 20,
   shipping: {
     baseRate: 15,
     baseItems: 3,

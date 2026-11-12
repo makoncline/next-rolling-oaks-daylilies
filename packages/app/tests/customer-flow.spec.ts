@@ -19,16 +19,18 @@ test("customers can search, filter, select photos and keep cart changes after re
   await page.locator('header a[href="/catalog/search"]:visible').click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
   await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
-  await page.getByRole("button", { name: "Show Search and Filters", exact: true }).click();
+  await page.getByRole("button", { name: "Filters", exact: true }).click();
   await page.locator("#search").fill("A Few Good Men");
   await expect(page.locator("main article")).toHaveCount(1);
   await expect(page.locator("main article")).toContainText("A Few Good Men");
   await page.locator("#search").fill("no-matching-cultivar-987654321");
   await expect(page.getByText("0 results", { exact: true })).toBeVisible();
   await expect(page.locator("main article")).toHaveCount(0);
-  await page.getByRole("button", { name: "Clear Filters", exact: true }).click();
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
   await expect(page.locator("main article").first()).toBeVisible();
+  await page.getByRole("switch", { name: "Advanced" }).click();
+  await page.getByRole("button", { name: "Plant", exact: true }).click();
   await page.locator("#ploidy").selectOption("Tetraploid");
   await expect(page).toHaveURL(/ploidy=Tetraploid/);
   await page.locator("#rebloom").check();
@@ -36,7 +38,7 @@ test("customers can search, filter, select photos and keep cart changes after re
   await expect(page.locator("#ploidy")).toHaveValue("Tetraploid");
   await expect(page.locator("main article").first()).toBeVisible();
   await expectNoOverflow(page);
-  await page.getByRole("button", { name: "Clear Filters", exact: true }).click();
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page.locator("#rebloom")).not.toBeChecked();
   await expect(page.locator("#ploidy")).toHaveValue("");
 

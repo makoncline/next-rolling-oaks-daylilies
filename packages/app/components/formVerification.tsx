@@ -38,7 +38,7 @@ export function FormVerification({
         injectScript={false}
         ref={ref}
         siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-        options={{ action, size: "flexible" }}
+        options={{ action, size: "compact" }}
         onSuccess={() => {
           onVerifiedChange(true);
           setHasError(false);

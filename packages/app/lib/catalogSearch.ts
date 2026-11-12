@@ -21,6 +21,8 @@ export const defaultCatalogFilters = {
   scapeHeight: "",
   bloomSeason: "",
   rebloom: false,
+  forSale: false,
+  photo: false,
   price: "",
   page: 0,
 };
@@ -37,7 +39,76 @@ export type CatalogFilterOptions = {
   foliageTypes: string[];
   fragrances: string[];
   bloomSeasons: string[];
+  /** Quick filters only appear where they would actually narrow results. */
+  canFilterForSale: boolean;
+  canFilterPhoto: boolean;
 };
+
+export type CatalogFilterKey = Exclude<keyof CatalogFilters, "page">;
+
+/** Filters shown in the basic search panel; everything else is advanced. */
+export const BASIC_FILTER_KEYS: CatalogFilterKey[] = [
+  "name",
+  "forSale",
+  "photo",
+  "rebloom",
+];
+
+export const CATALOG_FILTER_LABELS: Record<CatalogFilterKey, string> = {
+  name: "Name",
+  list: "List",
+  char: "First character",
+  hybridizer: "Hybridizer",
+  year: "Year",
+  ploidy: "Ploidy",
+  color: "Color",
+  form: "Form",
+  foliageType: "Foliage type",
+  note: "Note",
+  fragrance: "Fragrance",
+  bloomSize: "Bloom size",
+  scapeHeight: "Scape height",
+  bloomSeason: "Bloom season",
+  rebloom: "Rebloomers only",
+  forSale: "For sale",
+  photo: "Has photo",
+  price: "Price",
+};
+
+export const BLOOM_SIZE_OPTIONS = [
+  { value: "miniature", label: 'Miniature (up to 3")' },
+  { value: "small", label: 'Small (3" - 4.5")' },
+  { value: "large", label: 'Large (4.5" - 7")' },
+  { value: "extraLarge", label: 'Extra-Large (more than 7")' },
+];
+
+export const SCAPE_HEIGHT_OPTIONS = [
+  { value: "miniature", label: 'Miniature (up to 10")' },
+  { value: "short", label: 'Short (10" - 20")' },
+  { value: "medium", label: 'Medium (20" - 30")' },
+  { value: "tall", label: 'Tall (30" - 40")' },
+  { value: "extraTall", label: 'Extra-Tall (more than 40")' },
+];
+
+export const PRICE_OPTIONS = [
+  { value: "one", label: "up to $9.99" },
+  { value: "two", label: "$10 - $19.99" },
+  { value: "three", label: "$20 - $29.99" },
+  { value: "four", label: "$30 - $39.99" },
+  { value: "five", label: "$40 - $49.99" },
+  { value: "six", label: "$50 and up" },
+];
+
+export const getActiveFilterKeys = (filters: CatalogFilters) =>
+  (Object.keys(CATALOG_FILTER_LABELS) as CatalogFilterKey[]).filter(
+    (key) => Boolean(filters[key])
+  );
+
+export const hasActiveAdvancedFilters = (filters: CatalogFilters) =>
+  getActiveFilterKeys(filters).some((key) => !BASIC_FILTER_KEYS.includes(key));
+
+const hasPhoto = (listing: PublicListingCard) =>
+  (listing.images?.length ?? 0) > 0 || Boolean(listing.ahsListing?.ahsImageUrl);
 
 const getQueryString = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
@@ -67,6 +138,8 @@ export const getCatalogFiltersFromQuery = (
   scapeHeight: getQueryString(query.scapeHeight) || "",
   bloomSeason: getQueryString(query.bloomSeason) || "",
   rebloom: getQueryString(query.rebloom) === "true",
+  forSale: getQueryString(query.forSale) === "true",
+  photo: getQueryString(query.photo) === "true",
   price: getQueryString(query.price) || "",
   page: getPageFromQuery(query.page),
 });
@@ -111,6 +184,11 @@ export const getCatalogFilterOptions = (
   bloomSeasons: uniqueSorted(
     listings.map((listing) => listing.ahsListing?.bloomSeason)
   ),
+  canFilterForSale:
+    listings.some((listing) => listing.price != null) &&
+    listings.some((listing) => listing.price == null),
+  canFilterPhoto:
+    listings.some(hasPhoto) && listings.some((listing) => !hasPhoto(listing)),
 });
 
 export const filterCatalogListings = (
@@ -142,7 +220,7 @@ export const filterCatalogListings = (
     } else {
       filtered = filtered.filter((listing) =>
         listing.lists?.some((list) =>
-          list.title.toLowerCase().includes(filters.list.toLowerCase())
+          list.title.toLowerCase() === filters.list.toLowerCase()
         )
       );
     }
@@ -164,23 +242,19 @@ export const filterCatalogListings = (
 
   if (filters.hybridizer) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.hybridizer
-        ?.toLowerCase()
-        .includes(filters.hybridizer.toLowerCase())
+      listing.ahsListing?.hybridizer?.toLowerCase() === filters.hybridizer.toLowerCase()
     );
   }
 
   if (filters.year) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.year?.includes(filters.year)
+      listing.ahsListing?.year === filters.year
     );
   }
 
   if (filters.ploidy) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.ploidy
-        ?.toLowerCase()
-        .includes(filters.ploidy.toLowerCase())
+      listing.ahsListing?.ploidy?.toLowerCase() === filters.ploidy.toLowerCase()
     );
   }
 
@@ -194,17 +268,13 @@ export const filterCatalogListings = (
 
   if (filters.foliageType) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.foliageType
-        ?.toLowerCase()
-        .includes(filters.foliageType.toLowerCase())
+      listing.ahsListing?.foliageType?.toLowerCase() === filters.foliageType.toLowerCase()
     );
   }
 
   if (filters.fragrance) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.fragrance
-        ?.toLowerCase()
-        .includes(filters.fragrance.toLowerCase())
+      listing.ahsListing?.fragrance?.toLowerCase() === filters.fragrance.toLowerCase()
     );
   }
 
@@ -222,9 +292,17 @@ export const filterCatalogListings = (
     );
   }
 
+  if (filters.forSale) {
+    filtered = filtered.filter((listing) => listing.price != null);
+  }
+
+  if (filters.photo) {
+    filtered = filtered.filter(hasPhoto);
+  }
+
   if (filters.bloomSize) {
     let low = 0;
-    let high = 1000;
+    let high = Infinity;
 
     switch (filters.bloomSize) {
       case "miniature":
@@ -251,26 +329,26 @@ export const filterCatalogListings = (
 
   if (filters.scapeHeight) {
     let low = 0;
-    let high = 1000;
+    let high = Infinity;
 
     switch (filters.scapeHeight) {
       case "miniature":
         high = 10;
         break;
       case "short":
-        low = 10.1;
+        low = 10;
         high = 20;
         break;
       case "medium":
-        low = 20.1;
+        low = 20;
         high = 30;
         break;
       case "tall":
-        low = 30.1;
+        low = 30;
         high = 40;
         break;
       case "extraTall":
-        low = 40.1;
+        low = 40;
         break;
     }
 
@@ -282,7 +360,7 @@ export const filterCatalogListings = (
 
   if (filters.price) {
     let low = 0;
-    let high = 1000;
+    let high = Infinity;
 
     switch (filters.price) {
       case "one":
@@ -306,24 +384,81 @@ export const filterCatalogListings = (
         break;
       case "six":
         low = 50;
-        high = 999;
+        high = Infinity;
         break;
     }
 
     filtered = filtered.filter(
-      (listing) => listing.price != null && listing.price > low && listing.price <= high
+      (listing) => listing.price != null && listing.price > 0 && listing.price >= low && listing.price <= high
     );
   }
 
   return sortTitlesLettersBeforeNumbers(filtered);
 };
 
+/** Result order. The empty value is the default name order. */
+export const CATALOG_SORT_OPTIONS = [
+  { value: "", label: "Name" },
+  { value: "price-asc", label: "Price, low to high" },
+  { value: "price-desc", label: "Price, high to low" },
+  { value: "newest", label: "Newest registrations" },
+  { value: "updated", label: "Recently updated" },
+  { value: "bloom-size", label: "Largest blooms" },
+] as const;
+
+export type CatalogSort = (typeof CATALOG_SORT_OPTIONS)[number]["value"];
+
+export const getCatalogSortFromQuery = (query: ParsedUrlQuery): CatalogSort => {
+  const value = getQueryString(query.sort) || "";
+  return CATALOG_SORT_OPTIONS.some((option) => option.value === value)
+    ? (value as CatalogSort)
+    : "";
+};
+
+const numberOrNull = (value: number | null | undefined) =>
+  value != null && Number.isFinite(value) ? value : null;
+
+const sortKeys: Record<
+  Exclude<CatalogSort, "">,
+  { key: (listing: PublicListingCard) => number | null; descending: boolean }
+> = {
+  "price-asc": { key: (listing) => numberOrNull(listing.price || null), descending: false },
+  "price-desc": { key: (listing) => numberOrNull(listing.price || null), descending: true },
+  newest: { key: (listing) => numberOrNull(parseInt(listing.ahsListing?.year || "", 10)), descending: true },
+  updated: { key: (listing) => numberOrNull(Date.parse(listing.updatedAt)), descending: true },
+  "bloom-size": { key: (listing) => numberOrNull(parseLeadingNumber(listing.ahsListing?.bloomSize)), descending: true },
+};
+
+/** Listings without the sorted value keep name order after those that have it. */
+export const sortCatalogListings = (
+  listings: PublicListingCard[],
+  sort: CatalogSort
+) => {
+  if (!sort) return listings;
+  const { key, descending } = sortKeys[sort];
+  return listings
+    .map((listing, index) => ({ listing, index, value: key(listing) }))
+    .sort((a, b) => {
+      if (a.value === null || b.value === null) {
+        if (a.value === b.value) return a.index - b.index;
+        return a.value === null ? 1 : -1;
+      }
+      const difference = descending ? b.value - a.value : a.value - b.value;
+      return difference || a.index - b.index;
+    })
+    .map(({ listing }) => listing);
+};
+
 export const getCatalogSearchResult = (
   listings: PublicListingCard[],
   filters: CatalogFilters,
-  limit = CATALOG_PAGE_LIMIT
+  limit = CATALOG_PAGE_LIMIT,
+  sort: CatalogSort = ""
 ) => {
-  const filteredListings = filterCatalogListings(listings, filters);
+  const filteredListings = sortCatalogListings(
+    filterCatalogListings(listings, filters),
+    sort
+  );
   const total = filteredListings.length;
   const lastPage = Math.max(Math.ceil(total / limit) - 1, 0);
   const page = Math.min(Math.max(filters.page, 0), lastPage);

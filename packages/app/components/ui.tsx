@@ -86,13 +86,10 @@ export function FancyHeading({ level, children, ...props }: HeadingProps) {
   return React.createElement(
     `h${level}`,
     {
-      className: "text-foreground-emphasis grid w-full bg-background text-center [&>hr]:col-start-1 [&>hr]:row-start-1 [&>hr]:self-center",
+      className: "m-0 w-full text-foreground-emphasis",
       ...props,
     },
-    <>
-      <span className="z-1 col-start-1 row-start-1 m-auto bg-inherit px-control-x">{children}</span>
-      <Hr />
-    </>
+    children
   );
 }
 
@@ -100,6 +97,7 @@ type ButtonProps = {
   children: React.ReactNode;
   block?: boolean;
   styleType?: "primary" | "default";
+  size?: "default" | "compact";
   danger?: boolean;
   as?: keyof React.JSX.IntrinsicElements;
 } & UnstyledProps<
@@ -113,6 +111,7 @@ export const Button = React.forwardRef<HTMLElement, ButtonProps>(
       children,
       block = false,
       styleType = "default",
+      size = "default",
       danger = false,
       as = "button",
       type,
@@ -127,14 +126,17 @@ export const Button = React.forwardRef<HTMLElement, ButtonProps>(
         ref,
         type: as === "button" ? type || "button" : undefined,
         className: cx(
-          "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border-stroke px-control-x py-button-y text-base font-bold leading-normal hover:cursor-pointer hover:no-underline active:translate-y-press",
+          "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border-stroke border-transparent font-semibold leading-tight no-underline transition-colors hover:cursor-pointer hover:no-underline active:translate-y-press disabled:cursor-not-allowed disabled:border-transparent disabled:bg-secondary disabled:text-subtle-foreground disabled:active:translate-y-0 aria-disabled:cursor-not-allowed aria-disabled:text-subtle-foreground aria-disabled:hover:bg-secondary aria-disabled:active:translate-y-0",
+          size === "compact"
+            ? "min-h-control-compact gap-1.5 px-3 text-meta"
+            : "min-h-control px-5 py-button-y text-base",
           styleType === "primary"
             ? danger
-              ? "border-destructive bg-destructive text-destructive-foreground hover:border-primary-hover hover:bg-destructive"
-              : "border-primary bg-primary text-primary-foreground hover:border-primary-hover hover:bg-primary-hover"
+              ? "bg-destructive text-destructive-foreground hover:text-destructive-foreground"
+              : "bg-primary text-primary-foreground hover:bg-primary-hover hover:text-primary-foreground"
             : danger
-            ? "border-destructive bg-transparent text-destructive-text hover:border-button-border-hover hover:bg-accent"
-            : "border-button-border bg-transparent text-secondary-foreground hover:border-button-border-hover hover:bg-accent",
+            ? "bg-transparent text-destructive-text hover:bg-secondary hover:text-destructive-text"
+            : "bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:text-secondary-foreground",
           block && "w-full"
         ),
       },
@@ -150,7 +152,7 @@ export function Badge({
 }: UnstyledProps<React.HTMLAttributes<HTMLDivElement>>) {
   return (
     <div
-      className="inline-flex w-max whitespace-nowrap rounded-md bg-badge px-badge-x py-badge-y text-sm leading-normal text-badge-foreground"
+      className="inline-flex w-max items-center whitespace-nowrap rounded-sm bg-secondary px-badge-x py-badge-y text-meta font-medium leading-normal text-muted-foreground"
       {...props}
     >
       {children}
@@ -159,7 +161,7 @@ export function Badge({
 }
 
 export function Hr() {
-  return <hr className="h-stroke w-full border-0 bg-divider" />;
+  return <hr className="my-0 h-stroke w-full border-0 bg-border" />;
 }
 
 export function Spinner() {
@@ -185,7 +187,7 @@ export function PropertyList({
     <div
       className={cx(
         "flex flex-wrap",
-        divider && "[&>:not(:last-child)]:border-r-stroke [&>:not(:last-child)]:border-r-border [&>:not(:last-child)]:pr-4 [&>:not(:first-child)]:pl-4",
+        divider && "gap-y-3 [&>:not(:last-child)]:border-r-stroke [&>:not(:last-child)]:border-r-border [&>:not(:last-child)]:pr-5 [&>:not(:first-child)]:pl-5",
         column && "flex-col [&>:not(:last-child)]:pb-4"
       )}
     >
@@ -207,11 +209,11 @@ export function PropertyListItem({
     <div className={cx(
       "flex",
       inline
-        ? "flex-row gap-4 [&>*]:min-w-37.5 [&>*]:grow-0 [&>*]:shrink-0 [&>*]:basis-1/5"
-        : "flex-col"
+        ? "flex-col gap-0.5 py-2.5 sm:flex-row sm:items-baseline sm:gap-6 [&>:first-child]:shrink-0 sm:[&>:first-child]:basis-32"
+        : "flex-col gap-0.5"
     )}>
-      {label && <div className="text-muted-foreground">{label}</div>}
-      <div>{children}</div>
+      {label && <div className="text-meta text-muted-foreground">{label}</div>}
+      <div className="min-w-0 text-foreground-emphasis">{children}</div>
     </div>
   );
 }
@@ -229,7 +231,7 @@ function AlertRoot({
     <div
       className={cx(
         // Keep descendant colors below Heading utility specificity.
-        "flex w-full max-w-136 flex-col gap-3 py-2 [:where(&)_:is(h1,h2,h3)]:m-0 [:where(&)_:is(h1,h2,h3)]:text-alert-heading [:where(&)_p]:m-0",
+        "flex w-full max-w-136 flex-col gap-4 py-2 [:where(&)_:is(h1,h2,h3)]:m-0 [:where(&)_:is(h1,h2,h3)]:text-alert-heading [:where(&)_p]:m-0",
         type === "success"
           ? "[:where(&)_:is(h1,h2,h3)]:text-success-text"
           : "[:where(&)_:is(h1,h2,h3)]:text-destructive-text"
@@ -263,7 +265,7 @@ export const Alert = Object.assign(AlertRoot, {
 });
 
 export function FormWrapper({ children }: { children: React.ReactNode }) {
-  return <div className="mx-auto w-full max-w-120">{children}</div>;
+  return <div className="w-full max-w-form">{children}</div>;
 }
 
 export function Form({
@@ -275,8 +277,8 @@ export function Form({
   children: React.ReactNode;
 } & UnstyledProps<React.FormHTMLAttributes<HTMLFormElement>>) {
   return (
-    <form id={formId} className="max-w-160" {...props}>
-      <div className="flex flex-col items-center justify-center gap-4">
+    <form id={formId} className="w-full" {...props}>
+      <div className="flex flex-col items-stretch justify-center gap-4">
         {children}
       </div>
     </form>
@@ -323,8 +325,12 @@ export function Field({
   const inferredSpellCheck =
     props.spellCheck ?? (name === "email" ? false : undefined);
   return (
-    <div className={cx("w-full flex-col gap-2", hidden ? "hidden" : "flex")}>
-      <label htmlFor={fieldId} hidden={!showLabel}>
+    <div className={cx("w-full flex-col gap-1.5", hidden ? "hidden" : "flex")}>
+      <label
+        htmlFor={fieldId}
+        hidden={!showLabel}
+        className="text-meta font-medium text-foreground"
+      >
         {required ? (
           <span className="mr-1 font-bold text-required" aria-hidden="true">
             *
@@ -362,69 +368,9 @@ export function Field({
 
 export function FormError({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-destructive" role="alert" aria-live="polite">
+    <div className="text-destructive-text" role="alert" aria-live="polite">
       {children}
     </div>
-  );
-}
-
-export function Nav({
-  logo,
-  children,
-}: {
-  logo: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const navMenuId = React.useId();
-
-  React.useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
-
-  React.useEffect(() => {
-    const closeOnResize = () => setIsOpen(false);
-    window.addEventListener("resize", closeOnResize);
-    return () => window.removeEventListener("resize", closeOnResize);
-  }, []);
-
-  return (
-    <nav className="w-full py-2">
-      <div className="flex min-h-10 w-full items-center justify-between">
-        <div className="mr-auto">{logo}</div>
-        <ul className="m-0 hidden list-none flex-row items-center gap-3 p-0 md:flex">
-          {React.Children.map(children, (child, index) => (
-            <li key={index} className="px-3 py-2">
-              {child}
-            </li>
-          ))}
-        </ul>
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center border border-transparent bg-transparent text-foreground-emphasis md:hidden"
-          onClick={() => setIsOpen((value) => !value)}
-          aria-label="Toggle navigation"
-          aria-controls={navMenuId}
-          aria-expanded={isOpen}
-        >
-          {isOpen ? "✕" : "☰"}
-        </button>
-      </div>
-      {isOpen && (
-        <div id={navMenuId} className="overscroll-contain md:hidden">
-          <ul className="flex h-screen list-none flex-col gap-3 p-0">
-            {React.Children.map(children, (child, index) => (
-              <li key={index} className="px-3 py-2">
-                {child}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </nav>
   );
 }
 

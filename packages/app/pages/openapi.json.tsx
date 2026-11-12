@@ -1,5 +1,6 @@
 import type { GetServerSideProps } from "next";
 import { siteConfig } from "../siteConfig";
+import { CATALOG_SORT_OPTIONS } from "../lib/catalogSearch";
 
 const OpenApiJson = () => null;
 
@@ -66,6 +67,20 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
               in: "query",
               schema: { type: "string" },
             })),
+            ...["rebloom", "forSale", "photo"].map((name) => ({
+              name,
+              in: "query",
+              schema: { type: "boolean" },
+            })),
+            {
+              name: "sort",
+              in: "query",
+              description: "Result order; omit for name order.",
+              schema: {
+                type: "string",
+                enum: CATALOG_SORT_OPTIONS.map((option) => option.value).filter(Boolean),
+              },
+            },
           ],
           responses: {
             "200": {

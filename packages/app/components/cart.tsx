@@ -6,6 +6,8 @@ export type Product = {
   id: string;
   name: string;
   price: number;
+  /** Small public photo for recognizing the plant in the cart; older carts may lack it. */
+  image?: string | null;
 };
 type CartItem = {
   productId: string;
@@ -19,6 +21,7 @@ type CartValue = {
   changeQty: (productId: string, qty: number) => void;
   addOne: (productId: string) => void;
   removeOne: (productId: string) => void;
+  getQuantity: (productId: string) => number;
   clear: () => void;
   shipping: number;
   subTotal: number;
@@ -158,8 +161,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     };
   });
 
+  const getQuantity = (productId: string) => cart[productId]?.quantity ?? 0;
+
   const value = {
     products,
+    getQuantity,
     cart: cartList,
     addOrUpdateProduct,
     removeProduct,
