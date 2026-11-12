@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "npm run dev -w @packages/app",
     "build": "npm run build -w @packages/app",
-    "start": "npm run start -w @packages/app"
+    "start": "npm run start -w @packages/app",
+    "visual:setup": "node packages/app/scripts/visual-capture.mjs setup",
+    "visual:serve": "node packages/app/scripts/visual-capture.mjs serve",
+    "visual:start": "node packages/app/scripts/visual-capture.mjs start",
+    "visual:current": "node packages/app/scripts/visual-capture.mjs current",
+    "visual:sheet": "node packages/app/scripts/visual-capture.mjs sheet"
   },
   "workspaces": [
     "packages/app"

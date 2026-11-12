@@ -42,7 +42,7 @@ const BackToTop: React.FC = () => {
       href="#main-content"
       aria-label="Back to Top"
       title="Back To Top"
-      className={`fixed bottom-[1%] right-[1%] hidden cursor-pointer rounded bg-black/50 p-4 text-white no-underline transition-opacity sm:block ${
+      className={`fixed bottom-3 right-4 hidden cursor-pointer rounded-sm bg-overlay/50 p-4 text-overlay-foreground no-underline transition-opacity sm:block ${
         hasScrolled
           ? "opacity-100"
           : "pointer-events-none invisible opacity-0"

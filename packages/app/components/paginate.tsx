@@ -77,12 +77,11 @@ const Paginate: React.FC<{
 
   return (
     <nav aria-label={label}>
-      <Space block center className="justify-between">
+      <Space block center>
         <Button
           as="a"
           href={getPageHref(previousPage)}
           rel={page > 0 ? "prev" : undefined}
-          className="shrink-0"
           aria-label={`${label} Previous Page`}
           onClick={(event) => {
             event.preventDefault();
@@ -92,14 +91,14 @@ const Paginate: React.FC<{
           ⬅
         </Button>
         <form
-          className="flex min-w-0 flex-1 items-center justify-center gap-2 sm:flex-none"
+          className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-2 sm:flex-none"
           onSubmit={handlePageSubmit}
         >
           <span className="shrink-0">Page</span>
           <input
             key={page}
             aria-label={`${label} Page Number`}
-            className="w-20 min-w-0"
+            className="w-20 min-w-16"
             defaultValue={page + 1}
             inputMode="numeric"
             max={pages + 1}
@@ -108,7 +107,7 @@ const Paginate: React.FC<{
             type="number"
           />
           <span className="shrink-0">of {pages + 1}</span>
-          <Button type="submit" className="shrink-0">
+          <Button type="submit">
             Go
           </Button>
         </form>
@@ -116,7 +115,6 @@ const Paginate: React.FC<{
           as="a"
           href={getPageHref(nextPage)}
           rel={page < pages ? "next" : undefined}
-          className="shrink-0"
           aria-label={`${label} Next Page`}
           onClick={(event) => {
             event.preventDefault();

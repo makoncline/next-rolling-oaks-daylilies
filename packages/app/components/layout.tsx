@@ -54,10 +54,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta key="theme-color" name="theme-color" content="#1b2733" />
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
-      <a className="skip-link" href="#main-content">
+      <a
+        className="fixed left-4 top-0 z-50 -translate-y-full rounded-md border-stroke border-ring bg-popover px-control-x py-control-y text-popover-foreground focus-visible:top-4 focus-visible:translate-y-0"
+        href="#main-content"
+      >
         Skip to Main Content
       </a>
-      <div className="sticky top-0 z-10 bg-ro-bg/90">
+      <div className="sticky top-0 z-10 bg-background/90">
         <header className="mx-auto w-full max-w-content px-5 sm:px-8">
           <Nav
             logo={

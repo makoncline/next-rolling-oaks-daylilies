@@ -143,15 +143,11 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
         />
       </Head>
       <FancyHeading level={1}>{name}</FancyHeading>
-      <Space responsive gap="medium" className="items-start">
+      <Space responsive gap="medium">
         <div className="w-full max-w-72 justify-self-center md:max-w-none">
           <ImageDisplay images={allImages} title={name} />
         </div>
-        <Space
-          direction="column"
-          className="border-b border-ro-muted pb-4"
-          style={{ overflowX: "hidden", width: "100%" }}
-        >
+        <div className="flex w-full max-w-full flex-col gap-4 overflow-x-hidden border-b border-current pb-4">
           <PropertyList divider>
             {price && (
               <PropertyListItem label="Price">
@@ -187,12 +183,12 @@ const LilyTemplate = ({ listing }: { listing: DisplayListing }) => {
               >
                 <Space>
                   Add to Cart
-                  <Icon className="icon" icon={cart} aria-hidden="true" />
+                  <Icon icon={cart} aria-hidden="true" />
                 </Space>
               </Button>
             </div>
           )}
-        </Space>
+        </div>
       </Space>
       {ahsData && (
         <div>

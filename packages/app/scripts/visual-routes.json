@@ -1,0 +1,28 @@
+{
+  "viewports": {
+    "desktop": { "width": 1440, "height": 1000 },
+    "mobile": { "width": 390, "height": 844 }
+  },
+  "includeAllCatalogs": true,
+  "routes": [
+    { "id": "home", "label": "Home and contact form", "url": "/", "ready": "#contact form" },
+    { "id": "catalogs", "label": "Catalog index", "url": "/catalogs", "ready": "main article" },
+    { "id": "listing-display", "label": "Display-only listing", "url": "/a-few-good-men", "ready": "main h1" },
+    { "id": "listing-upload", "label": "Listing with uploaded photo", "url": "/16-080", "ready": "main h1" },
+    { "id": "listing-available", "label": "Available listing", "url": "/3546", "ready": "main h1" },
+    { "id": "listing-gallery", "label": "Multiple photos · second selected", "url": "/3081", "ready": "main h1", "state": "gallery" },
+    { "id": "listing-no-image", "label": "Listing without photos", "url": "/17-17", "ready": "main h1" },
+    { "id": "cart-empty", "label": "Empty cart", "url": "/cart", "ready": "main h1" },
+    { "id": "cart-populated", "label": "Populated cart", "url": "/cart", "ready": "main h1", "state": "cart" },
+    { "id": "thanks", "label": "Thank-you page", "url": "/thanks", "ready": "main [data-ui=alert]" },
+    { "id": "blog", "label": "Blog index", "url": "/blog", "ready": "main" },
+    { "id": "blog-article", "label": "Dorothy and Toto article", "url": "/blog/dorothy-and-toto", "ready": "main" },
+    { "id": "404", "label": "404 page", "url": "/404", "ready": "main [data-ui=alert]", "status": 404 },
+    { "id": "not-found", "label": "Unmatched URL", "url": "/visual-baseline-missing-page", "ready": "main [data-ui=alert]", "status": 404 },
+    { "id": "search-result", "label": "Search · named result", "url": "/catalog/search?name=A%20Few%20Good%20Men", "ready": "main article" },
+    { "id": "search-empty", "label": "Search · no results", "url": "/catalog/search?name=visual-baseline-no-matching-cultivar-987654321", "ready": "main h1", "state": "empty-results" },
+    { "id": "search-filters", "label": "Search · expanded filters and rebloom", "url": "/catalog/search?rebloom=true&ploidy=Tetraploid", "ready": "main h1", "state": "filters" },
+    { "id": "catalog-page-2", "label": "Catalog · second page", "url": "/catalog/for-sale", "ready": "main article", "state": "page-2" },
+    { "id": "mobile-menu", "label": "Mobile navigation · open", "url": "/", "ready": "#contact form", "state": "menu", "viewports": ["mobile"] }
+  ]
+}

@@ -4,7 +4,7 @@ import Image from "next/image";
 const Blog = () => {
   return (
     <Layout>
-      <article className="mx-auto w-full max-w-[46rem]">
+      <article className="mx-auto w-full max-w-content">
         <h1>Dorothy and Toto</h1>
         <h2 className="mb-2 mt-6">Introduction</h2>
         <p>

@@ -3,16 +3,21 @@ import React from "react";
 export const cx = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 
+type UnstyledProps<Props> = Omit<Props, "className" | "style"> & {
+  className?: never;
+  style?: never;
+};
+
 type SpaceProps = {
   direction?: "column" | "row";
   gap?: "none" | "xsmall" | "small" | "medium" | "large";
   children: React.ReactNode;
   center?: boolean;
+  align?: "start";
   responsive?: boolean;
   block?: boolean;
   as?: keyof React.JSX.IntrinsicElements;
-  className?: string;
-} & React.HTMLAttributes<HTMLElement>;
+} & UnstyledProps<React.HTMLAttributes<HTMLElement>>;
 
 const gapClasses = {
   none: "gap-0",
@@ -28,10 +33,10 @@ export const Space = React.forwardRef<HTMLElement, SpaceProps>(
       direction = "row",
       gap = "small",
       center = false,
+      align,
       responsive = false,
       block = false,
       as = "div",
-      className,
       children,
       ...props
     },
@@ -49,12 +54,12 @@ export const Space = React.forwardRef<HTMLElement, SpaceProps>(
           !responsive && direction === "column" && "flex-col",
           !responsive && direction === "row" && "flex-row",
           gapClasses[gap],
-          center && "items-center justify-center",
+          center && "items-center",
+          align === "start" && "items-start",
+          center && "justify-center",
           block && "w-full",
-          "max-w-full",
-          className
+          "max-w-full"
         ),
-        style: props.style,
       },
       children
     );
@@ -64,42 +69,30 @@ Space.displayName = "Space";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export function Heading({
-  level,
-  children,
-  className,
-  ...props
-}: {
+type HeadingProps = {
   level: HeadingLevel;
   children: React.ReactNode;
-  className?: string;
-} & React.HTMLAttributes<HTMLHeadingElement>) {
+} & UnstyledProps<React.HTMLAttributes<HTMLHeadingElement>>;
+
+export function Heading({ level, children, ...props }: HeadingProps) {
   return React.createElement(
     `h${level}`,
-    { className: cx("text-ro-text-high", className), ...props },
+    { className: "text-foreground-emphasis", ...props },
     children
   );
 }
 
-export function FancyHeading({
-  level,
-  children,
-  className,
-  ...props
-}: {
-  level: HeadingLevel;
-  children: React.ReactNode;
-  className?: string;
-} & React.HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <Heading
-      level={level}
-      className={cx("fancy-heading text-center", className)}
-      {...props}
-    >
-      <span>{children}</span>
+export function FancyHeading({ level, children, ...props }: HeadingProps) {
+  return React.createElement(
+    `h${level}`,
+    {
+      className: "text-foreground-emphasis grid w-full bg-background text-center [&>hr]:col-start-1 [&>hr]:row-start-1 [&>hr]:self-center",
+      ...props,
+    },
+    <>
+      <span className="z-1 col-start-1 row-start-1 m-auto bg-inherit px-control-x">{children}</span>
       <Hr />
-    </Heading>
+    </>
   );
 }
 
@@ -109,9 +102,10 @@ type ButtonProps = {
   styleType?: "primary" | "default";
   danger?: boolean;
   as?: keyof React.JSX.IntrinsicElements;
-  className?: string;
-} & React.ButtonHTMLAttributes<HTMLButtonElement> &
-  React.AnchorHTMLAttributes<HTMLAnchorElement>;
+} & UnstyledProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement> &
+    React.AnchorHTMLAttributes<HTMLAnchorElement>
+>;
 
 export const Button = React.forwardRef<HTMLElement, ButtonProps>(
   (
@@ -121,7 +115,6 @@ export const Button = React.forwardRef<HTMLElement, ButtonProps>(
       styleType = "default",
       danger = false,
       as = "button",
-      className,
       type,
       ...props
     },
@@ -134,11 +127,15 @@ export const Button = React.forwardRef<HTMLElement, ButtonProps>(
         ref,
         type: as === "button" ? type || "button" : undefined,
         className: cx(
-          "btn",
-          styleType === "primary" && "btn-primary",
-          danger && "btn-danger",
-          block && "w-full",
-          className
+          "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border-stroke px-control-x py-button-y text-base font-bold leading-normal hover:cursor-pointer hover:no-underline active:translate-y-press",
+          styleType === "primary"
+            ? danger
+              ? "border-destructive bg-destructive text-destructive-foreground hover:border-primary-hover hover:bg-destructive"
+              : "border-primary bg-primary text-primary-foreground hover:border-primary-hover hover:bg-primary-hover"
+            : danger
+            ? "border-destructive bg-transparent text-destructive-text hover:border-button-border-hover hover:bg-accent"
+            : "border-button-border bg-transparent text-secondary-foreground hover:border-button-border-hover hover:bg-accent",
+          block && "w-full"
         ),
       },
       children
@@ -149,24 +146,27 @@ Button.displayName = "Button";
 
 export function Badge({
   children,
-  className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: UnstyledProps<React.HTMLAttributes<HTMLDivElement>>) {
   return (
-    <div className={cx("badge", className)} {...props}>
+    <div
+      className="inline-flex w-max whitespace-nowrap rounded-md bg-badge px-badge-x py-badge-y text-sm leading-normal text-badge-foreground"
+      {...props}
+    >
       {children}
     </div>
   );
 }
 
-export function Hr(props: React.HTMLAttributes<HTMLHRElement>) {
-  return <hr className={cx("ro-hr", props.className)} {...props} />;
+export function Hr() {
+  return <hr className="h-stroke w-full border-0 bg-divider" />;
 }
 
-export function Spinner({ className }: { className?: string }) {
+export function Spinner() {
   return (
     <span
-      className={cx("spinner", className)}
+      data-ui="spinner"
+      className="inline-block size-4 animate-spinner rounded-full border-focus border-r-transparent motion-reduce:animate-none"
       aria-hidden="true"
     />
   );
@@ -176,20 +176,17 @@ export function PropertyList({
   children,
   divider,
   column,
-  className,
 }: {
   children: React.ReactNode;
   divider?: boolean;
   column?: boolean;
-  className?: string;
 }) {
   return (
     <div
       className={cx(
-        "property-list",
-        divider && "property-list-divider",
-        column && "property-list-column",
-        className
+        "flex flex-wrap",
+        divider && "[&>:not(:last-child)]:border-r-stroke [&>:not(:last-child)]:border-r-border [&>:not(:last-child)]:pr-4 [&>:not(:first-child)]:pl-4",
+        column && "flex-col [&>:not(:last-child)]:pb-4"
       )}
     >
       {children}
@@ -207,8 +204,13 @@ export function PropertyListItem({
   inline?: boolean;
 }) {
   return (
-    <div className={cx("property-list-item", inline && "property-list-inline")}>
-      {label && <div className="property-list-label">{label}</div>}
+    <div className={cx(
+      "flex",
+      inline
+        ? "flex-row gap-4 [&>*]:min-w-37.5 [&>*]:grow-0 [&>*]:shrink-0 [&>*]:basis-1/5"
+        : "flex-col"
+    )}>
+      {label && <div className="text-muted-foreground">{label}</div>}
       <div>{children}</div>
     </div>
   );
@@ -219,15 +221,20 @@ type AlertType = "success" | "danger";
 function AlertRoot({
   type,
   children,
-  className,
 }: {
   type: AlertType;
   children: React.ReactNode;
-  className?: string;
 }) {
   return (
     <div
-      className={cx("alert", `alert-${type}`, className)}
+      className={cx(
+        // Keep descendant colors below Heading utility specificity.
+        "flex w-full max-w-136 flex-col gap-3 py-2 [:where(&)_:is(h1,h2,h3)]:m-0 [:where(&)_:is(h1,h2,h3)]:text-alert-heading [:where(&)_p]:m-0",
+        type === "success"
+          ? "[:where(&)_:is(h1,h2,h3)]:text-success-text"
+          : "[:where(&)_:is(h1,h2,h3)]:text-destructive-text"
+      )}
+      data-ui="alert"
       role={type === "danger" ? "alert" : "status"}
       aria-live={type === "danger" ? "assertive" : "polite"}
     >
@@ -239,17 +246,11 @@ function AlertRoot({
 function AlertHeading({
   children,
   level = 1,
-  className,
 }: {
   children: React.ReactNode;
   level?: HeadingLevel;
-  className?: string;
 }) {
-  return (
-    <Heading level={level} className={className}>
-      {children}
-    </Heading>
-  );
+  return <Heading level={level}>{children}</Heading>;
 }
 
 function AlertBody({ children }: { children: React.ReactNode }) {
@@ -262,27 +263,39 @@ export const Alert = Object.assign(AlertRoot, {
 });
 
 export function FormWrapper({ children }: { children: React.ReactNode }) {
-  return <div className="mx-auto w-full max-w-[30rem]">{children}</div>;
+  return <div className="mx-auto w-full max-w-120">{children}</div>;
 }
 
 export function Form({
   children,
   formId,
-  className,
   ...props
 }: {
   formId: string;
   children: React.ReactNode;
-  className?: string;
-} & React.FormHTMLAttributes<HTMLFormElement>) {
+} & UnstyledProps<React.FormHTMLAttributes<HTMLFormElement>>) {
   return (
-    <form id={formId} className={cx("max-w-[40rem]", className)} {...props}>
+    <form id={formId} className="max-w-160" {...props}>
       <div className="flex flex-col items-center justify-center gap-4">
         {children}
       </div>
     </form>
   );
 }
+
+type FieldProps = {
+  type?: "text" | "password" | "email" | "number";
+  showLabel?: boolean;
+  children: string;
+  rows?: number;
+} & (
+  | ({ textarea?: false } & UnstyledProps<
+      Omit<React.ComponentPropsWithRef<"input">, "children" | "type">
+    >)
+  | ({ textarea: true } & UnstyledProps<
+      Omit<React.ComponentPropsWithRef<"textarea">, "children">
+    >)
+);
 
 export function Field({
   name = "",
@@ -295,18 +308,7 @@ export function Field({
   textarea = false,
   rows = 6,
   ...props
-}: {
-  name?: string;
-  type?: "text" | "password" | "email" | "number";
-  required?: boolean;
-  showLabel?: boolean;
-  placeholder?: string;
-  children: string;
-  hidden?: boolean;
-  textarea?: boolean;
-  rows?: number;
-  [key: string]: unknown;
-}) {
+}: FieldProps) {
   const fieldId = name || children.replace(/\s+/g, "-").toLowerCase();
   const inferredType = name === "email" && type === "text" ? "email" : type;
   const inferredAutoComplete =
@@ -321,10 +323,10 @@ export function Field({
   const inferredSpellCheck =
     props.spellCheck ?? (name === "email" ? false : undefined);
   return (
-    <div className={cx("field", hidden && "hidden")}>
+    <div className={cx("w-full flex-col gap-2", hidden ? "hidden" : "flex")}>
       <label htmlFor={fieldId} hidden={!showLabel}>
         {required ? (
-          <span className="required-marker" aria-hidden="true">
+          <span className="mr-1 font-bold text-required" aria-hidden="true">
             *
           </span>
         ) : null}
@@ -335,7 +337,7 @@ export function Field({
           id={fieldId}
           name={fieldId}
           placeholder={placeholder}
-          autoComplete={inferredAutoComplete as string | undefined}
+          autoComplete={inferredAutoComplete}
           rows={rows}
           required={required}
           aria-required={required || undefined}
@@ -347,8 +349,8 @@ export function Field({
           name={fieldId}
           type={inferredType}
           placeholder={placeholder}
-          autoComplete={inferredAutoComplete as string | undefined}
-          spellCheck={inferredSpellCheck as boolean | undefined}
+          autoComplete={inferredAutoComplete}
+          spellCheck={inferredSpellCheck}
           required={required}
           aria-required={required || undefined}
           {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
@@ -360,7 +362,7 @@ export function Field({
 
 export function FormError({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-ro-danger" role="alert" aria-live="polite">
+    <div className="text-destructive" role="alert" aria-live="polite">
       {children}
     </div>
   );
@@ -402,7 +404,7 @@ export function Nav({
         </ul>
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center border border-transparent bg-transparent text-ro-text-high md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center border border-transparent bg-transparent text-foreground-emphasis md:hidden"
           onClick={() => setIsOpen((value) => !value)}
           aria-label="Toggle navigation"
           aria-controls={navMenuId}
