@@ -106,6 +106,7 @@ const LilyTemplate = ({ listing, parentLinks, related }: Props) => {
   const purchaseRef = React.useRef<HTMLDivElement>(null);
   const [showBar, setShowBar] = React.useState(false);
   React.useEffect(() => {
+    setShowBar(false);
     const row = purchaseRef.current;
     if (!row) return;
     const observer = new IntersectionObserver(([entry]) => {
@@ -113,7 +114,7 @@ const LilyTemplate = ({ listing, parentLinks, related }: Props) => {
     });
     observer.observe(row);
     return () => observer.disconnect();
-  }, []);
+  }, [listing.id, price]);
   React.useEffect(() => {
     if (!justAdded) return;
     const timeout = setTimeout(() => setJustAdded(false), 2000);

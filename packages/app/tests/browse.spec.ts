@@ -100,6 +100,30 @@ test("listing Add sits beside the price; phones get a bar only after scrolling p
     .toBe(2);
 });
 
+test("mobile Add bar follows navigation through display-only listings", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "The scrolling Add bar is only shown on phones");
+  await page.goto("/double-blue-blood");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Double Blue Blood");
+
+  for (let visit = 0; visit < 2; visit += 1) {
+    await page.getByRole("link", { name: "Highland Lord", exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Highland Lord");
+    const add = page.getByRole("button", { name: "Add Highland Lord to Cart", exact: true });
+    await expect(add).toHaveCount(1);
+    await expect(add).toBeInViewport();
+
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect(add).toHaveCount(2);
+    await expect(add.last()).toBeInViewport();
+    await add.last().click();
+    await expect(page.getByText(`In cart: ${visit + 1}`, { exact: true }).last()).toBeVisible();
+
+    await page.goBack();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Double Blue Blood");
+    await expect(add).toHaveCount(0);
+  }
+});
+
 test("tiles keep showing what is in the cart, and the cart shows plant photos", async ({ page }) => {
   await page.goto("/catalog/search?name=NTS1");
   const tile = page.locator("main article").filter({ hasText: "NTS1" }).first();
