@@ -3,12 +3,13 @@ import {
   PropertyList,
   PropertyListItem,
   Space,
+  cx,
 } from "components/ui";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  getBlurPlaceholderStyle,
+  BlurPlaceholder,
   getDevImageRevealClassName,
   getImageUrls,
   type ImageSource,
@@ -31,7 +32,6 @@ export const CatalogCard = ({
   priority?: boolean;
 }) => {
   const images = getImageUrls(image);
-  const blurStyle = getBlurPlaceholderStyle(image);
   const introCopy = intro
     ?.replace(/Daylillies/g, "Daylilies")
     .replace(/daylillies/g, "daylilies")
@@ -39,15 +39,9 @@ export const CatalogCard = ({
     .replace(/non registered/g, "non-registered");
 
   return (
-    <article className="grid w-full grid-cols-1 gap-4 border-b border-ro-muted pb-6 md:grid-cols-[14rem_1fr]">
-      <div className="relative aspect-square w-full max-w-72 justify-self-center overflow-hidden md:max-w-56">
-        {blurStyle && (
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 scale-110 blur-lg"
-            style={blurStyle}
-          />
-        )}
+    <article className="grid w-full grid-cols-1 gap-4 border-b border-current pb-6 md:grid-cols-media">
+      <div className="relative aspect-square w-full max-w-72 justify-self-center overflow-hidden md:w-56">
+        <BlurPlaceholder source={image} />
         <Image
           src={images.thumb}
           alt={`${name} catalog image`}
@@ -55,11 +49,11 @@ export const CatalogCard = ({
           priority={priority}
           loading={priority ? undefined : "lazy"}
           sizes="288px"
-          className={`object-cover ${getDevImageRevealClassName(image) || ""}`}
+          className={cx("object-cover", getDevImageRevealClassName(image))}
           unoptimized
         />
       </div>
-      <Space block direction="column" className="items-start">
+      <Space block direction="column" align="start">
         <Heading level={2}>{name}</Heading>
         <PropertyList divider>
           <PropertyListItem label="# Listings">

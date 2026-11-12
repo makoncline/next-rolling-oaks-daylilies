@@ -16,13 +16,13 @@ const Blog = () => {
       <h1>Blog</h1>
       <ul className="grid list-none gap-6 p-0">
         {posts.map((post) => (
-          <li className="border-b border-ro-muted pb-6" key={post.slug}>
-            <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
+          <li className="border-b border-current pb-6" key={post.slug}>
+            <div className="grid gap-4 sm:grid-cols-media">
               <Image
                 src="https://garden.org/pics/2022-02-23/floota/4f618a-250.jpg"
                 alt=""
                 aria-hidden="true"
-                className="aspect-[4/3] w-full object-cover sm:aspect-square"
+                className="aspect-4/3 w-full object-cover sm:aspect-square sm:w-40"
                 width={250}
                 height={250}
                 priority

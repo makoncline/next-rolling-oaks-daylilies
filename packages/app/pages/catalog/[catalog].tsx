@@ -294,14 +294,14 @@ const SearchPage: NextPage<Props> = ({
           />
         )}
       </Head>
-      <Space direction="column" block center className="gap-2">
+      <Space direction="column" block center>
         <FancyHeading level={1}>{title}</FancyHeading>
         <p>{description}</p>
       </Space>
       <FormWrapper>
         <Space direction="column">
-          <div className="border-b border-ro-muted pb-4">
-            <p className="m-0 text-ro-text-high">
+          <div className="border-b border-current pb-4">
+            <p className="m-0 text-foreground-emphasis">
               {formatNumber(numResults)} {numResults === 1 ? "result" : "results"}
             </p>
             {activeFilterCount ? (
@@ -315,7 +315,7 @@ const SearchPage: NextPage<Props> = ({
             {`${showFilters ? "Hide" : "Show"} Search and Filters`}
           </Button>
           {showFilters && (
-            <div className="max-h-[52vh] overflow-y-auto border-b border-ro-muted pb-4">
+            <div data-ui="filter-panel" className="max-h-panel overflow-y-auto border-b border-current pb-4">
               <Heading level={2}>Search and Filter</Heading>
               <Space block direction="column">
                 {/* First char filter */}
@@ -539,7 +539,7 @@ const SearchPage: NextPage<Props> = ({
                 </Space>
                 <label
                   htmlFor="rebloom"
-                  className="flex cursor-pointer items-center gap-3 text-ro-text-high"
+                  className="flex cursor-pointer items-center gap-3 text-foreground-emphasis"
                 >
                   <input
                     id="rebloom"
@@ -547,7 +547,7 @@ const SearchPage: NextPage<Props> = ({
                     type="checkbox"
                     checked={filters.rebloom}
                     onChange={(e) => handleChange(e, "rebloom")}
-                    className="h-5 w-5 accent-ro-blue"
+                    className="h-5 w-5 accent-primary"
                   />
                   <span>Rebloomers only</span>
                 </label>

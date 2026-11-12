@@ -1,0 +1,16 @@
+{
+  "description": "Public catalog read-model snapshot, exported from the original visual Start fixture. Contains public listings, cultivar display data, catalog membership and public image URLs only; no database or form credentials.",
+  "source": "artifacts/visual/start/fixture.json",
+  "sourceCommit": "77112862a1d9cbb24cbdf9d09a2d54154d871fd3",
+  "snapshotVersion": "38fd55bcb657b27a",
+  "generatedAt": "2026-10-19T21:25:45.741Z",
+  "schemaVersion": 4,
+  "sha256": "74b40d4d1bbfed7a3561c357e202ccf8bc951d70d4751d92f20839c851c0b44a",
+  "uncompressedBytes": 7007699,
+  "counts": {
+    "visibleListings": 3036,
+    "forSaleVisibleListings": 738,
+    "catalogs": 7,
+    "visibleListingImages": 3706
+  }
+}

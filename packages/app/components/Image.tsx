@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import Image from "next/image";
 
 export type ImageSource =
   | string
@@ -30,21 +30,22 @@ export const getImageUrls = (inputSrc: ImageSource) => {
   };
 };
 
-export const getBlurPlaceholderStyle = (
-  inputSrc: ImageSource
-): CSSProperties | undefined => {
-  const source = toImageSource(inputSrc);
+export function BlurPlaceholder({ source }: { source: ImageSource }) {
+  const { blurUrl } = toImageSource(source);
+  if (!blurUrl) return null;
 
-  if (!source.blurUrl) {
-    return undefined;
-  }
-
-  return {
-    backgroundImage: `url("${source.blurUrl}")`,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-  };
-};
+  return (
+    <Image
+      src={blurUrl}
+      alt=""
+      aria-hidden="true"
+      fill
+      sizes="600px"
+      className="scale-110 object-cover blur-lg"
+      unoptimized
+    />
+  );
+}
 
 export const getDevImageRevealClassName = (inputSrc: ImageSource) => {
   const source = toImageSource(inputSrc);
@@ -53,5 +54,5 @@ export const getDevImageRevealClassName = (inputSrc: ImageSource) => {
     return undefined;
   }
 
-  return "ro-dev-image-reveal";
+  return "opacity-0 animate-image-reveal";
 };

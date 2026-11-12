@@ -1,0 +1,142 @@
+/* Semantic design tokens. Values intentionally preserve the original dark theme. */
+:root {
+  --background: #1b2733;
+  --foreground: #aaabad;
+  --foreground-emphasis: #ece9e6;
+  --card: #222d38;
+  --card-foreground: var(--foreground);
+  --popover: #28323e;
+  --popover-foreground: var(--foreground-emphasis);
+  --primary: #1f78d1;
+  --primary-foreground: var(--foreground-emphasis);
+  --primary-hover: #2f8de8;
+  --secondary: var(--popover);
+  --secondary-foreground: var(--foreground-emphasis);
+  --muted: var(--card);
+  --muted-foreground: #7f858c;
+  --accent: var(--secondary);
+  --accent-foreground: var(--foreground-emphasis);
+  --destructive: #ef4444;
+  --destructive-foreground: var(--foreground-emphasis);
+  --destructive-text: #fecaca;
+  --required: #fca5a5;
+  --success: #22c55e;
+  --success-foreground: var(--foreground-emphasis);
+  --success-text: #bbf7d0;
+  --border: #4b5563;
+  --input: var(--border);
+  --input-background: var(--secondary);
+  --input-foreground: var(--foreground-emphasis);
+  --ring: var(--primary);
+  --button-border: var(--muted-foreground);
+  --button-border-hover: var(--foreground-emphasis);
+  --link: #8dbcf5;
+  --link-hover: #b7d5ff;
+  --badge: var(--foreground-emphasis);
+  --badge-foreground: var(--background);
+  --overlay: #000000;
+  --overlay-foreground: #ffffff;
+  --divider-accent: #7c3aed;
+  --divider-gradient: linear-gradient(135deg, var(--primary), var(--divider-accent));
+
+  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --type-heading-1: clamp(2.25rem, 10vw, 3rem);
+  --type-heading-2: clamp(1.6rem, 7vw, 2rem);
+  --type-heading-3: 1.5rem;
+  --type-heading-4: 1.25rem;
+  --type-alert-heading: clamp(1.75rem, 7vw, 2.25rem);
+  --leading-heading: 1.15;
+  --leading-copy: 1.7;
+  --measure-copy: 70ch;
+  --size-panel: 52vh;
+
+  /* Preserve Tailwind's scale; these are component-specific exceptions/roles. */
+  --radius: 0.375rem;
+  --radius-subtle: 0.25rem;
+  --radius-round: 9999px;
+  --space-control-x: calc(var(--spacing) * 3);
+  --space-control-y: calc(var(--spacing) * 2);
+  --space-button-y: 0.35rem;
+  --space-badge-x: calc(var(--spacing) * 1.5);
+  --space-badge-y: 0.0625rem;
+  --stroke-width: 1px;
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --press-offset: 1px;
+  --elevation-toast: 0 10px 15px -3px rgb(0 0 0 / 30%),
+    0 4px 6px -4px rgb(0 0 0 / 30%);
+  --duration-spinner: 0.75s;
+  --duration-fade: 150ms;
+  --ease-fade: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-image-reveal: 1ms;
+  --delay-image-reveal: 1s;
+}
+
+/* shadcn-style role names, exposed through Tailwind v4, without its components
+ * or resets. Structural utilities continue to use the existing Tailwind scale. */
+@theme inline {
+  --color-*: initial;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-foreground-emphasis: var(--foreground-emphasis);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
+  --color-required: var(--required);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-text: var(--success-text);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-input-foreground: var(--input-foreground);
+  --color-ring: var(--ring);
+  --color-button-border: var(--button-border);
+  --color-button-border-hover: var(--button-border-hover);
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-badge: var(--badge);
+  --color-badge-foreground: var(--badge-foreground);
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-divider-accent: var(--divider-accent);
+  --background-image-divider: var(--divider-gradient);
+  --font-sans: var(--font-body);
+  --text-heading-1: var(--type-heading-1);
+  --text-heading-2: var(--type-heading-2);
+  --text-heading-3: var(--type-heading-3);
+  --text-heading-4: var(--type-heading-4);
+  --text-alert-heading: var(--type-alert-heading);
+  --leading-title: var(--leading-heading);
+  --leading-body: var(--leading-copy);
+  --spacing-panel: var(--size-panel);
+  --spacing-control-x: var(--space-control-x);
+  --spacing-control-y: var(--space-control-y);
+  --spacing-button-y: var(--space-button-y);
+  --spacing-badge-x: var(--space-badge-x);
+  --spacing-badge-y: var(--space-badge-y);
+  --spacing-stroke: var(--stroke-width);
+  --spacing-press: var(--press-offset);
+  --radius-sm: var(--radius-subtle);
+  --radius-md: var(--radius);
+  --radius-full: var(--radius-round);
+  --shadow-toast: var(--elevation-toast);
+  --animate-spinner: spinner-rotate var(--duration-spinner) linear infinite;
+  --animate-image-reveal: ro-dev-image-reveal var(--duration-image-reveal) linear var(--delay-image-reveal) forwards;
+  --default-transition-duration: var(--duration-fade);
+  --default-transition-timing-function: var(--ease-fade);
+}

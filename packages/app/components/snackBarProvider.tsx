@@ -47,14 +47,14 @@ export const SnackBarProvider = ({
     <SnackBarContext.Provider value={value}>
       {children}
       <div
-        className="pointer-events-none fixed bottom-4 left-4 z-20 flex max-w-[calc(100vw-2rem)] flex-col items-start justify-center gap-2 text-ro-text-high"
+        className="pointer-events-none fixed bottom-4 left-4 right-4 z-20 flex flex-col items-start justify-center gap-2 text-popover-foreground"
         role="status"
         aria-live="polite"
       >
         {alerts.map((alert, i) => (
           <div
             key={i}
-            className="rounded-md border border-ro-border bg-ro-surface2 px-4 py-2 text-sm font-semibold shadow-lg shadow-black/30"
+            className="rounded-md border border-current bg-popover px-4 py-2 text-sm font-semibold shadow-toast"
           >
             {alert}
           </div>

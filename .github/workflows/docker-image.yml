@@ -111,7 +111,7 @@ jobs:
 
   playwright:
     name: End-to-End Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     timeout-minutes: 60
     permissions:
@@ -138,6 +138,9 @@ jobs:
 
       - name: Test form verification
         run: node --test packages/app/unit-tests/forms.test.cjs
+
+      - name: Lint application and design-system usage
+        run: npm run lint --workspace @packages/app
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

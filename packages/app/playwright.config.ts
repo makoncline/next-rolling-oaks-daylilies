@@ -1,5 +1,12 @@
 import { PlaywrightTestConfig, devices } from "@playwright/test";
 
+const externalServer = process.env.TEST_BASE_URL;
+const port = Number(process.env.PORT || 3000);
+if (!externalServer && (!Number.isInteger(port) || port < 1024 || port > 65535)) {
+  throw new Error("PORT must be a valid unprivileged port");
+}
+const baseURL = externalServer || `http://127.0.0.1:${port}`;
+
 const config: PlaywrightTestConfig = {
   testDir: "./tests",
   timeout: 30 * 1000,
@@ -12,7 +19,7 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
+    baseURL,
     trace: "on-first-retry",
   },
   projects: [
@@ -20,15 +27,21 @@ const config: PlaywrightTestConfig = {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "mobile-chromium",
+      use: { ...devices["Pixel 7"] },
+    },
   ],
-  // Only use the webServer option when running locally
-  ...(process.env.CI
+  // An explicit URL always selects an already-running server, including in CI.
+  // Otherwise own the requested port; never silently reuse another checkout.
+  ...(externalServer
     ? {}
     : {
         webServer: {
-          command: "npm run dev",
-          port: 3000,
-          reuseExistingServer: !process.env.CI,
+          command: `npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+          url: baseURL,
+          reuseExistingServer: false,
+          timeout: 120_000,
         },
       }),
 };

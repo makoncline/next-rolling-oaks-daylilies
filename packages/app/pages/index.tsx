@@ -14,14 +14,14 @@ import Link from "next/link";
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className="grid w-full items-center justify-items-start gap-6 md:grid-cols-[12rem_1fr] lg:grid-cols-[16rem_1fr]">
+      <div className="grid w-full items-center justify-items-start gap-6 md:grid-cols-media">
         <Image
           src={logoSquare}
           placeholder="blur"
           alt="Rolling Oaks Daylilies logo"
           width={256}
-          height={256}
-          className="w-44 max-w-full md:w-48 lg:w-64"
+          height={Math.round((256 * logoSquare.height) / logoSquare.width)}
+          className="h-auto w-44 max-w-full md:w-48 lg:w-64"
         />
 
         <Space direction="column" as="section">
@@ -126,13 +126,13 @@ const Home: NextPage = () => {
           <ContactForm cta="Send Me a Message" successPath="/thanks" />
         </div>
       </Space>
-      <Space block className="justify-end pt-8">
+      <div className="flex w-full max-w-full justify-end gap-4 pt-8">
         <Link href="/catalogs">View Catalogs</Link>
         <Link href="/catalog/search">Search</Link>
-      </Space>
-      <Space className="pt-8">
+      </div>
+      <div className="flex max-w-full gap-4 pt-8">
         <Link href="/blog">Blog</Link>
-      </Space>
+      </div>
     </Layout>
   );
 };

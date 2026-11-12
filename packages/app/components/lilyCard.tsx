@@ -5,11 +5,11 @@ import { useSnackBar } from "./snackBarProvider";
 import Link from "next/link";
 import { ListingType } from "../pages/catalog/[catalog]";
 import { useCart } from "./cart";
-import { Button, Heading, Space } from "components/ui";
+import { Button, Heading, Space, cx } from "components/ui";
 import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import Image from "next/image";
 import {
-  getBlurPlaceholderStyle,
+  BlurPlaceholder,
   getDevImageRevealClassName,
   getImageUrls,
   type ImageSource,
@@ -32,7 +32,6 @@ const LilyCard = ({
       : lily.ahsListing?.ahsImageUrl || PLACEHOLDER_IMAGE_URL;
 
   const images = getImageUrls(imageSource);
-  const blurStyle = getBlurPlaceholderStyle(imageSource);
 
   const cartItem = lily.price && {
     id: lily.id,
@@ -41,16 +40,10 @@ const LilyCard = ({
   };
 
   return (
-    <article className="flex w-full max-w-[300px] flex-col gap-4">
+    <article className="flex w-full max-w-75 flex-col gap-4">
       {imageSource ? (
         <div className="relative aspect-square w-full overflow-hidden">
-          {blurStyle && (
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 scale-110 blur-lg"
-              style={blurStyle}
-            />
-          )}
+          <BlurPlaceholder source={imageSource} />
           <Image
             src={images.full}
             alt={lily.title + " image"}
@@ -58,15 +51,12 @@ const LilyCard = ({
             priority={priority}
             loading={priority ? undefined : "lazy"}
             sizes="600px"
-            className={getDevImageRevealClassName(imageSource)}
-            style={{
-              objectFit: "cover",
-            }}
+            className={cx("object-cover", getDevImageRevealClassName(imageSource))}
             unoptimized
           />
         </div>
       ) : (
-        <div style={{ height: "100%" }} />
+        <div className="h-full" />
       )}
       <Space direction="column">
         <Heading level={2}>{lily.title}</Heading>
@@ -77,14 +67,13 @@ const LilyCard = ({
           </Space>
           {cartItem && (
             <Button
-              className="iconbutton"
               aria-label={`Add ${lily.title} to Cart`}
               onClick={() => {
                 addOrUpdateProduct(cartItem);
                 addAlert(`Added ${lily.title} to Cart`);
               }}
             >
-              <Icon className="icon" icon={cart} aria-hidden="true" />
+              <Icon icon={cart} aria-hidden="true" />
             </Button>
           )}
         </Space>
