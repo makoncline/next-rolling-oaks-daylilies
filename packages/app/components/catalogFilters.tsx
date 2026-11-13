@@ -40,6 +40,13 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
     title: "Listing",
     fields: [
       {
+        key: "name",
+        id: "listing-name",
+        label: "Name",
+        kind: "text",
+        placeholder: "Search plant names",
+      },
+      {
         key: "note",
         id: "note",
         label: "Description",
@@ -331,7 +338,7 @@ function AdvancedSection({
   );
 }
 
-/** Always-visible name search for the catalog toolbar. */
+/** Shared name search for basic and advanced mode. */
 export function NameSearchField({
   value,
   onChange,
@@ -340,7 +347,7 @@ export function NameSearchField({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="relative w-full sm:w-64">
+    <div className="relative w-full">
       <label htmlFor="search" className="sr-only">
         Search by name
       </label>
@@ -446,7 +453,11 @@ export function CatalogFilterPanel({
       aria-label="Filters"
       className="flex flex-col gap-4 rounded-lg border-stroke border-card-border bg-card p-5 xl:sticky xl:top-28 xl:col-span-3 xl:max-h-panel xl:self-start xl:overflow-y-auto"
     >
-      {/* The Filters button names this panel, and the chips above own Clear all. */}
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-meta font-semibold text-foreground-emphasis">Search</span>
+        <ModeSwitch checked={advanced} onChange={onAdvancedChange} />
+      </div>
+      <NameSearchField value={filters.name} onChange={(value) => onChange("name", value)} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2" role="group" aria-label="Quick filters">
           {isSearch && <CatalogFacet id="list" label="Lists" options={filterOptions.lists} value={filters.list} onChange={(value) => onChange("list", value)} />}
@@ -473,7 +484,6 @@ export function CatalogFilterPanel({
             onChange={(checked) => onChange("rebloom", checked)}
           />
         </div>
-        <ModeSwitch checked={advanced} onChange={onAdvancedChange} />
       </div>
 
       {advanced && (

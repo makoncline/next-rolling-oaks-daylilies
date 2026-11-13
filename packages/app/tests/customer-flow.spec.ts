@@ -19,7 +19,6 @@ test("customers can search, filter, select photos and keep cart changes after re
   await page.locator('header a[href="/catalog/search"]:visible').click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
   await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
-  await page.getByRole("button", { name: "Filters", exact: true }).click();
   await page.locator("#search").fill("A Few Good Men");
   await expect(page.locator("main article")).toHaveCount(1);
   await expect(page.locator("main article")).toContainText("A Few Good Men");

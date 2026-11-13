@@ -211,7 +211,7 @@ async function settle(page) {
 async function prepareState(page, entry) {
   if (entry.state === "cart") await page.getByText("A Legacy of Joy", { exact: true }).filter({ visible: true }).waitFor();
   if (entry.state === "filters") {
-    await page.getByRole("button", { name: "Filters", exact: true }).click();
+    await page.locator("[data-ui=filter-panel]").waitFor();
     await page.locator("#rebloom:checked").waitFor();
   }
   if (entry.state === "empty-results") {

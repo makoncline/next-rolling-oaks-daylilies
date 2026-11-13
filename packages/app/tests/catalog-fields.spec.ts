@@ -1,7 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
 async function openAdvanced(page: Page) {
-  await page.getByRole("button", { name: "Filters", exact: true }).click();
   const advanced = page.getByRole("switch", { name: "Advanced", exact: true });
   if (await advanced.getAttribute("aria-checked") === "false") await advanced.click();
 }
@@ -99,7 +98,6 @@ test("range sliders commit on keyboard input and an upper-only bound is clear", 
 
 test("Lists works in basic mode and Parentage persists in advanced mode", async ({ page }) => {
   await page.goto("/catalog/search");
-  await page.getByRole("button", { name: "Filters", exact: true }).click();
   await expect(page.getByRole("switch", { name: "Advanced" })).toHaveAttribute("aria-checked", "false");
   await page.getByRole("button", { name: "Lists", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Lists", exact: true });

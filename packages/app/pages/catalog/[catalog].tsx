@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Breadcrumbs } from "components/breadcrumbs";
-import { SlidersHorizontal } from "lucide-react";
 import Head from "next/head";
 import Layout from "../../components/layout";
 import BackToTop from "../../components/backToTop";
@@ -8,11 +7,10 @@ import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import type { GetServerSideProps, NextPage } from "next";
 import { siteConfig } from "../../siteConfig";
-import { Button, cx, FancyHeading } from "components/ui";
+import { Button, FancyHeading } from "components/ui";
 import {
   ActiveFilterChips,
   CatalogFilterPanel,
-  NameSearchField,
   SortSelect,
   type FilterValue,
 } from "../../components/catalogFilters";
@@ -77,7 +75,6 @@ const SearchPage: NextPage<Props> = ({
   const [searchError, setSearchError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const pendingFiltersRef = React.useRef<Partial<CatalogFilters>>({});
-  const [showFilters, setShowFilters] = useState(false);
   const [advancedSearch, setAdvancedSearch] = useState(false);
   const modePathRef = React.useRef<string | null>(null);
   const sort = isReady ? getCatalogSortFromQuery(query) : "";
@@ -229,10 +226,6 @@ const SearchPage: NextPage<Props> = ({
     );
   }
 
-  function toggleFilters() {
-    setShowFilters((value) => !value);
-  }
-
   const topRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = () => {
     if (topRef.current) {
@@ -331,17 +324,18 @@ const SearchPage: NextPage<Props> = ({
           <p className="m-0 text-muted-foreground">{description}</p>
         ) : null}
       </div>
-      <div className={cx("grid w-full grid-cols-1 gap-6", showFilters && "xl:grid-cols-10 xl:gap-8")}>
-          <div className="flex flex-wrap items-center gap-3 border-b border-border pb-4 xl:col-span-full">
-            <NameSearchField
-              value={filters.name}
-              onChange={(value) => updateFilter("name", value)}
-            />
+      <div className="grid w-full grid-cols-1 gap-6 xl:grid-cols-10 xl:gap-8">
+        <CatalogFilterPanel
+          filters={filters}
+          filterOptions={filterOptions}
+          isSearch={isSearch}
+          advanced={advancedSearch}
+          onAdvancedChange={setAdvancedSearch}
+          onChange={updateFilter}
+        />
+        <div ref={topRef} aria-busy={isLoading} className="flex w-full min-w-0 flex-col gap-6 xl:col-span-7">
+          <div className="flex flex-wrap items-center gap-3 border-b border-border pb-4">
             <div className="flex w-full items-center gap-3 sm:w-auto">
-              <Button onClick={toggleFilters} aria-expanded={showFilters} size="compact">
-                <SlidersHorizontal aria-hidden="true" className="shrink-0 size-4" />
-                Filters
-              </Button>
               <SortSelect value={sort} onChange={updateSort} />
             </div>
             <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:ml-auto sm:w-auto sm:justify-end">
@@ -368,7 +362,7 @@ const SearchPage: NextPage<Props> = ({
             </div>
           </div>
           {activeFilterCount > 0 && (
-            <div className="xl:col-span-full">
+            <div className="min-w-0">
               <ActiveFilterChips
                 filters={filters}
                 onRemove={removeFilter}
@@ -376,17 +370,6 @@ const SearchPage: NextPage<Props> = ({
               />
             </div>
           )}
-          {showFilters && (
-            <CatalogFilterPanel
-              filters={filters}
-              filterOptions={filterOptions}
-              isSearch={isSearch}
-              advanced={advancedSearch}
-              onAdvancedChange={setAdvancedSearch}
-              onChange={updateFilter}
-            />
-          )}
-      <div ref={topRef} aria-busy={isLoading} className={cx("flex w-full min-w-0 flex-col gap-6", showFilters && "xl:col-span-7")}>
         {isLoading && (
           <p role="status" aria-live="polite">
             Loading Results…
@@ -400,7 +383,7 @@ const SearchPage: NextPage<Props> = ({
             </Button>
           </div>
         )}
-        {!searchError && <div className={cx("grid w-full grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4", showFilters && "xl:grid-cols-3")}>
+        {!searchError && <div className="grid w-full grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4 xl:grid-cols-3">
           {displayLilies.map((node: DisplayListing, index) => {
             if (!node) return;
             return (

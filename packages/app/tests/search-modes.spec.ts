@@ -9,9 +9,6 @@ async function resultCount(page: Page) {
 }
 
 async function openFilters(page: Page) {
-  await page
-    .getByRole("button", { name: "Filters", exact: true })
-    .click();
   await expect(page.locator("[data-ui=filter-panel]")).toBeVisible();
 }
 
@@ -250,9 +247,11 @@ test("catalog navigation clears filters and closes the mobile menu", async ({ pa
   await expect(page.locator("main article").first()).toBeVisible();
 });
 
-test("name search is visible in the catalog toolbar without opening filters", async ({ page }) => {
+test("basic search and checkboxes are visible immediately and advanced Name stays in sync", async ({ page }) => {
   await page.goto("/catalog/search");
-  await expect(page.locator("[data-ui=filter-panel]")).toHaveCount(0);
+  await expect(page.locator("[data-ui=filter-panel]")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Filters", exact: true })).toHaveCount(0);
+  await expect(page.locator("#forSale")).toBeVisible();
   const search = page.getByRole("searchbox", { name: "Search by name" });
   await expect(search).toBeVisible();
   await search.fill("A Few Good Men");
@@ -261,10 +260,18 @@ test("name search is visible in the catalog toolbar without opening filters", as
   await expect(page.getByRole("status").filter({ hasText: /^1 result$/ })).toBeVisible();
   await expect(page.locator('[data-ui="notifications"]')).toBeEmpty();
 
-  await search.fill("Coff");
+  await openFilters(page);
+  await advancedSwitch(page).click();
+  const listingName = page.getByRole("textbox", { name: "Name", exact: true });
+  await expect(listingName).toHaveValue("A Few Good Men");
+  await listingName.fill("Coff");
+  await expect(search).toHaveValue("Coff");
   await expect(page).toHaveURL(/name=Coff/);
   await expect(page.locator("main article").first()).toContainText(/Coff/i);
   await expect(page.locator('[data-ui="notifications"]')).toBeEmpty();
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
+  await expect(search).toHaveValue("");
+  await expect(listingName).toHaveValue("");
 });
 
 test("Back after paging returns to the previous catalog page", async ({ page }) => {
