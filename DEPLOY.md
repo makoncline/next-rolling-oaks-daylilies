@@ -191,7 +191,7 @@ Public responses do not set cookies and do not change with cookies or `Authoriza
 
 ### Cloudflare Cache Rule
 
-Create one Cache Rule in the `rollingoaksdaylilies.com` zone (**Caching > Cache Rules**). The Free plan supports Cache Rules, `Cloudflare-CDN-Cache-Control`, and purge by tag. Before you create the rule, examine the existing Cache Rules in the zone. Do not add a Cache Response Rule or a Worker for these responses. Paste the expression into the dashboard expression editor and make sure that it is valid before you deploy the rule.
+Create one Cache Rule in the `rollingoaksdaylilies.com` zone (**Caching > Cache Rules**). No code manages this rule, so this section is its record. When you change the rule in the dashboard, update this section in the same change. The Free plan supports Cache Rules, `Cloudflare-CDN-Cache-Control`, and purge by tag. Before you create the rule, examine the existing Cache Rules in the zone. Do not add a Cache Response Rule or a Worker for these responses. Paste the expression into the dashboard expression editor and make sure that it is valid before you deploy the rule.
 
 - Rule name: `Rolling Oaks app response cache`
 - Expression:
