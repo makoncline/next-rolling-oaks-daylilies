@@ -86,12 +86,6 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
     title: "Bloom Traits",
     fields: [
       {
-        key: "rebloom",
-        id: "rebloom",
-        label: CATALOG_FILTER_LABELS.rebloom,
-        kind: "toggle",
-      },
-      {
         key: "bloomHabit",
         id: "bloomHabit",
         label: "Bloom habit",
@@ -104,6 +98,12 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
         label: "Bloom season",
         kind: "facet",
         options: (o) => o.bloomSeasons,
+      },
+      {
+        key: "rebloom",
+        id: "rebloom",
+        label: CATALOG_FILTER_LABELS.rebloom,
+        kind: "toggle",
       },
       {
         key: "scapeHeight",
