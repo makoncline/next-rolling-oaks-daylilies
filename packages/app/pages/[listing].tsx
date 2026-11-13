@@ -3,7 +3,7 @@ import { Breadcrumbs } from "components/breadcrumbs";
 import { Check, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import type { GetStaticProps } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import Layout from "../components/layout";
 import { useCart } from "components/cart";
@@ -23,6 +23,7 @@ import {
   type PublicSnapshot,
 } from "../lib/publicSnapshot";
 import { formatCurrency, formatShortDate } from "../lib/format";
+import { cacheAtEdge } from "lib/cdnCache";
 
 const traitLabels: Partial<Record<keyof AhsDisplay, string>> = {
   hybridizer: "Hybridizer",
@@ -438,14 +439,7 @@ function getDetailFields(ahsData: AhsDisplay) {
     }));
 }
 
-export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-}
-
-export const getStaticProps: GetStaticProps<Props, { listing: string }> = async (context) => {
+export const getServerSideProps: GetServerSideProps<Props, { listing: string }> = async (context) => {
   const slug = context.params?.listing;
   if (!slug) {
     return {
@@ -462,12 +456,12 @@ export const getStaticProps: GetStaticProps<Props, { listing: string }> = async 
     };
   }
 
+  cacheAtEdge(context.res);
   return {
     props: {
       listing,
       parentLinks: getParentLinks(snapshot, listing),
       related: getRelatedListings(snapshot, listing),
     },
-    revalidate: 900,
   };
 };

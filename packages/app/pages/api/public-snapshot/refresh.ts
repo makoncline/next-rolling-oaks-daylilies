@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { refreshPublicSnapshotWithResult } from "../../../lib/publicSnapshot";
+import { neverCacheAtEdge } from "../../../lib/cdnCache";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  res.setHeader("Cache-Control", "no-store");
+  neverCacheAtEdge(res);
   res.setHeader("Referrer-Policy", "no-referrer");
 
   if (req.method !== "GET") {
@@ -32,12 +33,8 @@ export default async function handler(
   const requestedTrigger = Array.isArray(req.query.trigger)
     ? req.query.trigger[0]
     : req.query.trigger;
-  const trigger =
-    requestedTrigger === "background" || requestedTrigger === "missing"
-      ? requestedTrigger
-      : "manual";
+  const trigger = requestedTrigger === "missing" ? requestedTrigger : "manual";
   const requestEvents = {
-    background: "public_snapshot_background_refresh_requested",
     manual: "public_snapshot_manual_refresh_requested",
     missing: "public_snapshot_missing_refresh_requested",
   } as const;
@@ -53,7 +50,7 @@ export default async function handler(
 
   const result = await refreshPublicSnapshotWithResult({
     trigger,
-    force: trigger !== "background",
+    force: true,
   });
   const { snapshot } = result;
   res.status(200).json({

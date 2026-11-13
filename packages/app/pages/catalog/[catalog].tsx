@@ -35,6 +35,7 @@ import {
   type CatalogSort,
 } from "../../lib/catalogSearch";
 import { formatNumber } from "../../lib/format";
+import { cacheAtEdge } from "lib/cdnCache";
 
 const textFilterKeys = new Set(["name", "color", "note", "parentage"]);
 const nonSearchQueryKeys = new Set(["catalog", "filters"]);
@@ -487,6 +488,7 @@ export const getServerSideProps: GetServerSideProps<
     getCatalogSortFromQuery(context.query)
   );
 
+  cacheAtEdge(context.res);
   return {
     props: {
       title,

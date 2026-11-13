@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 import { getSitemapUrls } from "lib/sitemap";
+import { cacheAtEdge } from "lib/cdnCache";
 
 const SitemapXml = () => null;
 
@@ -12,7 +13,7 @@ ${urls.join("\n")}
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "text/xml");
-  res.setHeader("Cache-Control", "stale-while-revalidate, s-maxage=3600");
+  cacheAtEdge(res);
   res.write(xml);
   res.end();
 

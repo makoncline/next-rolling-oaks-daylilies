@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import nodemailer from "nodemailer";
 import { z } from "zod";
+import { neverCacheAtEdge } from "../../lib/cdnCache";
 
 type FormName = "contact" | "cart";
 
@@ -203,6 +204,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  neverCacheAtEdge(res);
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     res.status(405).json({ error: "Method not allowed" });

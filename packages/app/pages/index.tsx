@@ -17,6 +17,7 @@ import {
   getPublicSnapshot,
   type PublicListingCard,
 } from "../lib/publicSnapshot";
+import { cacheAtEdge } from "lib/cdnCache";
 
 const INTRODUCTIONS_SLUG = "kay-cline's-introductions";
 // Fills full rows in both the two- and three-column layouts.
@@ -255,6 +256,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ res }) => 
     .slice(0, FEATURED_COUNT)
     .map(({ listing }) => listing);
 
-  res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
+  cacheAtEdge(res);
   return { props: { introductions, introductionCount: all.length } };
 };

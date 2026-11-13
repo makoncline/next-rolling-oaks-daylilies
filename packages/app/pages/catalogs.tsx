@@ -1,10 +1,11 @@
 import React from "react";
 import Layout from "../components/layout";
 import { CatalogCard } from "../components/catalogCard";
-import { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { Heading } from "components/ui";
 import { PLACEHOLDER_IMAGE_URL } from "lib/getPlaceholderImage";
 import { getPublicSnapshot, PublicCatalogSummary } from "../lib/publicSnapshot";
+import { cacheAtEdge } from "lib/cdnCache";
 
 const getCardProps = (node: PublicCatalogSummary) => ({
   image: node.image
@@ -43,12 +44,15 @@ const Catalogs: NextPage<{ catalogs: PublicCatalogSummary[] }> = ({
 
 export default Catalogs;
 
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps<{
+  catalogs: PublicCatalogSummary[];
+}> = async ({ res }) => {
   const snapshot = await getPublicSnapshot();
   const realCatalogs = Object.values(snapshot.catalogsBySlug)
     .filter((catalog) => !["all", "search", "for-sale"].includes(catalog.slug))
     .sort((a, b) => b.totalCount - a.totalCount);
 
+  cacheAtEdge(res);
   return {
     props: {
       catalogs: [
@@ -58,4 +62,4 @@ export async function getServerSideProps() {
       ].filter(Boolean),
     },
   };
-}
+};

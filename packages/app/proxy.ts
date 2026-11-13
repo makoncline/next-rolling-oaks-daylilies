@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { siteConfig } from "./siteConfig";
+import { uncachedCdnHeaders } from "./lib/cdnCache";
 
 const markdownPaths = new Set([
   "/",
@@ -104,7 +105,7 @@ export function proxy(request: NextRequest) {
   return new NextResponse(markdown, {
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
-      "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+      ...uncachedCdnHeaders,
       "Vary": "Accept",
       "X-Markdown-Tokens": String(toTokenEstimate(markdown)),
     },
