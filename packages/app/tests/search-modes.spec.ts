@@ -33,6 +33,7 @@ test("basic search shows name search and quick filters only", async ({ page }) =
   await expect(page.locator("#search")).toBeVisible();
   await expect(page.locator("#forSale")).toBeVisible();
   await expect(page.locator("#photo")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Lists", exact: true })).toBeVisible();
   await expect(page.locator("#rebloom")).toBeVisible();
   await expect(page.locator("#ploidy")).toHaveCount(0);
   await expect(page.locator("#hybridizer")).toHaveCount(0);
@@ -47,17 +48,19 @@ test("advanced search reveals grouped sections with active counts", async ({ pag
 
   await advancedSwitch(page).click();
   await expect(advancedSwitch(page)).toHaveAttribute("aria-checked", "true");
-  for (const name of ["Listing", "Registration", "Bloom", "Plant"]) {
+  for (const name of ["Listing", "Registration", "Bloom Traits", "Classification & Details"]) {
     await expect(page.getByRole("button", { name, exact: true })).toBeVisible();
   }
   // The first section starts open; the rest stay collapsed until chosen.
   await expect(page.locator("#letters")).toBeVisible();
   await expect(page.locator("#ploidy")).toBeHidden();
 
-  const plant = page.getByRole("button", { name: "Plant", exact: true });
+  const plant = page.getByRole("button", { name: "Classification & Details", exact: true });
   await plant.click();
   await expect(plant).toHaveAttribute("aria-expanded", "true");
-  await page.locator("#ploidy").selectOption("Tetraploid");
+  await page.locator("#ploidy").click();
+  await page.getByRole("checkbox", { name: "Tetraploid", exact: true }).check();
+  await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/ploidy=Tetraploid/);
   await expect.poll(() => resultCount(page)).toBeLessThan(total);
   await expect(plant).toHaveAccessibleDescription("1 active filter");
@@ -119,7 +122,9 @@ test("shared links with advanced filters open advanced mode and the section", as
 
   await expect(advancedSwitch(page)).toHaveAttribute("aria-checked", "true");
   await expect(page.locator("#ploidy")).toBeVisible();
-  await expect(page.locator("#ploidy")).toHaveValue("Tetraploid");
+  await page.locator("#ploidy").click();
+  await expect(page.getByRole("checkbox", { name: "Tetraploid", exact: true })).toBeChecked();
+  await page.keyboard.press("Escape");
   await expect(page.locator("#rebloom")).toBeChecked();
 
   // Switching back to basic hides the fields but keeps the filters applied.
@@ -149,7 +154,7 @@ test("the advanced switch and sections work from the keyboard", async ({ page, i
   await page.keyboard.press("Space");
   await expect(advancedSwitch(page)).toHaveAttribute("aria-checked", "true");
 
-  const bloom = page.getByRole("button", { name: "Bloom", exact: true });
+  const bloom = page.getByRole("button", { name: "Bloom Traits", exact: true });
   await bloom.focus();
   await page.keyboard.press("Enter");
   await expect(bloom).toHaveAttribute("aria-expanded", "true");
@@ -161,7 +166,7 @@ test("advanced filters fit narrow screens without horizontal scrolling", async (
   await page.goto("/catalog/search?hybridizer=Tim%20Bell");
   await openFilters(page);
   await expect(page.locator("#hybridizer")).toBeVisible();
-  for (const name of ["Listing", "Bloom", "Plant"]) {
+  for (const name of ["Listing", "Bloom Traits", "Classification & Details"]) {
     await page.getByRole("button", { name, exact: true }).click();
   }
   expect(
@@ -210,7 +215,7 @@ test("failed searches show an error and can retry the selected filters", async (
 });
 
 test("catalog API includes price boundaries and matches selected foliage exactly", async ({ request }) => {
-  for (const [price, minimum, maximum] of [["two", 10, 19.99], ["six", 50, Infinity]] as const) {
+  for (const [price, minimum, maximum] of [["10:19.99", 10, 19.99], ["50:", 50, Infinity]] as const) {
     const response = await request.get(`/api/catalog/search?price=${price}&limit=100`);
     expect(response.ok()).toBe(true);
     const { listings } = await response.json();

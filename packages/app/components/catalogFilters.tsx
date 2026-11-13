@@ -1,12 +1,13 @@
 import React from "react";
 import { ArrowUpDown, ChevronDown, Search, X } from "lucide-react";
+import { CatalogRange } from "./catalogRange";
+import { catalogRangeFields, describeRange, type CatalogRangeKey } from "lib/catalogRanges";
+import { selectedValues } from "lib/catalogTraits";
+import { CatalogFacet } from "./catalogFacet";
 import { cx } from "components/ui";
 import {
-  BLOOM_SIZE_OPTIONS,
   CATALOG_FILTER_LABELS,
   CATALOG_SORT_OPTIONS,
-  PRICE_OPTIONS,
-  SCAPE_HEIGHT_OPTIONS,
   getActiveFilterKeys,
   type CatalogFilterKey,
   type CatalogFilterOptions,
@@ -23,10 +24,11 @@ type FieldDefinition = {
   id: string;
   label: string;
   placeholder?: string;
-  searchOnly?: boolean;
   allLabel?: string;
 } & (
+  | { kind: "range"; key: CatalogRangeKey }
   | { kind: "text" }
+  | { kind: "facet"; options: (options: CatalogFilterOptions) => Option[] }
   | { kind: "select"; options: (options: CatalogFilterOptions) => Option[] }
 );
 
@@ -39,7 +41,6 @@ type SectionDefinition = {
 const toOptions = (values: string[]) =>
   values.map((value) => ({ value, label: value }));
 
-// Advanced sections, grouped the way buyers narrow a daylily search.
 const ADVANCED_SECTIONS: SectionDefinition[] = [
   {
     id: "listing",
@@ -48,32 +49,22 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
       {
         key: "char",
         id: "letters",
-        label: "First character of name is:",
+        label: "First letter or number",
         kind: "select",
         options: (o) => toOptions(o.chars),
       },
       {
-        key: "list",
-        id: "list",
-        label: "On list:",
-        kind: "select",
-        searchOnly: true,
-        allLabel: "Any",
-        options: (o) => toOptions(o.lists),
-      },
-      {
         key: "note",
         id: "note",
-        label: "Note includes:",
+        label: "Description",
         kind: "text",
-        placeholder: "Enter daylily note text here…",
+        placeholder: "Search public descriptions",
       },
       {
         key: "price",
         id: "price",
-        label: "Price is:",
-        kind: "select",
-        options: () => PRICE_OPTIONS,
+        label: "Price",
+        kind: "range",
       },
     ],
   },
@@ -84,100 +75,111 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
       {
         key: "hybridizer",
         id: "hybridizer",
-        label: "Hybridizer is:",
-        kind: "select",
+        label: "Hybridizer",
+        kind: "facet",
         options: (o) => toOptions(o.hybridizers),
       },
       {
         key: "year",
         id: "year",
-        label: "Year is:",
-        kind: "select",
-        options: (o) => toOptions(o.years),
+        label: "Year",
+        kind: "range",
       },
     ],
   },
   {
     id: "bloom",
-    title: "Bloom",
+    title: "Bloom Traits",
     fields: [
       {
-        key: "color",
-        id: "color",
-        label: "Color includes:",
-        kind: "text",
-        placeholder: "Enter daylily color here…",
-      },
-      {
-        key: "bloomSize",
-        id: "bloomSize",
-        label: "Bloom size is:",
-        kind: "select",
-        options: () => BLOOM_SIZE_OPTIONS,
+        key: "bloomHabit",
+        id: "bloomHabit",
+        label: "Bloom habit",
+        kind: "facet",
+        options: (o) => toOptions(o.bloomHabits),
       },
       {
         key: "bloomSeason",
         id: "bloomSeason",
-        label: "Bloom Season is:",
-        kind: "select",
+        label: "Bloom season",
+        kind: "facet",
         options: (o) => toOptions(o.bloomSeasons),
       },
       {
-        key: "fragrance",
-        id: "fragrance",
-        label: "Fragrance is:",
-        kind: "select",
-        options: (o) => toOptions(o.fragrances),
+        key: "scapeHeight",
+        id: "scapeHeight",
+        label: "Scape height",
+        kind: "range",
+      },
+      {
+        key: "bloomSize",
+        id: "bloomSize",
+        label: "Bloom size",
+        kind: "range",
+      },
+      {
+        key: "budcount",
+        id: "budcount",
+        label: "Bud count",
+        kind: "range",
+      },
+      {
+        key: "branches",
+        id: "branches",
+        label: "Branches",
+        kind: "range",
       },
     ],
   },
   {
     id: "plant",
-    title: "Plant",
+    title: "Classification & Details",
     fields: [
-      {
-        key: "scapeHeight",
-        id: "scapeHeight",
-        label: "Scape Height is:",
-        kind: "select",
-        options: () => SCAPE_HEIGHT_OPTIONS,
-      },
       {
         key: "form",
         id: "form",
-        label: "Form is:",
-        kind: "select",
+        label: "Form",
+        kind: "facet",
         options: (o) => toOptions(o.forms),
       },
       {
         key: "ploidy",
         id: "ploidy",
-        label: "Ploidy is:",
-        kind: "select",
+        label: "Ploidy",
+        kind: "facet",
         options: (o) => toOptions(o.ploidies),
       },
       {
         key: "foliageType",
         id: "foliageType",
-        label: "Foliage type is:",
-        kind: "select",
+        label: "Foliage type",
+        kind: "facet",
         options: (o) => toOptions(o.foliageTypes),
+      },
+      {
+        key: "fragrance",
+        id: "fragrance",
+        label: "Fragrance",
+        kind: "facet",
+        options: (o) => toOptions(o.fragrances),
+      },
+      {
+        key: "color",
+        id: "color",
+        label: "Color",
+        kind: "text",
+        placeholder: "Search color descriptions",
+      },
+      {
+        key: "parentage",
+        id: "parentage",
+        label: "Parentage",
+        kind: "text",
+        placeholder: "Search parentage",
       },
     ],
   },
 ];
-
-const STATIC_VALUE_LABELS: Partial<Record<CatalogFilterKey, Option[]>> = {
-  bloomSize: BLOOM_SIZE_OPTIONS,
-  scapeHeight: SCAPE_HEIGHT_OPTIONS,
-  price: PRICE_OPTIONS,
-};
-
-const getVisibleSections = (isSearch: boolean) =>
-  ADVANCED_SECTIONS.map((section) => ({
-    ...section,
-    fields: section.fields.filter((field) => isSearch || !field.searchOnly),
-  })).filter((section) => section.fields.length > 0);
 
 const countActive = (section: SectionDefinition, filters: CatalogFilters) =>
   section.fields.filter((field) => Boolean(filters[field.key])).length;
@@ -197,6 +199,12 @@ function FilterField({
   onChange: (key: CatalogFilterKey, value: FilterValue) => void;
 }) {
   const value = String(filters[field.key] || "");
+  if (field.kind === "range") {
+    return <CatalogRange field={field.key} value={value} bounds={filterOptions.ranges[field.key]} onChange={(next) => onChange(field.key, next)} />;
+  }
+  if (field.kind === "facet") {
+    return <CatalogFacet id={field.id} label={field.label} options={field.options(filterOptions).map((option) => option.value)} value={value} onChange={(next) => onChange(field.key, next)} />;
+  }
   return (
     <div className={fieldClassName}>
       <label htmlFor={field.id}>{field.label}</label>
@@ -433,7 +441,7 @@ export function CatalogFilterPanel({
   onAdvancedChange: (advanced: boolean) => void;
   onChange: (key: CatalogFilterKey, value: FilterValue) => void;
 }) {
-  const sections = getVisibleSections(isSearch);
+  const sections = ADVANCED_SECTIONS;
   const [openSections, setOpenSections] = React.useState<Set<string>>(() => {
     const active = sections
       .filter((section) => countActive(section, filters) > 0)
@@ -472,6 +480,7 @@ export function CatalogFilterPanel({
       {/* The Filters button names this panel, and the chips above own Clear all. */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2" role="group" aria-label="Quick filters">
+          {isSearch && <CatalogFacet id="list" label="Lists" options={filterOptions.lists} value={filters.list} onChange={(value) => onChange("list", value)} />}
           {filterOptions.canFilterForSale && (
             <QuickToggle
               id="forSale"
@@ -531,10 +540,9 @@ const describeFilter = (
 ) => {
   const label = CATALOG_FILTER_LABELS[key];
   if (typeof value === "boolean") return label;
-  const staticLabel = STATIC_VALUE_LABELS[key]?.find(
-    (option) => option.value === value
-  )?.label;
-  return `${label}: ${staticLabel ?? value}`;
+  if (key in catalogRangeFields) return `${label}: ${describeRange(key as CatalogRangeKey, value)}`;
+  if (value.includes("|")) return `${label}: ${selectedValues(value).join(", ")}`;
+  return `${label}: ${value}`;
 };
 
 export function ActiveFilterChips({

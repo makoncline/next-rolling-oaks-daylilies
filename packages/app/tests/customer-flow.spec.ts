@@ -30,17 +30,19 @@ test("customers can search, filter, select photos and keep cart changes after re
   await expect(page).toHaveURL(/\/catalog\/search$/);
   await expect(page.locator("main article").first()).toBeVisible();
   await page.getByRole("switch", { name: "Advanced" }).click();
-  await page.getByRole("button", { name: "Plant", exact: true }).click();
-  await page.locator("#ploidy").selectOption("Tetraploid");
+  await page.getByRole("button", { name: "Classification & Details", exact: true }).click();
+  await page.locator("#ploidy").click();
+  await page.getByRole("checkbox", { name: "Tetraploid", exact: true }).check();
+  await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/ploidy=Tetraploid/);
   await page.locator("#rebloom").check();
   await expect(page).toHaveURL(/rebloom=true/);
-  await expect(page.locator("#ploidy")).toHaveValue("Tetraploid");
+  await expect(page.locator("#ploidy")).toHaveText("Ploidy1");
   await expect(page.locator("main article").first()).toBeVisible();
   await expectNoOverflow(page);
   await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page.locator("#rebloom")).not.toBeChecked();
-  await expect(page.locator("#ploidy")).toHaveValue("");
+  await expect(page.locator("#ploidy")).toHaveText("Ploidy");
 
   await page.goto("/3081");
   const photo = page.getByRole("img", { name: "19-4 Photo", exact: true });

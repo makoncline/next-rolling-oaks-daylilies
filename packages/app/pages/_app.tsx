@@ -10,7 +10,7 @@ const figtree = Figtree({ subsets: ["latin"], display: "swap", variable: "--font
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className={`${figtree.variable} font-sans`}>
+    <div id="app-root" className={`${figtree.variable} font-sans`}>
       <CartProvider>
         <SnackBarProvider>
           <Component {...pageProps} />

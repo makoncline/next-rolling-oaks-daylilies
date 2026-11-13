@@ -38,7 +38,7 @@ import {
 } from "../../lib/catalogSearch";
 import { formatNumber } from "../../lib/format";
 
-const textFilterKeys = new Set(["name", "color", "note"]);
+const textFilterKeys = new Set(["name", "color", "note", "parentage"]);
 const nonSearchQueryKeys = new Set(["catalog", "filters"]);
 
 type Props = {

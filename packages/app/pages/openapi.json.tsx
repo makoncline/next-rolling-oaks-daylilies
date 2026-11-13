@@ -57,14 +57,23 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
               "form",
               "foliageType",
               "note",
+              "parentage",
               "fragrance",
               "bloomSize",
               "scapeHeight",
               "bloomSeason",
+              "bloomHabit",
+              "budcount",
+              "branches",
               "price",
             ].map((name) => ({
               name,
               in: "query",
+              description: ["price", "year", "bloomSize", "scapeHeight", "budcount", "branches"].includes(name)
+                ? "Inclusive min:max range; either bound can be empty. Example: 4.5:7 or :25."
+                : ["list", "hybridizer", "ploidy", "form", "foliageType", "fragrance", "bloomSeason", "bloomHabit"].includes(name)
+                  ? "One or more choices separated by |; matches any selected choice."
+                  : "Case-insensitive text match.",
               schema: { type: "string" },
             })),
             ...["rebloom", "forSale", "photo"].map((name) => ({
