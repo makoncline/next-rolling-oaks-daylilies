@@ -8,29 +8,41 @@ export function CatalogRange({ field, value, bounds, onChange }: {
   bounds: RangeBounds;
   onChange: (value: string) => void;
 }) {
-  const { label, unit, step } = catalogRangeFields[field];
+  const { label, unit, integerOnly } = catalogRangeFields[field];
   const initial = parseRange(value);
-  const [draft, setDraft] = React.useState<[string, string]>([initial?.[0]?.toString() ?? "", initial?.[1]?.toString() ?? ""]);
+  const [draft, setDraft] = React.useState<[string, string]>([
+    String(initial?.[0] ?? bounds.min), String(initial?.[1] ?? bounds.max),
+  ]);
   React.useEffect(() => {
     const range = parseRange(value);
-    setDraft([range?.[0]?.toString() ?? "", range?.[1]?.toString() ?? ""]);
-  }, [value]);
-  const selection = draft.some(Boolean) ? draft.join(":") : "";
-  const invalid = Boolean(selection && (!parseRange(selection) || (step === 1 && draft.some((part) => part && !Number.isInteger(Number(part))))));
+    setDraft([String(range?.[0] ?? bounds.min), String(range?.[1] ?? bounds.max)]);
+  }, [value, bounds.min, bounds.max]);
+  const serialize = (numbers: [number, number]) => {
+    const min = numbers[0] === bounds.min ? "" : String(numbers[0]);
+    const max = numbers[1] === bounds.max ? "" : String(numbers[1]);
+    return min || max ? `${min}:${max}` : "";
+  };
+  const numbers: [number, number] = [Number(draft[0] || bounds.min), Number(draft[1] || bounds.max)];
+  const selection = serialize(numbers);
+  const invalid = !parseRange(numbers.join(":")) || (integerOnly && numbers.some((number) => !Number.isInteger(number)));
   const errorId = `${field}-error`;
-  const commit = () => { if (!invalid && selection !== value) onChange(selection); };
-  const sliderMin = invalid ? bounds.min : Math.min(bounds.min, Number(draft[0] || bounds.min));
-  const sliderMax = invalid ? Math.max(bounds.max, bounds.min + step) : Math.max(sliderMin + step, bounds.max, Number(draft[1] || bounds.max));
+  const commit = () => {
+    if (invalid) return;
+    setDraft([String(numbers[0]), String(numbers[1])]);
+    if (selection !== value) onChange(selection);
+  };
+  const sliderMin = invalid ? bounds.min : Math.min(bounds.min, numbers[0]);
+  const sliderMax = invalid ? Math.max(bounds.max, bounds.min + 1) : Math.max(sliderMin + 1, bounds.max, numbers[1]);
   return (
     <fieldset className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0">
       <legend className="mb-2 text-meta text-muted-foreground">{label}{unit && ` (${unit})`}</legend>
       <Slider.Root
         min={sliderMin}
         max={sliderMax}
-        step={step}
-        value={invalid ? [bounds.min, bounds.max] : [Number(draft[0] || bounds.min), Number(draft[1] || bounds.max)]}
+        step={1}
+        value={invalid ? [bounds.min, bounds.max] : numbers}
         onValueChange={(numbers) => setDraft([String(numbers[0]), String(numbers[1])])}
-        onValueCommit={(numbers) => onChange(numbers.join(":"))}
+        onValueCommit={(numbers) => onChange(serialize([numbers[0], numbers[1]]))}
         className="relative flex h-8 w-full touch-none select-none items-center"
       >
         <Slider.Track className="relative h-1 grow rounded-full bg-border-strong">
@@ -46,11 +58,10 @@ export function CatalogRange({ field, value, bounds, onChange }: {
             <input
               type="number"
               min={0}
-              step={step}
+              step={1}
               aria-label={`${label} ${bound.toLowerCase()}`}
               aria-invalid={invalid || undefined}
               aria-describedby={invalid ? errorId : undefined}
-              placeholder="Any"
               value={draft[index]}
               onChange={(event) => setDraft((current) => index === 0 ? [event.target.value, current[1]] : [current[0], event.target.value])}
               onBlur={commit}
@@ -60,8 +71,8 @@ export function CatalogRange({ field, value, bounds, onChange }: {
           </label>
         ))}
       </div>
-      {invalid && <p id={errorId} role="alert" className="m-0 text-meta text-destructive">Use nonnegative {step === 1 ? "whole numbers" : "numbers"}, with minimum no greater than maximum.</p>}
-      {(value || draft.some(Boolean)) && <button type="button" onClick={() => { setDraft(["", ""]); onChange(""); }} className="min-h-control-compact self-start bg-transparent text-meta text-muted-foreground underline underline-offset-4">Clear {label.toLowerCase()}</button>}
+      {invalid && <p id={errorId} role="alert" className="m-0 text-meta text-destructive">Use nonnegative {integerOnly ? "whole numbers" : "numbers"}, with minimum no greater than maximum.</p>}
+      {(value || selection) && <button type="button" onClick={() => { setDraft([String(bounds.min), String(bounds.max)]); onChange(""); }} className="min-h-control-compact self-start bg-transparent text-meta text-muted-foreground underline underline-offset-4">Clear {label.toLowerCase()}</button>}
     </fieldset>
   );
 }

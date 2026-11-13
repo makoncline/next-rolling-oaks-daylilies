@@ -284,7 +284,7 @@ export const filterCatalogListings = (
   }
 
   for (const key of Object.keys(catalogRangeFields) as CatalogRangeKey[]) {
-    if (filters[key]) filtered = filtered.filter((listing) => matchesRange(catalogRangeFields[key].value(listing), filters[key], catalogRangeFields[key].step));
+    if (filters[key]) filtered = filtered.filter((listing) => matchesRange(catalogRangeFields[key].value(listing), filters[key], catalogRangeFields[key].integerOnly));
   }
 
   return sortTitlesLettersBeforeNumbers(filtered);

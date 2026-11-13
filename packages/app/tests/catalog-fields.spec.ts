@@ -33,8 +33,7 @@ test("Form offers separate traits, combines choices, and retains them on reload"
   await page.getByRole("button", { name: "Form", exact: true }).click();
   await expect(choices.getByRole("checkbox", { name: "Double", exact: true })).toBeChecked();
   await expect(choices.getByRole("checkbox", { name: "Spider", exact: true })).toBeChecked();
-  await choices.getByRole("searchbox").fill("unusual");
-  await expect(choices.getByRole("checkbox")).toHaveCount(1);
+  await expect(choices.getByRole("searchbox")).toHaveCount(0);
   await choices.getByRole("button", { name: "Clear form", exact: true }).click();
   await expect(page).not.toHaveURL(/form=/);
 });
@@ -94,8 +93,8 @@ test("range sliders commit on keyboard input and an upper-only bound is clear", 
   const slider = page.getByRole("slider", { name: "Price maximum", exact: true });
   await slider.focus();
   await slider.press("ArrowLeft");
-  await expect(max).toHaveValue("24.99");
-  await expect.poll(() => new URL(page.url()).searchParams.get("price")?.split(":")[1]).toBe("24.99");
+  await expect(max).toHaveValue("24");
+  await expect.poll(() => new URL(page.url()).searchParams.get("price")?.split(":")[1]).toBe("24");
 });
 
 test("Lists works in basic mode and Parentage persists in advanced mode", async ({ page }) => {
@@ -104,7 +103,7 @@ test("Lists works in basic mode and Parentage persists in advanced mode", async 
   await expect(page.getByRole("switch", { name: "Advanced" })).toHaveAttribute("aria-checked", "false");
   await page.getByRole("button", { name: "Lists", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Lists", exact: true });
-  await dialog.getByRole("searchbox").fill("Kay Cline");
+  await expect(dialog.getByRole("searchbox")).toHaveCount(0);
   await dialog.getByRole("checkbox", { name: "Kay Cline's Introductions", exact: true }).check();
   await page.keyboard.press("Escape");
   await expect(page.locator("main article").first()).toBeVisible();
@@ -118,4 +117,33 @@ test("Lists works in basic mode and Parentage persists in advanced mode", async 
   await page.reload();
   await openAdvanced(page);
   await expect(page.getByRole("textbox", { name: "Parentage", exact: true })).toHaveValue("Highland Lord");
+});
+
+
+test("ranges show their endpoints and every slider moves by one", async ({ page }) => {
+  await page.goto("/catalog/search");
+  await openAdvanced(page);
+  for (const name of ["Registration", "Bloom Traits"]) await page.getByRole("button", { name, exact: true }).click();
+  for (const label of ["Price", "Year", "Bloom size", "Scape height", "Bud count", "Branches"]) {
+    const minimum = page.getByRole("spinbutton", { name: `${label} minimum`, exact: true });
+    const maximum = page.getByRole("spinbutton", { name: `${label} maximum`, exact: true });
+    const low = await minimum.inputValue();
+    const high = await maximum.inputValue();
+    expect(low).not.toBe("");
+    expect(high).not.toBe("");
+    await expect(minimum).toHaveAttribute("step", "1");
+    await expect(maximum).toHaveAttribute("step", "1");
+    await page.getByRole("slider", { name: `${label} maximum`, exact: true }).press("ArrowLeft");
+    await expect(maximum).toHaveValue(String(Number(high) - 1));
+    await page.getByRole("button", { name: `Clear ${label.toLowerCase()}`, exact: true }).click();
+    await expect(minimum).toHaveValue(low);
+    await expect(maximum).toHaveValue(high);
+  }
+  await expect(page).toHaveURL(/\/catalog\/search$/);
+  await page.getByRole("button", { name: "Hybridizer", exact: true }).click();
+  const hybridizers = page.getByRole("dialog", { name: "Hybridizer", exact: true });
+  await hybridizers.getByRole("searchbox").fill("Kay Cline");
+  await expect(hybridizers.getByRole("checkbox")).toHaveCount(1);
+  await hybridizers.getByRole("checkbox", { name: "Kay Cline", exact: true }).check();
+  await expect(page).toHaveURL(/hybridizer=Kay/);
 });

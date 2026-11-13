@@ -21,7 +21,9 @@ export function CatalogFacet({
   const [search, setSearch] = React.useState("");
   const selected = selectedValues(value);
   const choices = Array.from(new Set([...options, ...selected]));
+  const searchable = choices.length >= 10;
   const visible = choices.filter((option) =>
+    !searchable ||
     option.toLowerCase().includes(search.trim().toLowerCase())
   );
   return (
@@ -46,7 +48,7 @@ export function CatalogFacet({
           collisionPadding={12}
           className="z-50 flex w-64 flex-col gap-3 rounded-lg border-stroke border-border-strong bg-popover p-3 text-popover-foreground shadow-toast"
         >
-          <input
+          {searchable && <input
             type="search"
             aria-label={`Search ${label.toLowerCase()} options`}
             placeholder={`Search ${label.toLowerCase()}…`}
@@ -54,7 +56,7 @@ export function CatalogFacet({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             className="min-h-control-compact w-full text-base"
-          />
+          />}
           <fieldset className="m-0 flex max-h-64 min-w-0 flex-col overflow-y-auto border-0 p-0">
             <legend className="sr-only">{label}</legend>
             {visible.map((option) => (

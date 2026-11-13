@@ -2,12 +2,12 @@ import { parseLeadingNumber } from "./cultivarDisplay";
 import type { PublicListingCard } from "./publicSnapshot";
 
 export const catalogRangeFields = {
-  year: { label: "Year", unit: "", step: 1, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.year) },
-  bloomSize: { label: "Bloom size", unit: "in.", step: 0.01, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.bloomSize) },
-  scapeHeight: { label: "Scape height", unit: "in.", step: 0.01, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.scapeHeight) },
-  budcount: { label: "Bud count", unit: "", step: 1, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.budcount) },
-  branches: { label: "Branches", unit: "", step: 1, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.branches) },
-  price: { label: "Price", unit: "$", step: 0.01, value: (listing: PublicListingCard) => listing.price },
+  year: { label: "Year", unit: "", integerOnly: true, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.year) },
+  bloomSize: { label: "Bloom size", unit: "in.", integerOnly: false, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.bloomSize) },
+  scapeHeight: { label: "Scape height", unit: "in.", integerOnly: false, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.scapeHeight) },
+  budcount: { label: "Bud count", unit: "", integerOnly: true, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.budcount) },
+  branches: { label: "Branches", unit: "", integerOnly: true, value: (listing: PublicListingCard) => parseLeadingNumber(listing.ahsListing?.branches) },
+  price: { label: "Price", unit: "$", integerOnly: false, value: (listing: PublicListingCard) => listing.price },
 };
 export type CatalogRangeKey = keyof typeof catalogRangeFields;
 export type RangeBounds = { min: number; max: number };
@@ -23,9 +23,9 @@ export function parseRange(value: string): [number | null, number | null] | null
   return [min, max];
 }
 
-export function matchesRange(value: number | null, selection: string, step: number) {
+export function matchesRange(value: number | null, selection: string, integerOnly: boolean) {
   const range = parseRange(selection);
-  return range !== null && (step !== 1 || range.every((bound) => bound === null || Number.isInteger(bound))) && value !== null && Number.isFinite(value) &&
+  return range !== null && (!integerOnly || range.every((bound) => bound === null || Number.isInteger(bound))) && value !== null && Number.isFinite(value) &&
     (range[0] === null || value >= range[0]) && (range[1] === null || value <= range[1]);
 }
 
