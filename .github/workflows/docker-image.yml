@@ -239,3 +239,45 @@ jobs:
             -H "Authorization: Bearer ${DEPLOY_WEBHOOK_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{\"image_tag\":\"${IMAGE_TAG}\"}"
+
+      # The webhook returns after the new container replaces the old one.
+      - name: Purge Cloudflare site cache
+        env:
+          CLOUDFLARE_ZONE_ID: ${{ vars.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_CACHE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+          SITE_HEALTH_URL: https://rollingoaksdaylilies.com/api/health
+          SITE_CACHE_TAG: rolling-oaks-site
+        run: |
+          if [ -z "$CLOUDFLARE_ZONE_ID" ] || [ -z "$CLOUDFLARE_CACHE_PURGE_TOKEN" ]; then
+            echo "::warning::CLOUDFLARE_ZONE_ID variable or CLOUDFLARE_CACHE_PURGE_TOKEN secret is missing. Cache purge skipped. Configure both before you enable the Cloudflare Cache Rule."
+            exit 0
+          fi
+
+          healthy=false
+          for attempt in $(seq 1 24); do
+            if curl -fsS --max-time 5 "$SITE_HEALTH_URL" >/dev/null; then
+              healthy=true
+              break
+            fi
+            sleep 5
+          done
+          if [ "$healthy" != true ]; then
+            echo "::warning::$SITE_HEALTH_URL did not report healthy before the cache purge."
+          fi
+
+          purge_response="$(
+            curl --fail-with-body --show-error --silent \
+              --request POST \
+              --url "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/purge_cache" \
+              --header "Authorization: Bearer $CLOUDFLARE_CACHE_PURGE_TOKEN" \
+              --header "Content-Type: application/json" \
+              --data "{\"tags\":[\"$SITE_CACHE_TAG\"]}"
+          )"
+          echo "$purge_response" | jq -e '.success == true' >/dev/null
+
+          {
+            echo "## Cloudflare cache purge"
+            echo
+            echo "- purged cache tag: \`$SITE_CACHE_TAG\`"
+            echo "- site healthy before purge: \`$healthy\`"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,6 +1,7 @@
 import type { GetServerSideProps } from "next";
 import { siteConfig } from "../siteConfig";
 import { CATALOG_SORT_OPTIONS } from "../lib/catalogSearch";
+import { cacheAtEdge } from "lib/cdnCache";
 
 const OpenApiJson = () => null;
 
@@ -166,10 +167,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/vnd.oai.openapi+json");
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=86400"
-  );
+  cacheAtEdge(res);
   res.write(JSON.stringify(schema));
   res.end();
 

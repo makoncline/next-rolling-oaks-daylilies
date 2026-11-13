@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { siteConfig } from "../../siteConfig";
+import { cacheAtEdge, neverCacheAtEdge } from "../../lib/cdnCache";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  neverCacheAtEdge(res);
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
     res.status(405).json({ error: "Method not allowed" });
@@ -9,10 +11,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   res.setHeader("Content-Type", "application/linkset+json");
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=86400"
-  );
+  cacheAtEdge(res);
   const linkset = {
     linkset: [
       {

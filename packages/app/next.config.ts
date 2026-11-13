@@ -1,5 +1,9 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+import { publicCdnCacheHeaders } from "./lib/cdnCache";
+
+const staticPagePaths = ["/cart", "/thanks", "/blog", "/blog/dorothy-and-toto"];
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "standalone",
   transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
@@ -28,6 +32,13 @@ const nextConfig = {
   },
   async headers() {
     return [
+      ...staticPagePaths.map((source) => ({
+        source,
+        headers: Object.entries(publicCdnCacheHeaders).map(([key, value]) => ({
+          key,
+          value,
+        })),
+      })),
       {
         source: "/",
         headers: [
@@ -64,4 +75,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

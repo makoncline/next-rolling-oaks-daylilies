@@ -1,11 +1,9 @@
 const fs = require("fs/promises");
-const http = require("http");
 const path = require("path");
 
 const service = "rolling-oaks-daylilies";
 const component = "public-snapshot";
 const schemaVersion = 4;
-const freshForSeconds = 60 * 60;
 const refreshToken =
   process.env.PUBLIC_SNAPSHOT_REFRESH_TOKEN || "container-startup";
 
@@ -134,44 +132,6 @@ async function refreshPublicSnapshot(trigger = "manual") {
   return body;
 }
 
-function waitForServer() {
-  const port = Number(process.env.PORT || 3000);
-  const hostname = "127.0.0.1";
-  const deadline = Date.now() + 60000;
-
-  return new Promise((resolve, reject) => {
-    const check = () => {
-      const req = http.get(
-        {
-          hostname,
-          port,
-          path: "/api/health",
-          timeout: 2000,
-        },
-        (res) => {
-          res.resume();
-          resolve();
-        }
-      );
-
-      req.on("timeout", () => {
-        req.destroy();
-      });
-
-      req.on("error", () => {
-        if (Date.now() >= deadline) {
-          reject(new Error("Timed out waiting for Next server to listen."));
-          return;
-        }
-
-        setTimeout(check, 1000);
-      });
-    };
-
-    check();
-  });
-}
-
 async function bootstrap() {
   if (await hasExistingSnapshot()) {
     return;
@@ -180,45 +140,10 @@ async function bootstrap() {
   await refreshPublicSnapshot("missing");
 }
 
-async function backgroundRefresh() {
-  await waitForServer();
-
-  const manifest = await getExistingSnapshotManifest().catch((error) => {
-    logPublicSnapshot("public_snapshot_missing", {
-      manifestPath: getManifestPath(),
-      reason: error instanceof Error ? error.message : String(error),
-    });
-    return null;
-  });
-
-  if (manifest) {
-    const ageSeconds = getSnapshotAgeSeconds(manifest);
-    if (ageSeconds < freshForSeconds) {
-      logPublicSnapshot("public_snapshot_refresh_skipped", {
-        trigger: "background",
-        reason: "fresh_snapshot",
-        version: manifest.version,
-        generatedAt: manifest.generatedAt,
-        ageSeconds,
-      });
-      return;
-    }
-  }
-
-  logPublicSnapshot("public_snapshot_background_refresh_requested");
-  await refreshPublicSnapshot("background");
-}
-
-const mode = process.argv[2] || "bootstrap";
-const task = mode === "background" ? backgroundRefresh : bootstrap;
-
-task().catch((error) => {
+bootstrap().catch((error) => {
   logPublicSnapshot("public_snapshot_build_failed", {
-    mode,
+    mode: "bootstrap",
     error: error instanceof Error ? error.message : String(error),
   });
-
-  if (mode === "bootstrap") {
-    process.exit(1);
-  }
+  process.exit(1);
 });

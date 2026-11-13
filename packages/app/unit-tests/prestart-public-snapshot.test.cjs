@@ -46,7 +46,7 @@ test("startup accepts a current schema 4 snapshot", async (t) => {
   );
   const { stdout } = await execFileAsync(
     process.execPath,
-    [scriptPath, "bootstrap"],
+    [scriptPath],
     {
       env: {
         ...process.env,

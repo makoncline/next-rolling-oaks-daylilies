@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPublicSnapshot } from "../../../lib/publicSnapshot";
+import { cacheAtEdge, neverCacheAtEdge } from "../../../lib/cdnCache";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  neverCacheAtEdge(res);
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     res.status(405).json({ error: "Method not allowed" });
@@ -28,10 +30,7 @@ export default async function handler(
     return;
   }
 
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=300, stale-while-revalidate=3600"
-  );
+  cacheAtEdge(res);
   res.status(200).json({
     listing: {
       ...listing,

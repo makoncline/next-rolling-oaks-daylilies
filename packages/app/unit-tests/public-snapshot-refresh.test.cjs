@@ -1,4 +1,5 @@
 const assert = require("node:assert/strict");
+const { execFile } = require("node:child_process");
 const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
@@ -155,6 +156,87 @@ test("background refresh skips fresh snapshots and does not overlap a manual ref
   assert.equal(backgroundResult.status, "built");
   assert.equal(backgroundResult.attempts, 1);
   assert.equal(buildCalls, 1);
+});
+
+test("the schedule refreshes a stale snapshot without requests; reads never start a refresh", async (t) => {
+  await setupTestSnapshotDir(t);
+
+  let buildCalls = 0;
+  global.prisma = {
+    list: { findMany: async () => [] },
+    listing: {
+      findMany: async () => {
+        buildCalls += 1;
+        return [];
+      },
+    },
+  };
+
+  await publicSnapshot.writePublicSnapshot(
+    createSnapshot({
+      version: "stale-seed",
+      generatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    })
+  );
+
+  const served = await publicSnapshot.getPublicSnapshot();
+  await delay(20);
+  assert.equal(served.version, "stale-seed");
+  assert.equal(buildCalls, 0);
+
+  const stopSchedule = publicSnapshot.startPublicSnapshotRefreshSchedule(10);
+  t.after(stopSchedule);
+
+  const deadline = Date.now() + 1_000;
+  let current = served;
+  while (current.version === "stale-seed" && Date.now() < deadline) {
+    await delay(5);
+    current = await publicSnapshot.getExistingPublicSnapshot();
+  }
+  assert.notEqual(current.version, "stale-seed");
+
+  await delay(50);
+  assert.equal(buildCalls, 1);
+});
+
+test("a process exit during a refresh removes the refresh lock", async (t) => {
+  const snapshotDir = await setupTestSnapshotDir(t);
+  const child = `
+    const fs = require("node:fs");
+    const path = require("node:path");
+    const { createJiti } = require("jiti");
+    const publicSnapshot = createJiti(${JSON.stringify(__filename)})("../lib/publicSnapshot.ts");
+    global.prisma = {
+      list: { findMany: async () => [] },
+      listing: { findMany: () => new Promise(() => {}) },
+    };
+    publicSnapshot.refreshPublicSnapshotWithResult({ trigger: "manual", force: true });
+    const lockPath = path.join(process.env.PUBLIC_SNAPSHOT_DIR, "refresh.lock");
+    const timer = setInterval(() => {
+      if (fs.existsSync(lockPath)) {
+        clearInterval(timer);
+        console.log("locked");
+        process.exit(143);
+      }
+    }, 5);
+  `;
+
+  const exitCode = await new Promise((resolve) => {
+    execFile(
+      process.execPath,
+      ["-e", child],
+      { cwd: __dirname, env: process.env, timeout: 10_000 },
+      (error, stdout) => {
+        assert.match(stdout, /locked/);
+        resolve(error?.code ?? 0);
+      }
+    );
+  });
+
+  assert.equal(exitCode, 143);
+  await assert.rejects(fs.stat(path.join(snapshotDir, "refresh.lock")), {
+    code: "ENOENT",
+  });
 });
 
 test("fetch failures retry once, then activate backoff for later refresh paths", async (t) => {

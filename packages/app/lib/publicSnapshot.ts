@@ -9,6 +9,7 @@ import {
   unlink,
   writeFile,
 } from "fs/promises";
+import { rmSync } from "fs";
 import path from "path";
 import { siteConfig } from "../siteConfig";
 import { prisma } from "../prisma/db";
@@ -30,6 +31,7 @@ const CATALOG_PAGE_SIZE = 24;
 export const PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS = 60 * 60;
 export const PUBLIC_SNAPSHOT_MAX_STALE_SECONDS = 24 * 60 * 60;
 const PUBLIC_SNAPSHOT_REFRESH_LOCK_STALE_MS = 30 * 60 * 1000;
+const PUBLIC_SNAPSHOT_REFRESH_CHECK_MS = 5 * 60 * 1000;
 const DEFAULT_PUBLIC_SNAPSHOT_BUILD_ATTEMPTS = 3;
 const DEFAULT_PUBLIC_SNAPSHOT_RETRY_INITIAL_DELAY_MS = 5_000;
 const DEFAULT_PUBLIC_SNAPSHOT_RETRY_MAX_DELAY_MS = 60_000;
@@ -920,6 +922,9 @@ async function acquireRefreshLock() {
     lockHandle = await open(lockPath, "wx");
   }
 
+  const removeLockOnExit = () => rmSync(lockPath, { force: true });
+  process.once("exit", removeLockOnExit);
+
   await lockHandle.writeFile(
     JSON.stringify({
       pid: process.pid,
@@ -929,6 +934,7 @@ async function acquireRefreshLock() {
   );
 
   return async () => {
+    process.off("exit", removeLockOnExit);
     await lockHandle.close();
     await unlink(lockPath).catch((error) => {
       if (!isMissingFileError(error)) {
@@ -1111,12 +1117,25 @@ export async function refreshPublicSnapshot(
   return result.snapshot;
 }
 
-function refreshPublicSnapshotInBackground() {
-  logPublicSnapshot("public_snapshot_background_refresh_requested");
-  return refreshPublicSnapshot({
-    trigger: "background",
-    force: false,
-  });
+export function startPublicSnapshotRefreshSchedule(
+  intervalMs = PUBLIC_SNAPSHOT_REFRESH_CHECK_MS
+) {
+  const refreshIfStale = () => {
+    refreshPublicSnapshotWithResult({
+      trigger: "background",
+      force: false,
+    }).catch((error) => {
+      logPublicSnapshot("public_snapshot_scheduled_refresh_failed", {
+        error: getErrorMessage(error),
+      });
+    });
+  };
+
+  refreshIfStale();
+  const timer = setInterval(refreshIfStale, intervalMs);
+  timer.unref();
+
+  return () => clearInterval(timer);
 }
 
 async function readPublicSnapshot() {
@@ -1172,16 +1191,7 @@ export async function getExistingPublicSnapshot() {
 
 export async function getPublicSnapshot(): Promise<PublicSnapshot> {
   try {
-    const snapshot = await readPublicSnapshot();
-
-    if (
-      getPublicSnapshotAgeSeconds(snapshot) >=
-      PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS
-    ) {
-      refreshPublicSnapshotInBackground().catch(() => undefined);
-    }
-
-    return snapshot;
+    return await readPublicSnapshot();
   } catch (error) {
     if (!isMissingFileError(error) && !isSnapshotSchemaVersionError(error)) {
       throw error;

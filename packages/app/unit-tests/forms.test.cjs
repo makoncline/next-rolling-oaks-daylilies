@@ -66,6 +66,10 @@ beforeEach((t) => {
 
 async function submit(body) {
   const response = {
+    headers: {},
+    setHeader(name, value) {
+      this.headers[name.toLowerCase()] = value;
+    },
     status(code) {
       this.statusCode = code;
       return this;
@@ -133,6 +137,7 @@ test("SMTP failures return an API error without logging personal data", async ()
   const response = await submit(payload);
   assert.equal(response.statusCode, 500);
   assert.deepEqual(response.body, { error: "Could not send message" });
+  assert.equal(response.headers["cloudflare-cdn-cache-control"], "no-store");
   assert.equal(sent.length, 0);
   assert.equal(logs.at(-1).event, "form_email_send_failed");
   assert.equal(logs.at(-1).smtpResponseCode, 550);

@@ -8,11 +8,13 @@ import {
   PUBLIC_SNAPSHOT_FRESH_FOR_SECONDS,
   PUBLIC_SNAPSHOT_MAX_STALE_SECONDS,
 } from "../../lib/publicSnapshot";
+import { neverCacheAtEdge } from "../../lib/cdnCache";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  neverCacheAtEdge(res);
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     res.status(405).json({ error: "Method not allowed" });
