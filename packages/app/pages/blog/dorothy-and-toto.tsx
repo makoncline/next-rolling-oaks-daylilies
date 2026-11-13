@@ -4,8 +4,8 @@ import Image from "next/image";
 const Blog = () => {
   return (
     <Layout>
-      <article className="mx-auto w-full max-w-content">
-        <h1>Dorothy and Toto</h1>
+      <article className="mx-auto w-full max-w-prose [&_figcaption]:mt-3 [&_figcaption]:text-sm [&_figcaption]:text-muted-foreground [&_h2]:text-heading-3">
+        <h1 className="mt-0">Dorothy and Toto</h1>
         <h2 className="mb-2 mt-6">Introduction</h2>
         <p>
           Dorothy and Toto is a stunning daylily that was introduced in 2003 by
@@ -27,7 +27,7 @@ const Blog = () => {
             alt="Dorothy and Toto daylily"
             width={500}
             height={500}
-            className="w-full max-w-md object-cover"
+            className="w-full max-w-md rounded-lg object-cover"
             unoptimized
           />
           <figcaption>
@@ -51,7 +51,7 @@ const Blog = () => {
             alt="Dorothy and Toto daylily"
             width={500}
             height={500}
-            className="w-full max-w-md object-cover"
+            className="w-full max-w-md rounded-lg object-cover"
             unoptimized
           />
           <figcaption>
@@ -65,7 +65,7 @@ const Blog = () => {
             alt="Dorothy and Toto daylily"
             width={500}
             height={500}
-            className="w-full max-w-md object-cover"
+            className="w-full max-w-md rounded-lg object-cover"
             unoptimized
           />
           <figcaption>

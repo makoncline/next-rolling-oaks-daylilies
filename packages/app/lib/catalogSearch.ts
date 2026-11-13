@@ -1,3 +1,5 @@
+import { catalogRangeFields, matchesRange, rangeBounds, type CatalogRangeKey, type RangeBounds } from "./catalogRanges";
+import { BLOOM_SEASONS, formValues, habitValues, matchesSelected, selectedValues, seasonValues } from "./catalogTraits";
 import type { ParsedUrlQuery } from "querystring";
 import { parseLeadingNumber } from "./cultivarDisplay";
 import { sortTitlesLettersBeforeNumbers } from "./sort";
@@ -8,7 +10,6 @@ export const CATALOG_PAGE_LIMIT = 24;
 export const defaultCatalogFilters = {
   name: "",
   list: "",
-  char: "",
   hybridizer: "",
   year: "",
   ploidy: "",
@@ -16,11 +17,17 @@ export const defaultCatalogFilters = {
   form: "",
   foliageType: "",
   note: "",
+  parentage: "",
   fragrance: "",
   bloomSize: "",
   scapeHeight: "",
   bloomSeason: "",
+  bloomHabit: "",
+  budcount: "",
+  branches: "",
   rebloom: false,
+  forSale: false,
+  photo: false,
   price: "",
   page: 0,
 };
@@ -28,16 +35,64 @@ export const defaultCatalogFilters = {
 export type CatalogFilters = typeof defaultCatalogFilters;
 
 export type CatalogFilterOptions = {
-  chars: string[];
+  ranges: Record<CatalogRangeKey, RangeBounds>;
   lists: string[];
   hybridizers: string[];
-  years: string[];
   ploidies: string[];
   forms: string[];
   foliageTypes: string[];
   fragrances: string[];
   bloomSeasons: string[];
+  bloomHabits: string[];
+  /** Quick filters only appear where they would actually narrow results. */
+  canFilterForSale: boolean;
+  canFilterPhoto: boolean;
 };
+
+export type CatalogFilterKey = Exclude<keyof CatalogFilters, "page">;
+
+/** Filters shown in the basic search panel; everything else is advanced. */
+export const BASIC_FILTER_KEYS: CatalogFilterKey[] = [
+  "name",
+  "list",
+  "forSale",
+  "photo",
+];
+
+export const CATALOG_FILTER_LABELS: Record<CatalogFilterKey, string> = {
+  name: "Name",
+  list: "List",
+  hybridizer: "Hybridizer",
+  year: "Year",
+  ploidy: "Ploidy",
+  color: "Color",
+  form: "Form",
+  foliageType: "Foliage type",
+  note: "Description",
+  parentage: "Parentage",
+  fragrance: "Fragrance",
+  bloomSize: "Bloom size",
+  scapeHeight: "Scape height",
+  bloomSeason: "Bloom season",
+  bloomHabit: "Bloom habit",
+  budcount: "Bud count",
+  branches: "Branches",
+  rebloom: "Rebloomers only",
+  forSale: "For sale",
+  photo: "Has photo",
+  price: "Price",
+};
+
+export const getActiveFilterKeys = (filters: CatalogFilters) =>
+  (Object.keys(CATALOG_FILTER_LABELS) as CatalogFilterKey[]).filter(
+    (key) => Boolean(filters[key])
+  );
+
+export const hasActiveAdvancedFilters = (filters: CatalogFilters) =>
+  getActiveFilterKeys(filters).some((key) => !BASIC_FILTER_KEYS.includes(key));
+
+const hasPhoto = (listing: PublicListingCard) =>
+  (listing.images?.length ?? 0) > 0 || Boolean(listing.ahsListing?.ahsImageUrl);
 
 const getQueryString = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
@@ -53,7 +108,6 @@ export const getCatalogFiltersFromQuery = (
 ): CatalogFilters => ({
   ...defaultCatalogFilters,
   name: getQueryString(query.name) || "",
-  char: getQueryString(query.char) || "",
   list: getQueryString(query.list) || "",
   hybridizer: getQueryString(query.hybridizer) || "",
   year: getQueryString(query.year) || "",
@@ -62,11 +116,17 @@ export const getCatalogFiltersFromQuery = (
   form: getQueryString(query.form) || "",
   foliageType: getQueryString(query.foliageType) || "",
   note: getQueryString(query.note) || "",
+  parentage: getQueryString(query.parentage) || "",
   fragrance: getQueryString(query.fragrance) || "",
   bloomSize: getQueryString(query.bloomSize) || "",
   scapeHeight: getQueryString(query.scapeHeight) || "",
   bloomSeason: getQueryString(query.bloomSeason) || "",
+  bloomHabit: getQueryString(query.bloomHabit) || "",
+  budcount: getQueryString(query.budcount) || "",
+  branches: getQueryString(query.branches) || "",
   rebloom: getQueryString(query.rebloom) === "true",
+  forSale: getQueryString(query.forSale) === "true",
+  photo: getQueryString(query.photo) === "true",
   price: getQueryString(query.price) || "",
   page: getPageFromQuery(query.page),
 });
@@ -82,9 +142,7 @@ const uniqueSorted = (items: Array<string | null | undefined>) =>
 export const getCatalogFilterOptions = (
   listings: PublicListingCard[]
 ): CatalogFilterOptions => ({
-  chars: uniqueSorted(
-    listings.map(({ title }) => title.substring(0, 1).toUpperCase())
-  ),
+  ranges: Object.fromEntries(Object.entries(catalogRangeFields).map(([key, field]) => [key, rangeBounds(listings.map(field.value))])) as Record<CatalogRangeKey, RangeBounds>,
   lists: uniqueSorted(
     listings.flatMap((listing) =>
       listing.lists && listing.lists.length > 0
@@ -93,24 +151,27 @@ export const getCatalogFilterOptions = (
     )
   ),
   hybridizers: uniqueSorted(
-    listings.map((listing) => listing.ahsListing?.hybridizer)
+    listings.flatMap((listing) => selectedValues(listing.ahsListing?.hybridizer ?? ""))
   ),
-  years: uniqueSorted(listings.map((listing) => listing.ahsListing?.year))
-    .sort((a, b) => sortAlphaNum(a, b))
-    .reverse(),
-  ploidies: uniqueSorted(listings.map((listing) => listing.ahsListing?.ploidy)),
+  ploidies: uniqueSorted(listings.flatMap((listing) => selectedValues(listing.ahsListing?.ploidy ?? ""))),
   forms: uniqueSorted(
-    listings.map((listing) => listing.ahsListing?.form?.split(" ")[0])
+    listings.flatMap((listing) => formValues(listing.ahsListing?.form))
   ),
   foliageTypes: uniqueSorted(
-    listings.map((listing) => listing.ahsListing?.foliageType)
+    listings.flatMap((listing) => selectedValues(listing.ahsListing?.foliageType ?? ""))
   ),
   fragrances: uniqueSorted(
-    listings.map((listing) => listing.ahsListing?.fragrance)
+    listings.flatMap((listing) => selectedValues(listing.ahsListing?.fragrance ?? ""))
   ),
-  bloomSeasons: uniqueSorted(
-    listings.map((listing) => listing.ahsListing?.bloomSeason)
+  bloomSeasons: BLOOM_SEASONS.filter((season) =>
+    listings.some((listing) => seasonValues(listing.ahsListing?.bloomSeason).includes(season))
   ),
+  bloomHabits: uniqueSorted(listings.flatMap((listing) => habitValues(listing.ahsListing?.bloomHabit))),
+  canFilterForSale:
+    listings.some((listing) => listing.price != null) &&
+    listings.some((listing) => listing.price == null),
+  canFilterPhoto:
+    listings.some(hasPhoto) && listings.some((listing) => !hasPhoto(listing)),
 });
 
 export const filterCatalogListings = (
@@ -125,27 +186,11 @@ export const filterCatalogListings = (
     );
   }
 
-  if (filters.char) {
-    filtered = filtered.filter((listing) =>
-      listing.title
-        .substring(0, 1)
-        .toLowerCase()
-        .includes(filters.char.toLowerCase())
-    );
-  }
-
   if (filters.list) {
-    if (filters.list.toLowerCase() === "no list") {
-      filtered = filtered.filter(
-        (listing) => !listing.lists || listing.lists.length === 0
-      );
-    } else {
-      filtered = filtered.filter((listing) =>
-        listing.lists?.some((list) =>
-          list.title.toLowerCase().includes(filters.list.toLowerCase())
-        )
-      );
-    }
+    filtered = filtered.filter((listing) => matchesSelected(
+      listing.lists?.length ? listing.lists.map((list) => list.title) : ["No List"],
+      filters.list
+    ));
   }
 
   if (filters.color) {
@@ -156,6 +201,10 @@ export const filterCatalogListings = (
     );
   }
 
+  if (filters.parentage) {
+    filtered = filtered.filter((listing) => listing.ahsListing?.parentage?.toLowerCase().includes(filters.parentage.toLowerCase()));
+  }
+
   if (filters.note) {
     filtered = filtered.filter((listing) =>
       listing.description?.toLowerCase().includes(filters.note.toLowerCase())
@@ -164,56 +213,43 @@ export const filterCatalogListings = (
 
   if (filters.hybridizer) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.hybridizer
-        ?.toLowerCase()
-        .includes(filters.hybridizer.toLowerCase())
-    );
-  }
-
-  if (filters.year) {
-    filtered = filtered.filter((listing) =>
-      listing.ahsListing?.year?.includes(filters.year)
+      matchesSelected(selectedValues(listing.ahsListing?.hybridizer ?? ""), filters.hybridizer)
     );
   }
 
   if (filters.ploidy) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.ploidy
-        ?.toLowerCase()
-        .includes(filters.ploidy.toLowerCase())
+      matchesSelected(selectedValues(listing.ahsListing?.ploidy ?? ""), filters.ploidy)
     );
   }
 
   if (filters.form) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.form
-        ?.toLowerCase()
-        .includes(filters.form.toLowerCase())
+      matchesSelected(formValues(listing.ahsListing?.form), filters.form)
     );
   }
 
   if (filters.foliageType) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.foliageType
-        ?.toLowerCase()
-        .includes(filters.foliageType.toLowerCase())
+      matchesSelected(selectedValues(listing.ahsListing?.foliageType ?? ""), filters.foliageType)
     );
   }
 
   if (filters.fragrance) {
     filtered = filtered.filter((listing) =>
-      listing.ahsListing?.fragrance
-        ?.toLowerCase()
-        .includes(filters.fragrance.toLowerCase())
+      matchesSelected(selectedValues(listing.ahsListing?.fragrance ?? ""), filters.fragrance)
     );
   }
 
   if (filters.bloomSeason) {
     filtered = filtered.filter(
       (listing) =>
-        listing.ahsListing?.bloomSeason?.toLowerCase() ===
-        filters.bloomSeason.toLowerCase()
+        matchesSelected(seasonValues(listing.ahsListing?.bloomSeason), seasonValues(filters.bloomSeason).join("|"))
     );
+  }
+
+  if (filters.bloomHabit) {
+    filtered = filtered.filter((listing) => matchesSelected(habitValues(listing.ahsListing?.bloomHabit), filters.bloomHabit));
   }
 
   if (filters.rebloom) {
@@ -222,108 +258,84 @@ export const filterCatalogListings = (
     );
   }
 
-  if (filters.bloomSize) {
-    let low = 0;
-    let high = 1000;
-
-    switch (filters.bloomSize) {
-      case "miniature":
-        high = 3;
-        break;
-      case "small":
-        low = 3;
-        high = 4.5;
-        break;
-      case "large":
-        low = 4.5;
-        high = 7;
-        break;
-      case "extraLarge":
-        low = 7;
-        break;
-    }
-
-    filtered = filtered.filter((listing) => {
-      const size = parseLeadingNumber(listing.ahsListing?.bloomSize);
-      return size && size > low && size <= high;
-    });
+  if (filters.forSale) {
+    filtered = filtered.filter((listing) => listing.price != null);
   }
 
-  if (filters.scapeHeight) {
-    let low = 0;
-    let high = 1000;
-
-    switch (filters.scapeHeight) {
-      case "miniature":
-        high = 10;
-        break;
-      case "short":
-        low = 10.1;
-        high = 20;
-        break;
-      case "medium":
-        low = 20.1;
-        high = 30;
-        break;
-      case "tall":
-        low = 30.1;
-        high = 40;
-        break;
-      case "extraTall":
-        low = 40.1;
-        break;
-    }
-
-    filtered = filtered.filter((listing) => {
-      const size = parseLeadingNumber(listing.ahsListing?.scapeHeight);
-      return size && size > low && size <= high;
-    });
+  if (filters.photo) {
+    filtered = filtered.filter(hasPhoto);
   }
 
-  if (filters.price) {
-    let low = 0;
-    let high = 1000;
-
-    switch (filters.price) {
-      case "one":
-        high = 9.99;
-        break;
-      case "two":
-        low = 10;
-        high = 19.99;
-        break;
-      case "three":
-        low = 20;
-        high = 29.99;
-        break;
-      case "four":
-        low = 30;
-        high = 39.99;
-        break;
-      case "five":
-        low = 40;
-        high = 49.99;
-        break;
-      case "six":
-        low = 50;
-        high = 999;
-        break;
-    }
-
-    filtered = filtered.filter(
-      (listing) => listing.price != null && listing.price > low && listing.price <= high
-    );
+  for (const key of Object.keys(catalogRangeFields) as CatalogRangeKey[]) {
+    if (filters[key]) filtered = filtered.filter((listing) => matchesRange(catalogRangeFields[key].value(listing), filters[key], catalogRangeFields[key].integerOnly));
   }
 
   return sortTitlesLettersBeforeNumbers(filtered);
 };
 
+/** Result order. The empty value is the default name order. */
+export const CATALOG_SORT_OPTIONS = [
+  { value: "", label: "Name" },
+  { value: "price-asc", label: "Price, low to high" },
+  { value: "price-desc", label: "Price, high to low" },
+  { value: "newest", label: "Newest registrations" },
+  { value: "updated", label: "Recently updated" },
+  { value: "bloom-size", label: "Largest blooms" },
+] as const;
+
+export type CatalogSort = (typeof CATALOG_SORT_OPTIONS)[number]["value"];
+
+export const getCatalogSortFromQuery = (query: ParsedUrlQuery): CatalogSort => {
+  const value = getQueryString(query.sort) || "";
+  return CATALOG_SORT_OPTIONS.some((option) => option.value === value)
+    ? (value as CatalogSort)
+    : "";
+};
+
+const numberOrNull = (value: number | null | undefined) =>
+  value != null && Number.isFinite(value) ? value : null;
+
+const sortKeys: Record<
+  Exclude<CatalogSort, "">,
+  { key: (listing: PublicListingCard) => number | null; descending: boolean }
+> = {
+  "price-asc": { key: (listing) => numberOrNull(listing.price || null), descending: false },
+  "price-desc": { key: (listing) => numberOrNull(listing.price || null), descending: true },
+  newest: { key: (listing) => numberOrNull(parseInt(listing.ahsListing?.year || "", 10)), descending: true },
+  updated: { key: (listing) => numberOrNull(Date.parse(listing.updatedAt)), descending: true },
+  "bloom-size": { key: (listing) => numberOrNull(parseLeadingNumber(listing.ahsListing?.bloomSize)), descending: true },
+};
+
+/** Listings without the sorted value keep name order after those that have it. */
+export const sortCatalogListings = (
+  listings: PublicListingCard[],
+  sort: CatalogSort
+) => {
+  if (!sort) return listings;
+  const { key, descending } = sortKeys[sort];
+  return listings
+    .map((listing, index) => ({ listing, index, value: key(listing) }))
+    .sort((a, b) => {
+      if (a.value === null || b.value === null) {
+        if (a.value === b.value) return a.index - b.index;
+        return a.value === null ? 1 : -1;
+      }
+      const difference = descending ? b.value - a.value : a.value - b.value;
+      return difference || a.index - b.index;
+    })
+    .map(({ listing }) => listing);
+};
+
 export const getCatalogSearchResult = (
   listings: PublicListingCard[],
   filters: CatalogFilters,
-  limit = CATALOG_PAGE_LIMIT
+  limit = CATALOG_PAGE_LIMIT,
+  sort: CatalogSort = ""
 ) => {
-  const filteredListings = filterCatalogListings(listings, filters);
+  const filteredListings = sortCatalogListings(
+    filterCatalogListings(listings, filters),
+    sort
+  );
   const total = filteredListings.length;
   const lastPage = Math.max(Math.ceil(total / limit) - 1, 0);
   const page = Math.min(Math.max(filters.page, 0), lastPage);

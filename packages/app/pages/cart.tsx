@@ -1,16 +1,19 @@
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { Minus, Plus, X } from "lucide-react";
 import { FormVerification } from "../components/formVerification";
 import React from "react";
+import Image from "next/image";
+import { NoPhoto } from "../components/noPhoto";
 import Layout from "../components/layout";
 import { useCart } from "components/cart";
 import {
   Button,
+  cx,
   FancyHeading,
   Field,
   Form,
   FormError,
   FormWrapper,
-  Space,
   Spinner,
 } from "components/ui";
 import { useRouter } from "next/router";
@@ -19,120 +22,123 @@ import {
   submitWebsiteForm,
 } from "../lib/formSubmission";
 import { formatCurrency } from "../lib/format";
+import { siteConfig } from "../siteConfig";
 
 const CartTable = () => {
-  const { addOne, removeOne, numItems, shipping, cart, total } = useCart();
+  const { addOne, removeOne, removeProduct, clear, numItems, shipping, cart, subTotal, total } =
+    useCart();
+  const belowMinimum = numItems > 0 && subTotal < siteConfig.minimumOrder;
 
   return (
     <>
       {numItems ? (
-        <div className="w-full">
-          <div className="grid gap-4 md:hidden">
+        <div className="w-full overflow-hidden rounded-lg border-stroke border-card-border bg-card">
+          <div className="flex items-center justify-between gap-4 border-b border-card-border px-5 py-2">
+            <p className="m-0 text-meta text-muted-foreground">
+              {numItems} {numItems === 1 ? "plant" : "plants"}
+            </p>
+            <button
+              type="button"
+              onClick={clear}
+              className="min-h-control-compact cursor-pointer rounded-md bg-transparent px-2 text-meta font-medium text-destructive-text underline-offset-4 hover:underline"
+            >
+              Empty Cart
+            </button>
+          </div>
+          <div className="flex flex-col divide-y divide-card-border">
             {cart.map((item) => (
               <article
-                className="border-b border-current pb-4"
+                className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-6"
                 key={item.id}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <h2 className="m-0 text-lg">{item.name}</h2>
-                  <strong className="shrink-0 text-foreground-emphasis">
-                    {formatCurrency(item.price)}
-                  </strong>
+                <div className="flex min-w-0 grow items-center gap-4">
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-md bg-tile">
+                    {item.image ? (
+                      <Image src={item.image} alt="" fill sizes="56px" className="object-cover" unoptimized />
+                    ) : (
+                      <NoPhoto title={item.name} size="thumb" />
+                    )}
+                  </div>
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <h2 className="m-0 text-tile-title font-semibold">{item.name}</h2>
+                    <span className="text-meta text-muted-foreground">
+                      {formatCurrency(item.price)} each
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-4 flex items-center justify-between gap-4">
-                  <span>Quantity: {item.quantity}</span>
-                  <Space gap="xsmall">
+                <div className="flex items-center justify-between gap-4 sm:justify-end">
+                  <div className="flex items-center gap-1" role="group" aria-label={`Quantity of ${item.name}`}>
                     <Button
+                      size="compact"
                       aria-label={`Remove One ${item.name}`}
                       onClick={() => removeOne(item.id)}
                     >
-                      -
+                      <Minus aria-hidden="true" className="shrink-0 size-4" />
                     </Button>
+                    <span className="min-w-8 text-center font-semibold tabular-nums text-foreground-emphasis">
+                      <span className="sr-only">Quantity: </span>
+                      {item.quantity}
+                    </span>
                     <Button
+                      size="compact"
                       aria-label={`Add One ${item.name}`}
                       onClick={() => addOne(item.id)}
                     >
-                      +
+                      <Plus aria-hidden="true" className="shrink-0 size-4" />
                     </Button>
-                  </Space>
+                  </div>
+                  <span className="w-20 shrink-0 text-right font-semibold tabular-nums text-foreground-emphasis">
+                    {formatCurrency(item.price * item.quantity)}
+                  </span>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => removeProduct(item.id)}
+                  aria-label={`Remove ${item.name} from cart`}
+                  className="flex min-h-control-compact cursor-pointer items-center gap-1.5 self-start rounded-md bg-transparent px-2 text-meta text-muted-foreground hover:bg-secondary hover:text-foreground-emphasis sm:self-center"
+                >
+                  <X aria-hidden="true" className="shrink-0 size-4" />
+                  <span className="sm:sr-only">Remove</span>
+                </button>
               </article>
             ))}
-            <div className="grid gap-3 border-b border-current pb-4 text-foreground-emphasis">
-              <div className="flex justify-between gap-4">
-                <span>Shipping</span>
-                <strong>{formatCurrency(shipping)}</strong>
-              </div>
-              <hr className="my-1" />
-              <div className="flex justify-between gap-4 text-xl">
-                <span>Total</span>
-                <strong>{formatCurrency(total)}</strong>
-              </div>
-            </div>
           </div>
-          <table className="hidden w-full md:table">
-            <thead>
-              <tr>
-                <th className="text-left">Name</th>
-                <th>Quantity</th>
-                <th colSpan={2}>
-                  <span className="sr-only">Quantity Actions</span>
-                </th>
-                <th className="text-right">Price/each</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colSpan={8}>
-                  <hr className="my-2" />
-                </td>
-              </tr>
-              {cart &&
-                cart.map((item, i) => (
-                  <tr key={i}>
-                    <td className="max-w-52 break-words text-left">
-                      {item.name}
-                    </td>
-                    <td className="text-center">{item.quantity}</td>
-                    <td>
-                      <Button
-                        aria-label={`Remove One ${item.name}`}
-                        onClick={() => removeOne(item.id)}
-                      >
-                        -
-                      </Button>
-                    </td>
-                    <td>
-                      <Button
-                        aria-label={`Add One ${item.name}`}
-                        onClick={() => addOne(item.id)}
-                      >
-                        +
-                      </Button>
-                    </td>
-                    <td className="text-right">
-                      {formatCurrency(item.price)}
-                    </td>
-                  </tr>
-                ))}
-              <tr>
-                <td className="pt-6" colSpan={4}>
-                  Shipping:
-                </td>
-                <td className="text-right">
-                  {formatCurrency(shipping)}
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={4}>
-                  Total:
-                </td>
-                <td className="text-right">{formatCurrency(total)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <dl className="m-0 grid gap-2 border-t border-card-border bg-background-sunken px-5 py-4 text-foreground-emphasis">
+            <div className="flex justify-between gap-4 text-meta">
+              <dt className="text-muted-foreground">Subtotal</dt>
+              <dd className="m-0 font-semibold tabular-nums">{formatCurrency(subTotal)}</dd>
+            </div>
+            <div className="flex justify-between gap-4 text-meta">
+              <dt className="text-muted-foreground">Shipping</dt>
+              <dd className="m-0 font-semibold tabular-nums">{formatCurrency(shipping)}</dd>
+            </div>
+            <div className="flex justify-between gap-4 text-heading-4 font-bold">
+              <dt>Total</dt>
+              <dd className="m-0 tabular-nums">{formatCurrency(total)}</dd>
+            </div>
+            {belowMinimum && (
+              <p className="m-0 mt-1 text-meta text-muted-foreground">
+                Orders have a {formatCurrency(siteConfig.minimumOrder)} minimum,
+                so this list is{" "}
+                {formatCurrency(siteConfig.minimumOrder - subTotal)} short. You
+                can still send it to ask about availability.
+              </p>
+            )}
+          </dl>
         </div>
-      ) : null}
+      ) : (
+        <div className="flex w-full flex-col items-start gap-4 rounded-lg border-stroke border-card-border bg-card p-6">
+          <p className="m-0 text-muted-foreground">Your cart is empty.</p>
+          <div className="flex flex-wrap gap-3">
+            <Button as="a" href="/catalog/for-sale" styleType="primary">
+              Shop Daylilies for Sale
+            </Button>
+            <Button as="a" href="/catalogs">
+              View Catalogs
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -250,35 +256,33 @@ const CartForm = () => {
   );
 };
 
-const ClearButton = () => {
-  const { clear, numItems } = useCart();
-  return (
-    <>
-      {numItems > 0 && (
-        <Button onClick={clear} danger>
-          Empty Cart
-        </Button>
-      )}
-    </>
-  );
-};
-
 const Cart: React.FC = () => {
+  const { numItems } = useCart();
   return (
     <Layout>
-      <Space direction="column" gap="large" center>
-        <Space direction="column">
-          <FancyHeading level={1}>Cart</FancyHeading>
-          <p>
-            Add items to your cart from any catalog. Enter your email, and a
-            message if you like, to check for availability before proceeding
-            with your order.
+      <div className="flex flex-col gap-2">
+        <FancyHeading level={1}>Cart</FancyHeading>
+        {numItems > 0 && (
+          <p className="m-0 text-muted-foreground">
+            Nothing is charged here. Send me this list and I’ll confirm which
+            plants are available and email you the final total. You pay
+            afterward by check, PayPal or Venmo.
           </p>
-        </Space>
-        <CartTable />
-        <CartForm />
-        <ClearButton />
-      </Space>
+        )}
+      </div>
+      <div
+        className={cx(
+          "grid w-full items-start gap-8",
+          numItems > 0 ? "lg:grid-cols-12 lg:gap-10" : "max-w-prose"
+        )}
+      >
+        <div className="flex flex-col items-start gap-4 lg:col-span-7">
+          <CartTable />
+        </div>
+        <div className="w-full lg:col-span-5">
+          <CartForm />
+        </div>
+      </div>
     </Layout>
   );
 };

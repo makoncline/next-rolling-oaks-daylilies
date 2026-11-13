@@ -14,7 +14,6 @@ import {
   WEBSITE_FORMS_PATH,
   submitWebsiteForm,
 } from "../lib/formSubmission";
-import { useCart } from "./cart";
 
 type ContactFormProps = {
   cta: string;
@@ -23,7 +22,6 @@ type ContactFormProps = {
 
 const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
   const router = useRouter();
-  const { clear } = useCart();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const verification = React.useRef<TurnstileInstance>(null);
@@ -37,7 +35,6 @@ const ContactForm: React.FC<ContactFormProps> = ({ cta, successPath }) => {
 
     try {
       await submitWebsiteForm(event.currentTarget);
-      clear();
       await router.push(successPath);
     } catch (error) {
       console.error(error);

@@ -9,6 +9,6 @@ test("homepage has correct title and heading", async ({ page }) => {
   // Check the main heading
   const heading = page.locator("h1").first();
   await expect(heading).toHaveText("Rolling Oaks Daylilies");
-  const logo = page.getByRole("img", { name: "Rolling Oaks Daylilies logo", exact: true });
+  const logo = page.getByRole("img", { name: "Rolling Oaks Daylilies", exact: true });
   await expect.poll(() => logo.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
 });

@@ -1,5 +1,6 @@
 import type { GetServerSideProps } from "next";
 import { siteConfig } from "../siteConfig";
+import { CATALOG_SORT_OPTIONS } from "../lib/catalogSearch";
 
 const OpenApiJson = () => null;
 
@@ -48,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
             ...[
               "name",
               "list",
-              "char",
               "hybridizer",
               "year",
               "ploidy",
@@ -56,16 +56,39 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
               "form",
               "foliageType",
               "note",
+              "parentage",
               "fragrance",
               "bloomSize",
               "scapeHeight",
               "bloomSeason",
+              "bloomHabit",
+              "budcount",
+              "branches",
               "price",
             ].map((name) => ({
               name,
               in: "query",
+              description: ["price", "year", "bloomSize", "scapeHeight", "budcount", "branches"].includes(name)
+                ? "Inclusive min:max range; either bound can be empty. Example: 4.5:7 or :25."
+                : ["list", "hybridizer", "ploidy", "form", "foliageType", "fragrance", "bloomSeason", "bloomHabit"].includes(name)
+                  ? "One or more choices separated by |; matches any selected choice."
+                  : "Case-insensitive text match.",
               schema: { type: "string" },
             })),
+            ...["rebloom", "forSale", "photo"].map((name) => ({
+              name,
+              in: "query",
+              schema: { type: "boolean" },
+            })),
+            {
+              name: "sort",
+              in: "query",
+              description: "Result order; omit for name order.",
+              schema: {
+                type: "string",
+                enum: CATALOG_SORT_OPTIONS.map((option) => option.value).filter(Boolean),
+              },
+            },
           ],
           responses: {
             "200": {

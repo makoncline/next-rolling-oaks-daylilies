@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { Breadcrumbs } from "components/breadcrumbs";
 import Head from "next/head";
 import Layout from "../../components/layout";
 import BackToTop from "../../components/backToTop";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import type { GetServerSideProps, NextPage } from "next";
-import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
+import { Button, FancyHeading } from "components/ui";
 import {
-  Button,
-  cx,
-  FancyHeading,
-  FormWrapper,
-  Heading,
-  Space,
-} from "components/ui";
+  ActiveFilterChips,
+  CatalogFilterPanel,
+  SortSelect,
+  type FilterValue,
+} from "../../components/catalogFilters";
 import { useRouter } from "next/router";
 import {
   getCatalogListings,
@@ -27,11 +26,17 @@ import {
   getCatalogFilterOptions,
   getCatalogFiltersFromQuery,
   getCatalogSearchResult,
+  getCatalogSortFromQuery,
+  getActiveFilterKeys,
+  hasActiveAdvancedFilters,
+  type CatalogFilterKey,
   type CatalogFilterOptions,
+  type CatalogFilters,
+  type CatalogSort,
 } from "../../lib/catalogSearch";
 import { formatNumber } from "../../lib/format";
 
-const textFilterKeys = new Set(["name", "color", "note"]);
+const textFilterKeys = new Set(["name", "color", "note", "parentage"]);
 const nonSearchQueryKeys = new Set(["catalog", "filters"]);
 
 type Props = {
@@ -67,21 +72,45 @@ const SearchPage: NextPage<Props> = ({
     page: initialPage,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const pendingFiltersRef = React.useRef<Partial<CatalogFilters>>({});
+  const [advancedSearch, setAdvancedSearch] = useState(false);
+  const modePathRef = React.useRef<string | null>(null);
+  const sort = isReady ? getCatalogSortFromQuery(query) : "";
 
   useEffect(() => {
     if (isReady) {
-      setFilters(getCatalogFiltersFromQuery(query));
+      const queryFilters = getCatalogFiltersFromQuery(query);
+      // Keep text edits until the URL acknowledges them. A quick toggle must
+      // not discard a name that is still waiting for the debounce timer.
+      for (const key of Object.keys(pendingFiltersRef.current) as CatalogFilterKey[]) {
+        if (pendingFiltersRef.current[key] === queryFilters[key]) {
+          delete pendingFiltersRef.current[key];
+        }
+      }
+      setFilters({ ...queryFilters, ...pendingFiltersRef.current });
+      // A shared link with advanced filters opens in advanced mode once;
+      // afterwards the visitor's own switch choice wins.
+      if (modePathRef.current !== path) {
+        modePathRef.current = path;
+        setAdvancedSearch(hasActiveAdvancedFilters(queryFilters));
+      }
     }
-  }, [query, pathname, isReady]);
+  }, [query, pathname, isReady, path]);
 
   useEffect(() => {
-    return () => {
-      if (textFilterTimeoutRef.current) {
-        clearTimeout(textFilterTimeoutRef.current);
-      }
+    const cancelPending = (_url: string, { shallow }: { shallow: boolean }) => {
+      if (shallow) return;
+      if (textFilterTimeoutRef.current) clearTimeout(textFilterTimeoutRef.current);
+      pendingFiltersRef.current = {};
     };
-  }, []);
+    router.events.on("routeChangeStart", cancelPending);
+    return () => {
+      router.events.off("routeChangeStart", cancelPending);
+      if (textFilterTimeoutRef.current) clearTimeout(textFilterTimeoutRef.current);
+    };
+  }, [router.events]);
 
   useEffect(() => {
     if (!isReady) return;
@@ -99,6 +128,7 @@ const SearchPage: NextPage<Props> = ({
     });
 
     setIsLoading(true);
+    setSearchError(false);
     fetch(`/api/catalog/${query.catalog}?${params.toString()}`, {
       signal: controller.signal,
     })
@@ -109,6 +139,7 @@ const SearchPage: NextPage<Props> = ({
         return response.json();
       })
       .then((data) => {
+        if (controller.signal.aborted) return;
         setResult({
           listings: data.listings,
           total: data.pagination.total,
@@ -116,8 +147,8 @@ const SearchPage: NextPage<Props> = ({
         });
       })
       .catch((error) => {
-        if (error.name !== "AbortError") {
-          console.error(error);
+        if (!controller.signal.aborted && error.name !== "AbortError") {
+          setSearchError(true);
         }
       })
       .finally(() => {
@@ -127,40 +158,23 @@ const SearchPage: NextPage<Props> = ({
       });
 
     return () => controller.abort();
-  }, [isReady, query]);
+  }, [isReady, query, retryCount]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    filterKey: string
-  ) => {
-    const newValue =
-      e.target.type === "checkbox" && "checked" in e.target
-        ? e.target.checked
-        : e.target.value;
+  const updateFilter = (filterKey: CatalogFilterKey, newValue: FilterValue) => {
+    pendingFiltersRef.current = { ...pendingFiltersRef.current, [filterKey]: newValue };
     setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: newValue }));
     if (textFilterTimeoutRef.current) {
       clearTimeout(textFilterTimeoutRef.current);
     }
 
     const replaceQuery = () => {
-      const queryValue =
-        typeof newValue === "boolean"
-          ? newValue
-            ? "true"
-            : ""
-          : newValue;
-      const newQuery = { ...router.query, [filterKey]: queryValue };
-      if (!queryValue) {
-        delete newQuery[filterKey];
+      textFilterTimeoutRef.current = null;
+      const newQuery = { ...router.query };
+      for (const [key, value] of Object.entries(pendingFiltersRef.current)) {
+        if (value) newQuery[key] = String(value);
+        else delete newQuery[key];
       }
-      if (
-        filterKey === "page" &&
-        parseInt(queryValue) - 1 === defaultCatalogFilters.page
-      ) {
-        delete newQuery[filterKey];
-      } else {
-        newQuery.page = "1";
-      }
+      delete newQuery.page;
       router.replace(
         {
           query: newQuery,
@@ -178,6 +192,20 @@ const SearchPage: NextPage<Props> = ({
     replaceQuery();
   };
 
+  const updateSort = (value: CatalogSort) => {
+    const newQuery = { ...router.query };
+    if (value) newQuery.sort = value;
+    else delete newQuery.sort;
+    delete newQuery.page;
+    router.replace({ query: newQuery }, undefined, { shallow: true });
+  };
+
+  const removeFilter = (filterKey: CatalogFilterKey) =>
+    updateFilter(
+      filterKey,
+      typeof defaultCatalogFilters[filterKey] === "boolean" ? false : ""
+    );
+
   const pageLimit = CATALOG_PAGE_LIMIT;
   const lastPage = Math.max(Math.ceil(result.total / pageLimit) - 1, 0);
   const currentPage = Math.min(Math.max(result.page, 0), lastPage);
@@ -188,16 +216,14 @@ const SearchPage: NextPage<Props> = ({
     if (textFilterTimeoutRef.current) {
       clearTimeout(textFilterTimeoutRef.current);
     }
+    pendingFiltersRef.current = {};
     setFilters(defaultCatalogFilters);
+    // Clearing filters keeps the visitor's chosen order.
     router.replace(
-      { pathname: router.asPath.split("?")[0], query: null },
+      { pathname: router.asPath.split("?")[0], query: sort ? { sort } : null },
       undefined,
       { shallow: true }
     );
-  }
-
-  function toggleFilters() {
-    setShowFilters((value) => !value);
   }
 
   const topRef = React.useRef<HTMLDivElement>(null);
@@ -215,11 +241,8 @@ const SearchPage: NextPage<Props> = ({
     }
   };
   const numResults = result.total;
-  useSearchChange(numResults);
   const isSearch = title === "Search";
-  const activeFilterCount = Object.entries(filters).filter(
-    ([key, value]) => key !== "page" && value
-  ).length;
+  const activeFilterCount = getActiveFilterKeys(filters).length;
   const canonicalPath =
     currentPage > 0 ? `${path}?page=${currentPage + 1}` : path;
   const previousPath =
@@ -294,323 +317,73 @@ const SearchPage: NextPage<Props> = ({
           />
         )}
       </Head>
-      <Space direction="column" block center>
+      <div className="flex flex-col gap-2">
+        <Breadcrumbs items={[{ label: "Catalogs", href: "/catalogs" }, { label: title }]} />
         <FancyHeading level={1}>{title}</FancyHeading>
-        <p>{description}</p>
-      </Space>
-      <FormWrapper>
-        <Space direction="column">
-          <div className="border-b border-current pb-4">
-            <p className="m-0 text-foreground-emphasis">
-              {formatNumber(numResults)} {numResults === 1 ? "result" : "results"}
-            </p>
-            {activeFilterCount ? (
-              <p className="m-0 text-sm">
-                {activeFilterCount} active{" "}
-                {activeFilterCount === 1 ? "filter" : "filters"}
-              </p>
-            ) : null}
+        {description ? (
+          <p className="m-0 text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      <div className="grid w-full grid-cols-1 gap-6 xl:grid-cols-10 xl:gap-8">
+        <CatalogFilterPanel
+          filters={filters}
+          filterOptions={filterOptions}
+          isSearch={isSearch}
+          advanced={advancedSearch}
+          onAdvancedChange={setAdvancedSearch}
+          onChange={updateFilter}
+        />
+        <div ref={topRef} aria-busy={isLoading} className="flex w-full min-w-0 flex-col gap-6 xl:col-span-7">
+          <div className="flex flex-wrap items-center gap-3 border-b border-border pb-4">
+            <div className="flex w-full items-center gap-3 sm:w-auto">
+              <SortSelect value={sort} onChange={updateSort} />
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:ml-auto sm:w-auto sm:justify-end">
+              <div className="flex items-baseline gap-2">
+                <p role="status" aria-live="polite" className="m-0 font-semibold tabular-nums text-foreground-emphasis">
+                  {formatNumber(numResults)} {numResults === 1 ? "result" : "results"}
+                </p>
+                {activeFilterCount ? (
+                  <p className="m-0 text-meta text-muted-foreground">
+                    {activeFilterCount} active{" "}
+                    {activeFilterCount === 1 ? "filter" : "filters"}
+                  </p>
+                ) : null}
+              </div>
+              {result.total > pageLimit && (
+                <Paginate
+                  page={currentPage}
+                  pages={pages || 0}
+                  onPageChange={handlePageChange}
+                  label="Top Catalog Pagination"
+                  showPageJump={false}
+                />
+              )}
+            </div>
           </div>
-          <Button onClick={toggleFilters} block>
-            {`${showFilters ? "Hide" : "Show"} Search and Filters`}
-          </Button>
-          {showFilters && (
-            <div data-ui="filter-panel" className="max-h-panel overflow-y-auto border-b border-current pb-4">
-              <Heading level={2}>Search and Filter</Heading>
-              <Space block direction="column">
-                {/* First char filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="letters">First character of name is:</label>
-                  <FullWidthSelect
-                    name="letters"
-                    value={filters.char}
-                    onChange={(e) => handleChange(e, "char")}
-                  >
-                    <option key="char-none" value="">
-                      All
-                    </option>
-                    {filterOptions.chars.map((char, i) => (
-                      <option key={`char-${i}`} value={char}>
-                        {char}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* Name filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="search">Name includes:</label>
-                  <input
-                    name="search"
-                    id="search"
-                    autoComplete="off"
-                    placeholder="Enter daylily name here…"
-                    onChange={(e) => handleChange(e, "name")}
-                    value={filters.name}
-                  />
-                </Space>
-                {/* List filter */}
-                {isSearch && (
-                  <Space block direction="column" gap="xsmall">
-                    <label htmlFor="list">On list:</label>
-                    <FullWidthSelect
-                      name="list"
-                      value={filters.list}
-                      onChange={(e) => handleChange(e, "list")}
-                    >
-                      <option key="list-none" value="">
-                        Any
-                      </option>
-                      {filterOptions.lists.map((list, i) => (
-                        <option key={`list-${i}`} value={list}>
-                          {list}
-                        </option>
-                      ))}
-                    </FullWidthSelect>
-                  </Space>
-                )}
-                {/* Color filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="color">Color includes:</label>
-                  <input
-                    name="color"
-                    id="color"
-                    autoComplete="off"
-                    placeholder="Enter daylily color here…"
-                    onChange={(e) => handleChange(e, "color")}
-                    value={filters.color}
-                  />
-                </Space>
-                {/* Hybridizer filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="hybridizer">Hybridizer is:</label>
-                  <FullWidthSelect
-                    name="hybridizer"
-                    value={filters.hybridizer}
-                    onChange={(e) => handleChange(e, "hybridizer")}
-                  >
-                    <option key="hybridizer-none" value="">
-                      All
-                    </option>
-                    {filterOptions.hybridizers.map((hybridizer, i) => (
-                      <option key={`hybridizer-${i}`} value={hybridizer}>
-                        {hybridizer}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* Year filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="year">Year is:</label>
-                  <FullWidthSelect
-                    name="year"
-                    value={filters.year}
-                    onChange={(e) => handleChange(e, "year")}
-                  >
-                    <option key="year-none" value="">
-                      All
-                    </option>
-                    {filterOptions.years.map((year, i) => (
-                      <option key={`year-${i}`} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* Ploidy filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="ploidy">Ploidy is:</label>
-                  <FullWidthSelect
-                    name="ploidy"
-                    value={filters.ploidy}
-                    onChange={(e) => handleChange(e, "ploidy")}
-                  >
-                    <option key="ploidy-none" value="">
-                      All
-                    </option>
-                    {filterOptions.ploidies.map((ploidy, i) => (
-                      <option key={`ploidy-${i}`} value={ploidy}>
-                        {ploidy}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* Form filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="form">Form is:</label>
-                  <FullWidthSelect
-                    name="form"
-                    value={filters.form}
-                    onChange={(e) => handleChange(e, "form")}
-                  >
-                    <option key="form-none" value="">
-                      All
-                    </option>
-                    {filterOptions.forms.map((form, i) => (
-                      <option key={`form-${i}`} value={form}>
-                        {form}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* Foliage type filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="foliageType">Foliage type is:</label>
-                  <FullWidthSelect
-                    name="foliageType"
-                    value={filters.foliageType}
-                    onChange={(e) => handleChange(e, "foliageType")}
-                  >
-                    <option key="foliageType-none" value="">
-                      All
-                    </option>
-                    {filterOptions.foliageTypes.map((foliageType, i) => (
-                      <option key={`foliageType-${i}`} value={foliageType}>
-                        {foliageType}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* Fragrance filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="fragrance">Fragrance is:</label>
-                  <FullWidthSelect
-                    name="fragrance"
-                    value={filters.fragrance}
-                    onChange={(e) => handleChange(e, "fragrance")}
-                  >
-                    <option key="fragrance-none" value={""}>
-                      All
-                    </option>
-                    {filterOptions.fragrances.map((fragrance, i) => (
-                      <option key={`fragrance-${i}`} value={fragrance}>
-                        {fragrance}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                {/* bloomSize filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="bloomSize">Bloom size is:</label>
-                  <FullWidthSelect
-                    name="bloomSize"
-                    value={filters.bloomSize}
-                    onChange={(e) => handleChange(e, "bloomSize")}
-                  >
-                    <option value={""}>All</option>
-                    <option value="miniature">{`Miniature (up to 3")`}</option>
-                    <option value="small">{`Small (3" - 4.5")`}</option>
-                    <option value="large">{`Large (4.5" - 7")`}</option>
-                    <option value="extraLarge">{`Extra-Large (more than 7")`}</option>
-                  </FullWidthSelect>
-                </Space>
-                {/* scapeHeight filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="scapeHeight">Scape Height is:</label>
-                  <FullWidthSelect
-                    name="scapeHeight"
-                    value={filters.scapeHeight}
-                    onChange={(e) => handleChange(e, "scapeHeight")}
-                  >
-                    <option value={""}>All</option>
-                    <option value="miniature">{`Miniature (up to 10")`}</option>
-                    <option value="short">{`Short (10" - 20")`}</option>
-                    <option value="medium">{`Medium (20" - 30")`}</option>
-                    <option value="tall">{`Tall (30" - 40")`}</option>
-                    <option value="extraTall">{`Extra-Tall (more than 40")`}</option>
-                  </FullWidthSelect>
-                </Space>
-                {/* Bloom Season filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="bloomSeason">Bloom Season is:</label>
-                  <FullWidthSelect
-                    name="bloomSeason"
-                    value={filters.bloomSeason}
-                    onChange={(e) => handleChange(e, "bloomSeason")}
-                  >
-                    <option key="bloomSeason-none" value="">
-                      All
-                    </option>
-                    {filterOptions.bloomSeasons.map((bloomSeason, i) => (
-                      <option key={`bloomSeason-${i}`} value={bloomSeason}>
-                        {bloomSeason}
-                      </option>
-                    ))}
-                  </FullWidthSelect>
-                </Space>
-                <label
-                  htmlFor="rebloom"
-                  className="flex cursor-pointer items-center gap-3 text-foreground-emphasis"
-                >
-                  <input
-                    id="rebloom"
-                    name="rebloom"
-                    type="checkbox"
-                    checked={filters.rebloom}
-                    onChange={(e) => handleChange(e, "rebloom")}
-                    className="h-5 w-5 accent-primary"
-                  />
-                  <span>Rebloomers only</span>
-                </label>
-                {/* Price filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="price">Price is:</label>
-                  <FullWidthSelect
-                    name="price"
-                    value={filters.price}
-                    onChange={(e) => handleChange(e, "price")}
-                  >
-                    <option value={""}>All</option>
-                    <option value="one">{`up to $9.99`}</option>
-                    <option value="two">{`$10 - $19.99`}</option>
-                    <option value="three">{`$20 - $29.99`}</option>
-                    <option value="four">{`$30 - $39.99`}</option>
-                    <option value="five">{`$40 - $49.99`}</option>
-                    <option value="six">{`more than $50`}</option>
-                  </FullWidthSelect>
-                </Space>
-                {/* Note filter */}
-                <Space block direction="column" gap="xsmall">
-                  <label htmlFor="note">Note includes:</label>
-                  <input
-                    name="note"
-                    id="note"
-                    autoComplete="off"
-                    placeholder="Enter daylily note text here…"
-                    onChange={(e) => handleChange(e, "note")}
-                    value={filters.note}
-                  />
-                </Space>
-                <Button
-                  onClick={() => {
-                    clearFilters();
-                  }}
-                  block
-                  danger
-                >
-                  Clear Filters
-                </Button>
-              </Space>
+          {activeFilterCount > 0 && (
+            <div className="min-w-0">
+              <ActiveFilterChips
+                filters={filters}
+                onRemove={removeFilter}
+                onClearAll={clearFilters}
+              />
             </div>
           )}
-        </Space>
-      </FormWrapper>
-      <Space direction="column" ref={topRef} block>
-        <Space direction="column">
-          {result.total > pageLimit && (
-            <Paginate
-              page={currentPage}
-              pages={pages || 0}
-              onPageChange={handlePageChange}
-              label="Top Catalog Pagination"
-            />
-          )}
-        </Space>
         {isLoading && (
           <p role="status" aria-live="polite">
             Loading Results…
           </p>
         )}
-        <div className="grid w-full grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {searchError && (
+          <div role="alert" className="flex flex-col items-start gap-3 rounded-lg border-stroke border-card-border bg-card p-5">
+            <p className="m-0">Search results could not load. Please try again.</p>
+            <Button size="compact" onClick={() => setRetryCount((count) => count + 1)}>
+              Retry search
+            </Button>
+          </div>
+        )}
+        {!searchError && <div className="grid w-full grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4 xl:grid-cols-3">
           {displayLilies.map((node: DisplayListing, index) => {
             if (!node) return;
             return (
@@ -619,8 +392,12 @@ const SearchPage: NextPage<Props> = ({
               </React.Fragment>
             );
           })}
-        </div>
-        {displayLilies.length < 1 && <p>No Results Found for This Search…</p>}
+        </div>}
+        {!searchError && !isLoading && displayLilies.length < 1 && (
+          <p className="m-0 w-full max-w-none rounded-lg border-stroke border-card-border bg-card px-6 py-12 text-center text-muted-foreground">
+            No Results Found for This Search…
+          </p>
+        )}
         {result.total > pageLimit && (
           <Paginate
             page={currentPage}
@@ -629,23 +406,13 @@ const SearchPage: NextPage<Props> = ({
             label="Bottom Catalog Pagination"
           />
         )}
-      </Space>
+      </div>
+      </div>
       <BackToTop />
     </Layout>
   );
 };
 export default SearchPage;
-
-const useSearchChange = (numResults: number) => {
-  const [prevNum, setPrevNum] = React.useState(numResults);
-  const addAlert = useSnackBar().addAlert;
-  useEffect(() => {
-    if (numResults !== prevNum) {
-      addAlert(`${formatNumber(numResults)} Results`);
-      setPrevNum(numResults);
-    }
-  }, [addAlert, numResults, prevNum]);
-};
 
 type DisplayListing = PublicListingCard;
 
@@ -713,7 +480,12 @@ export const getServerSideProps: GetServerSideProps<
   const description = list.intro;
   const filterOptions = getCatalogFilterOptions(listings);
   const filters = getCatalogFiltersFromQuery(context.query);
-  const searchResult = getCatalogSearchResult(listings, filters);
+  const searchResult = getCatalogSearchResult(
+    listings,
+    filters,
+    CATALOG_PAGE_LIMIT,
+    getCatalogSortFromQuery(context.query)
+  );
 
   return {
     props: {
@@ -727,17 +499,3 @@ export const getServerSideProps: GetServerSideProps<
     },
   };
 };
-
-const FullWidthSelect = ({
-  className,
-  id,
-  name,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement>) => (
-  <select
-    id={id || name}
-    name={name}
-    className={cx("w-full", className)}
-    {...props}
-  />
-);

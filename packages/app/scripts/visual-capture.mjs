@@ -155,8 +155,21 @@ async function serve() {
   // Empty values prevent Next's .env loader from importing live DB or mail credentials.
   const env = { ...process.env, PUBLIC_SNAPSHOT_DIR: runtime, NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA", TURSO_DATABASE_URL: "", TURSO_DATABASE_AUTH_TOKEN: "", SMTP_USER: "", SMTP_PASS: "" };
   execFileSync(process.execPath, [require.resolve("prisma/build/index.js"), "generate", "--schema=prisma/schema.sqlite.prisma"], { cwd: app, env, stdio: "inherit" });
-  const child = spawn(process.execPath, [require.resolve("next/dist/bin/next"), "dev", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: app, env, stdio: "inherit" });
-  await writeJson(path.join(runtime, "server.json"), { root, port, pid: child.pid, node: process.version, fixtureHash: hash(fixture), snapshotVersion: snapshot.version, fixtureSource });
+  // VISUAL_SERVER=production captures the standalone build: no dev-only image
+  // reveal or development UI. Same pinned fixture and empty credentials.
+  const mode = process.env.VISUAL_SERVER === "production" ? "production" : "development";
+  let child;
+  if (mode === "production") {
+    const prodEnv = { ...env, NODE_ENV: "production" };
+    execFileSync(process.execPath, [require.resolve("next/dist/bin/next"), "build"], { cwd: app, env: prodEnv, stdio: "inherit" });
+    const standalone = path.join(app, ".next/standalone/packages/app");
+    await fs.cp(path.join(app, ".next/static"), path.join(standalone, ".next/static"), { recursive: true, force: true });
+    await fs.cp(path.join(app, "public"), path.join(standalone, "public"), { recursive: true, force: true });
+    child = spawn(process.execPath, [path.join(standalone, "server.js")], { cwd: standalone, env: { ...prodEnv, PORT: String(port), HOSTNAME: "127.0.0.1" }, stdio: "inherit" });
+  } else {
+    child = spawn(process.execPath, [require.resolve("next/dist/bin/next"), "dev", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: app, env, stdio: "inherit" });
+  }
+  await writeJson(path.join(runtime, "server.json"), { root, port, pid: child.pid, mode, node: process.version, fixtureHash: hash(fixture), snapshotVersion: snapshot.version, fixtureSource });
   for (const signal of ["SIGTERM", "SIGINT"]) process.on(signal, () => child.kill(signal));
   child.on("exit", (code) => { process.exitCode = code ?? 1; });
   console.log(`Visual fixture ${snapshot.version}; local server http://127.0.0.1:${port}`);
@@ -190,14 +203,15 @@ async function settle(page) {
   });
   await page.waitForFunction(() => Array.from(document.images).every((image) => image.complete), null, { timeout: 60000 });
   await page.waitForFunction(() => !document.querySelector("[data-ui=spinner]"), null, { timeout: 30000 });
-  await pause(700); // CSS image reveal and 500ms snackbar dismissal, not network readiness.
+  await page.waitForFunction(() => !document.querySelector('[data-ui="notifications"]')?.textContent?.trim());
+  await pause(700); // CSS image reveal, not network readiness.
   await page.evaluate(() => { window.scrollTo(0, 0); if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
 }
 
 async function prepareState(page, entry) {
   if (entry.state === "cart") await page.getByText("A Legacy of Joy", { exact: true }).filter({ visible: true }).waitFor();
   if (entry.state === "filters") {
-    await page.getByRole("button", { name: "Show Search and Filters", exact: true }).click();
+    await page.locator("[data-ui=filter-panel]").waitFor();
     await page.locator("#rebloom:checked").waitFor();
   }
   if (entry.state === "empty-results") {
@@ -413,7 +427,7 @@ async function capture(mode) {
     const entries = captureEntries(manifest, snapshot);
     const { chromium } = require("@playwright/test");
     browser = await chromium.launch({ headless: true });
-    const environment = { browser: browser.version(), channel: "playwright-chromium", node: server.node, serverNode: server.node, playwright: require("@playwright/test/package.json").version, tailwind: require("tailwindcss/package.json").version, next: require("next/package.json").version, platform: `${process.platform}-${process.arch}`, osRelease: os.release(), locale: "en-US", timezoneId: "America/Chicago", colorScheme: "dark", reducedMotion: "reduce", deviceScaleFactor: 1, lockfileHash: hash(await fs.readFile(path.join(root, "package-lock.json"))) };
+    const environment = { browser: browser.version(), channel: "playwright-chromium", node: server.node, serverNode: server.node, serverMode: server.mode || "development", playwright: require("@playwright/test/package.json").version, tailwind: require("tailwindcss/package.json").version, next: require("next/package.json").version, platform: `${process.platform}-${process.arch}`, osRelease: os.release(), locale: "en-US", timezoneId: "America/Chicago", colorScheme: "dark", reducedMotion: "reduce", deviceScaleFactor: 1, lockfileHash: hash(await fs.readFile(path.join(root, "package-lock.json"))) };
     const baselineHash = mode === "current" ? await verifyBaseline(output) : null;
     const previous = mode === "current" ? await json(path.join(output, "start/metadata.json")) : null;
     const inputNotes = previous ? await verifyCaptureInputs(previous, manifestBytes, fixture) : [];
@@ -473,7 +487,7 @@ async function capture(mode) {
         // so full-page emulation cannot enlarge the menu or filter panel.
         await page.evaluate(() => {
           document.body.style.minHeight = getComputedStyle(document.body).minHeight;
-          document.querySelectorAll(".h-screen").forEach((element) => { element.style.height = getComputedStyle(element).height; });
+          document.querySelectorAll(".h-screen, .h-dvh").forEach((element) => { element.style.height = getComputedStyle(element).height; });
           document.querySelectorAll("[data-ui=filter-panel]").forEach((element) => { element.style.maxHeight = getComputedStyle(element).maxHeight; });
         });
         await page.screenshot({ path: file, fullPage: true, animations: "disabled", caret: "hide", mask: [page.locator('iframe[src*="challenges.cloudflare.com"]')], maskColor: "#28323e", style: "nextjs-portal { visibility: hidden !important; }" });
@@ -510,6 +524,7 @@ async function capture(mode) {
 const usage = `Usage: node packages/app/scripts/visual-capture.mjs setup|serve|start|current|sheet
   setup    Verify bundled public fixture and install Playwright Chromium (npm ci first).
   serve    Start an isolated dev server with Start's fixture, or the bundled fixture.
+           VISUAL_SERVER=production builds and serves the standalone production app instead.
   start    Capture a NEW immutable Start and initial Current; refuses an existing Start.
   current  Capture against Start's exact fixture and route/state coverage, then build sheets.
   sheet    Rebuild HTML, desktop/mobile PNG overviews and full-page pairs; no server needed.

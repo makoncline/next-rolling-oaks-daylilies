@@ -10,35 +10,39 @@ test("customers can search, filter, select photos and keep cart changes after re
   // This journey must never send email, even if a selector changes.
   await page.route("**/api/forms", route => route.abort());
   await page.goto("/");
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe("hidden");
   const menu = page.getByRole("button", { name: "Toggle navigation" });
   if (isMobile) {
     await menu.click();
-    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByRole("dialog", { name: "Navigation", exact: true })).toBeVisible();
   }
-  await page.locator('header a[href="/catalog/search"]:visible').click();
+  await (isMobile ? page.getByRole("dialog", { name: "Navigation", exact: true }).getByRole("link", { name: "Search", exact: true }) : page.locator('header a[href="/catalog/search"]:visible')).click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
-  await page.getByRole("button", { name: "Show Search and Filters", exact: true }).click();
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe("hidden");
   await page.locator("#search").fill("A Few Good Men");
   await expect(page.locator("main article")).toHaveCount(1);
   await expect(page.locator("main article")).toContainText("A Few Good Men");
   await page.locator("#search").fill("no-matching-cultivar-987654321");
   await expect(page.getByText("0 results", { exact: true })).toBeVisible();
   await expect(page.locator("main article")).toHaveCount(0);
-  await page.getByRole("button", { name: "Clear Filters", exact: true }).click();
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
   await expect(page.locator("main article").first()).toBeVisible();
-  await page.locator("#ploidy").selectOption("Tetraploid");
+  await page.getByRole("switch", { name: "Advanced" }).click();
+  await page.getByRole("button", { name: "Classification & Details", exact: true }).click();
+  await page.locator("#ploidy").click();
+  await page.getByRole("checkbox", { name: "Tetraploid", exact: true }).check();
+  await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/ploidy=Tetraploid/);
+  await page.getByRole("button", { name: "Bloom Traits", exact: true }).click();
   await page.locator("#rebloom").check();
   await expect(page).toHaveURL(/rebloom=true/);
-  await expect(page.locator("#ploidy")).toHaveValue("Tetraploid");
+  await expect(page.locator("#ploidy")).toHaveText("Ploidy1");
   await expect(page.locator("main article").first()).toBeVisible();
   await expectNoOverflow(page);
-  await page.getByRole("button", { name: "Clear Filters", exact: true }).click();
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page.locator("#rebloom")).not.toBeChecked();
-  await expect(page.locator("#ploidy")).toHaveValue("");
+  await expect(page.locator("#ploidy")).toHaveText("Ploidy");
 
   await page.goto("/3081");
   const photo = page.getByRole("img", { name: "19-4 Photo", exact: true });

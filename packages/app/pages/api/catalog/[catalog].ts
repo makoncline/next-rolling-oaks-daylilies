@@ -6,6 +6,7 @@ import {
 import {
   getCatalogFiltersFromQuery,
   getCatalogSearchResult,
+  getCatalogSortFromQuery,
 } from "../../../lib/catalogSearch";
 import { getPagination } from "../../../lib/publicApi";
 
@@ -41,7 +42,8 @@ export default async function handler(
   const searchResult = getCatalogSearchResult(
     getCatalogListings(snapshot, catalogSlug),
     filters,
-    limit
+    limit,
+    getCatalogSortFromQuery(req.query)
   );
 
   res.setHeader(

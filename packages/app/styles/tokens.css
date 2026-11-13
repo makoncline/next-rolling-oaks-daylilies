@@ -1,86 +1,140 @@
-/* Semantic design tokens. Values intentionally preserve the original dark theme. */
+/*
+ * Semantic design tokens — dark "evening garden" theme.
+ * A deep evergreen ground (from the logo's oak green, not neutral black) keeps
+ * flower photography vivid. One accent, daylily-throat gold, marks the primary
+ * action; prices stay in the emphasis text color. Hierarchy comes from type and grouping, not shadows.
+ */
 :root {
-  --background: #1b2733;
-  --foreground: #aaabad;
-  --foreground-emphasis: #ece9e6;
-  --card: #222d38;
+  /* Raw palette (only referenced by the semantic roles below). */
+  --palette-green-950: #121a16;
+  --palette-green-900: #18221d;
+  --palette-green-850: #1f2b24;
+  --palette-green-820: #24322a;
+  --palette-green-800: #28362e;
+  --palette-green-750: #2f3d35;
+  --palette-green-700: #3a4a41;
+  --palette-green-600: #647569;
+  --palette-sage-400: #8e9b92;
+  --palette-sage-300: #a8b3ab;
+  --palette-mist-100: #e3e7e2;
+  --palette-mist-50: #f5f6f3;
+  --palette-gold-400: #ecc15a;
+  --palette-gold-300: #f3d283;
+  --palette-gold-950: #1f1806;
+  --palette-coral-400: #f29a8a;
+  --palette-coral-600: #c4493a;
+  --palette-leaf-300: #a9d79f;
+  --palette-black: #000000;
+
+  /* Semantic roles. */
+  --background: var(--palette-green-900);
+  --background-sunken: var(--palette-green-950);
+  --foreground: var(--palette-mist-100);
+  --foreground-emphasis: var(--palette-mist-50);
+  --card: var(--palette-green-850);
+  --card-border: var(--palette-green-750);
+  --tile: var(--palette-green-820);
   --card-foreground: var(--foreground);
-  --popover: #28323e;
-  --popover-foreground: var(--foreground-emphasis);
-  --primary: #1f78d1;
-  --primary-foreground: var(--foreground-emphasis);
-  --primary-hover: #2f8de8;
-  --secondary: var(--popover);
-  --secondary-foreground: var(--foreground-emphasis);
-  --muted: var(--card);
-  --muted-foreground: #7f858c;
-  --accent: var(--secondary);
-  --accent-foreground: var(--foreground-emphasis);
-  --destructive: #ef4444;
-  --destructive-foreground: var(--foreground-emphasis);
-  --destructive-text: #fecaca;
-  --required: #fca5a5;
-  --success: #22c55e;
-  --success-foreground: var(--foreground-emphasis);
-  --success-text: #bbf7d0;
-  --border: #4b5563;
-  --input: var(--border);
-  --input-background: var(--secondary);
-  --input-foreground: var(--foreground-emphasis);
-  --ring: var(--primary);
-  --button-border: var(--muted-foreground);
-  --button-border-hover: var(--foreground-emphasis);
-  --link: #8dbcf5;
-  --link-hover: #b7d5ff;
-  --badge: var(--foreground-emphasis);
-  --badge-foreground: var(--background);
-  --overlay: #000000;
-  --overlay-foreground: #ffffff;
-  --divider-accent: #7c3aed;
-  --divider-gradient: linear-gradient(135deg, var(--primary), var(--divider-accent));
+  --popover: var(--palette-green-800);
+  --popover-foreground: var(--palette-mist-50);
+  --primary: var(--palette-gold-400);
+  --primary-foreground: var(--palette-gold-950);
+  --primary-hover: var(--palette-gold-300);
+  --secondary: var(--palette-green-800);
+  --secondary-hover: var(--palette-green-750);
+  --secondary-foreground: var(--palette-mist-50);
+  --muted: var(--palette-green-850);
+  --muted-foreground: var(--palette-sage-300);
+  --subtle-foreground: var(--palette-sage-400);
+  --accent: var(--palette-green-800);
+  --accent-foreground: var(--palette-mist-50);
+  --destructive: var(--palette-coral-600);
+  --destructive-foreground: var(--palette-mist-50);
+  --destructive-text: var(--palette-coral-400);
+  --required: var(--palette-coral-400);
+  --success: var(--palette-leaf-300);
+  --success-foreground: var(--palette-green-950);
+  --success-text: var(--palette-leaf-300);
+  --border: var(--palette-green-700);
+  --border-strong: var(--palette-green-600);
+  --input: var(--palette-green-600);
+  --input-background: var(--palette-green-950);
+  --input-foreground: var(--palette-mist-50);
+  --ring: var(--palette-gold-400);
+  --button-border: var(--palette-green-600);
+  --button-border-hover: var(--palette-sage-300);
+  --link: var(--palette-mist-50);
+  --link-hover: var(--palette-gold-300);
+  --badge: var(--palette-green-800);
+  --badge-foreground: var(--palette-mist-100);
+  --overlay: var(--palette-black);
+  --overlay-foreground: var(--palette-mist-50);
+  --hero-mobile: linear-gradient(to bottom, transparent 55%, var(--background));
+  --hero-desktop: linear-gradient(to right, var(--background), color-mix(in srgb, var(--background) 88%, transparent) 40%, transparent 80%);
+  --divider-accent: var(--palette-gold-400);
+  --divider-gradient: linear-gradient(90deg, var(--palette-gold-400), var(--palette-gold-400));
 
   --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
-  --type-heading-1: clamp(2.25rem, 10vw, 3rem);
-  --type-heading-2: clamp(1.6rem, 7vw, 2rem);
-  --type-heading-3: 1.5rem;
-  --type-heading-4: 1.25rem;
-  --type-alert-heading: clamp(1.75rem, 7vw, 2.25rem);
+  --type-base: 1.0625rem;
+  --type-hero: clamp(2.375rem, 6vw, 3.5rem);
+  --type-heading-1: clamp(2rem, 5vw, 2.75rem);
+  --type-heading-2: clamp(1.5rem, 3.5vw, 1.875rem);
+  --type-heading-3: 1.25rem;
+  --type-heading-4: 1.125rem;
+  --type-tile-title: 1rem;
+  --type-meta: 0.875rem;
+  --type-fine: 0.8125rem;
+  --type-alert-heading: clamp(1.625rem, 5vw, 2.125rem);
   --leading-heading: 1.15;
-  --leading-copy: 1.7;
-  --measure-copy: 70ch;
-  --size-panel: 52vh;
+  --leading-copy: 1.65;
+  --letter-heading: -0.02em;
+  --measure-copy: 66ch;
+  --size-panel: 75vh;
+  --width-page: 75rem;
+  --width-prose: 44rem;
+  --width-form: 36rem;
+  --header-height: 4.5rem;
+  --space-safe-top: env(safe-area-inset-top, 0px);
+  --space-safe-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 
-  /* Preserve Tailwind's scale; these are component-specific exceptions/roles. */
-  --radius: 0.375rem;
-  --radius-subtle: 0.25rem;
+  --radius: 0.5rem;
+  --radius-subtle: 0.3125rem;
+  --radius-large: 0.75rem;
   --radius-round: 9999px;
   --space-control-x: calc(var(--spacing) * 3);
-  --space-control-y: calc(var(--spacing) * 2);
-  --space-button-y: 0.35rem;
-  --space-badge-x: calc(var(--spacing) * 1.5);
-  --space-badge-y: 0.0625rem;
+  --space-control-y: calc(var(--spacing) * 2.25);
+  --space-button-y: calc(var(--spacing) * 2.25);
+  --space-badge-x: calc(var(--spacing) * 2);
+  --space-badge-y: calc(var(--spacing) * 0.5);
   --stroke-width: 1px;
   --focus-width: 2px;
   --focus-offset: 2px;
   --press-offset: 1px;
-  --elevation-toast: 0 10px 15px -3px rgb(0 0 0 / 30%),
-    0 4px 6px -4px rgb(0 0 0 / 30%);
+  --control-height: 2.75rem;
+  --control-height-compact: 2.25rem;
+  --space-section: clamp(3.5rem, 8vw, 6rem);
+  --elevation-toast: 0 8px 24px -6px rgb(0 0 0 / 55%);
   --duration-spinner: 0.75s;
-  --duration-fade: 150ms;
+  --duration-fade: 120ms;
   --ease-fade: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-image-reveal: 1ms;
   --delay-image-reveal: 1s;
 }
 
 /* shadcn-style role names, exposed through Tailwind v4, without its components
- * or resets. Structural utilities continue to use the existing Tailwind scale. */
+ * or resets. Structural utilities continue to use the existing Tailwind scale.
+ * Theme names must differ from the raw :root names above, or they self-reference. */
 @theme inline {
   --color-*: initial;
+  --color-transparent: transparent;
   --color-background: var(--background);
+  --color-background-sunken: var(--background-sunken);
   --color-foreground: var(--foreground);
   --color-foreground-emphasis: var(--foreground-emphasis);
   --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-tile: var(--tile);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
@@ -88,9 +142,11 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
@@ -101,6 +157,7 @@
   --color-success-foreground: var(--success-foreground);
   --color-success-text: var(--success-text);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-input-foreground: var(--input-foreground);
@@ -114,15 +171,23 @@
   --color-overlay: var(--overlay);
   --color-overlay-foreground: var(--overlay-foreground);
   --color-divider-accent: var(--divider-accent);
+  --background-image-hero-mobile: var(--hero-mobile);
+  --background-image-hero-desktop: var(--hero-desktop);
   --background-image-divider: var(--divider-gradient);
   --font-sans: var(--font-body);
+  --text-base: var(--type-base);
+  --text-hero: var(--type-hero);
   --text-heading-1: var(--type-heading-1);
   --text-heading-2: var(--type-heading-2);
   --text-heading-3: var(--type-heading-3);
   --text-heading-4: var(--type-heading-4);
+  --text-tile-title: var(--type-tile-title);
+  --text-meta: var(--type-meta);
+  --text-fine: var(--type-fine);
   --text-alert-heading: var(--type-alert-heading);
   --leading-title: var(--leading-heading);
   --leading-body: var(--leading-copy);
+  --tracking-heading: var(--letter-heading);
   --spacing-panel: var(--size-panel);
   --spacing-control-x: var(--space-control-x);
   --spacing-control-y: var(--space-control-y);
@@ -131,8 +196,18 @@
   --spacing-badge-y: var(--space-badge-y);
   --spacing-stroke: var(--stroke-width);
   --spacing-press: var(--press-offset);
+  --spacing-control: var(--control-height);
+  --spacing-control-compact: var(--control-height-compact);
+  --spacing-header: var(--header-height);
+  --spacing-safe-top: var(--space-safe-top);
+  --spacing-safe-bottom: var(--space-safe-bottom);
+  --spacing-section: var(--space-section);
+  --container-page: var(--width-page);
+  --container-prose: var(--width-prose);
+  --container-form: var(--width-form);
   --radius-sm: var(--radius-subtle);
   --radius-md: var(--radius);
+  --radius-lg: var(--radius-large);
   --radius-full: var(--radius-round);
   --shadow-toast: var(--elevation-toast);
   --animate-spinner: spinner-rotate var(--duration-spinner) linear infinite;
