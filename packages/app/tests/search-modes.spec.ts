@@ -31,7 +31,7 @@ test("basic search shows name search and quick filters only", async ({ page }) =
   await expect(page.locator("#forSale")).toBeVisible();
   await expect(page.locator("#photo")).toBeVisible();
   await expect(page.getByRole("button", { name: "Lists", exact: true })).toBeVisible();
-  await expect(page.locator("#rebloom")).toBeVisible();
+  await expect(page.locator("#rebloom")).toHaveCount(0);
   await expect(page.locator("#ploidy")).toHaveCount(0);
   await expect(page.locator("#hybridizer")).toHaveCount(0);
   await expect(page.getByRole("list", { name: "Active filters" })).toHaveCount(0);
@@ -135,11 +135,23 @@ test("shared links with advanced filters open advanced mode and the section", as
   await expect(page).toHaveURL(/ploidy=Tetraploid/);
 });
 
-test("quick filters that cannot narrow a catalog are not offered", async ({ page }) => {
+test("sale catalogs omit the sale toggle and keep Rebloom in advanced Bloom Traits", async ({ page }) => {
   await page.goto("/catalog/for-sale");
   await openFilters(page);
   await expect(page.locator("#forSale")).toHaveCount(0);
-  await expect(page.locator("#rebloom")).toBeVisible();
+  await expect(page.locator("#rebloom")).toHaveCount(0);
+  await advancedSwitch(page).click();
+  await page.getByRole("button", { name: "Bloom Traits", exact: true }).click();
+  await page.getByRole("checkbox", { name: "Rebloomers only", exact: true }).check();
+  await expect(page).toHaveURL(/rebloom=true/);
+  await expect(page.locator("main article").first()).toBeVisible();
+  await page.reload();
+  await expect(advancedSwitch(page)).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("button", { name: "Bloom Traits", exact: true })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#rebloom")).toBeChecked();
+  await page.getByRole("button", { name: "Remove filter Rebloomers only", exact: true }).click();
+  await expect(page).not.toHaveURL(/rebloom=/);
+  await expect(page.locator("#rebloom")).not.toBeChecked();
 });
 
 test("the advanced switch and sections work from the keyboard", async ({ page, isMobile }) => {

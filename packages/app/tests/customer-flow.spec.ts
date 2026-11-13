@@ -34,6 +34,7 @@ test("customers can search, filter, select photos and keep cart changes after re
   await page.getByRole("checkbox", { name: "Tetraploid", exact: true }).check();
   await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/ploidy=Tetraploid/);
+  await page.getByRole("button", { name: "Bloom Traits", exact: true }).click();
   await page.locator("#rebloom").check();
   await expect(page).toHaveURL(/rebloom=true/);
   await expect(page.locator("#ploidy")).toHaveText("Ploidy1");

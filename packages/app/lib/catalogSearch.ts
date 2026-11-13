@@ -57,7 +57,6 @@ export const BASIC_FILTER_KEYS: CatalogFilterKey[] = [
   "list",
   "forSale",
   "photo",
-  "rebloom",
 ];
 
 export const CATALOG_FILTER_LABELS: Record<CatalogFilterKey, string> = {

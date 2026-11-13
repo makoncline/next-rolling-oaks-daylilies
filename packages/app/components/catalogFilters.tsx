@@ -25,6 +25,7 @@ type FieldDefinition = {
 } & (
   | { kind: "range"; key: CatalogRangeKey }
   | { kind: "text" }
+  | { kind: "toggle"; key: "rebloom" }
   | { kind: "facet"; options: (options: CatalogFilterOptions) => string[] }
 );
 
@@ -84,6 +85,12 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
     id: "bloom",
     title: "Bloom Traits",
     fields: [
+      {
+        key: "rebloom",
+        id: "rebloom",
+        label: CATALOG_FILTER_LABELS.rebloom,
+        kind: "toggle",
+      },
       {
         key: "bloomHabit",
         id: "bloomHabit",
@@ -191,6 +198,9 @@ function FilterField({
   filterOptions: CatalogFilterOptions;
   onChange: (key: CatalogFilterKey, value: FilterValue) => void;
 }) {
+  if (field.kind === "toggle") {
+    return <QuickToggle id={field.id} label={field.label} checked={filters[field.key]} onChange={(checked) => onChange(field.key, checked)} />;
+  }
   const value = String(filters[field.key] || "");
   if (field.kind === "range") {
     return <CatalogRange field={field.key} value={value} bounds={filterOptions.ranges[field.key]} onChange={(next) => onChange(field.key, next)} />;
@@ -477,12 +487,6 @@ export function CatalogFilterPanel({
               onChange={(checked) => onChange("photo", checked)}
             />
           )}
-          <QuickToggle
-            id="rebloom"
-            label={CATALOG_FILTER_LABELS.rebloom}
-            checked={filters.rebloom}
-            onChange={(checked) => onChange("rebloom", checked)}
-          />
         </div>
       </div>
 
