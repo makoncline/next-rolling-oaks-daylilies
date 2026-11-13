@@ -253,6 +253,13 @@ test("name search is visible in the catalog toolbar without opening filters", as
   await search.fill("A Few Good Men");
   await expect(page).toHaveURL(/name=A(\+|%20)Few(\+|%20)Good(\+|%20)Men/);
   await expect(page.locator("main article")).toHaveCount(1);
+  await expect(page.getByRole("status").filter({ hasText: /^1 result$/ })).toBeVisible();
+  await expect(page.locator('[data-ui="notifications"]')).toBeEmpty();
+
+  await search.fill("Coff");
+  await expect(page).toHaveURL(/name=Coff/);
+  await expect(page.locator("main article").first()).toContainText(/Coff/i);
+  await expect(page.locator('[data-ui="notifications"]')).toBeEmpty();
 });
 
 test("Back after paging returns to the previous catalog page", async ({ page }) => {

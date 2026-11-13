@@ -7,7 +7,6 @@ import BackToTop from "../../components/backToTop";
 import Paginate from "../../components/paginate";
 import LilyCard from "../../components/lilyCard";
 import type { GetServerSideProps, NextPage } from "next";
-import { useSnackBar } from "../../components/snackBarProvider";
 import { siteConfig } from "../../siteConfig";
 import { Button, cx, FancyHeading } from "components/ui";
 import {
@@ -249,7 +248,6 @@ const SearchPage: NextPage<Props> = ({
     }
   };
   const numResults = result.total;
-  useSearchChange(numResults);
   const isSearch = title === "Search";
   const activeFilterCount = getActiveFilterKeys(filters).length;
   const canonicalPath =
@@ -348,7 +346,7 @@ const SearchPage: NextPage<Props> = ({
             </div>
             <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:ml-auto sm:w-auto sm:justify-end">
               <div className="flex items-baseline gap-2">
-                <p className="m-0 font-semibold tabular-nums text-foreground-emphasis">
+                <p role="status" aria-live="polite" className="m-0 font-semibold tabular-nums text-foreground-emphasis">
                   {formatNumber(numResults)} {numResults === 1 ? "result" : "results"}
                 </p>
                 {activeFilterCount ? (
@@ -432,17 +430,6 @@ const SearchPage: NextPage<Props> = ({
   );
 };
 export default SearchPage;
-
-const useSearchChange = (numResults: number) => {
-  const [prevNum, setPrevNum] = React.useState(numResults);
-  const addAlert = useSnackBar().addAlert;
-  useEffect(() => {
-    if (numResults !== prevNum) {
-      addAlert(`${formatNumber(numResults)} Results`);
-      setPrevNum(numResults);
-    }
-  }, [addAlert, numResults, prevNum]);
-};
 
 type DisplayListing = PublicListingCard;
 
