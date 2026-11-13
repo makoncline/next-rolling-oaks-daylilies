@@ -10,7 +10,6 @@ export const CATALOG_PAGE_LIMIT = 24;
 export const defaultCatalogFilters = {
   name: "",
   list: "",
-  char: "",
   hybridizer: "",
   year: "",
   ploidy: "",
@@ -37,7 +36,6 @@ export type CatalogFilters = typeof defaultCatalogFilters;
 
 export type CatalogFilterOptions = {
   ranges: Record<CatalogRangeKey, RangeBounds>;
-  chars: string[];
   lists: string[];
   hybridizers: string[];
   ploidies: string[];
@@ -65,7 +63,6 @@ export const BASIC_FILTER_KEYS: CatalogFilterKey[] = [
 export const CATALOG_FILTER_LABELS: Record<CatalogFilterKey, string> = {
   name: "Name",
   list: "List",
-  char: "First character",
   hybridizer: "Hybridizer",
   year: "Year",
   ploidy: "Ploidy",
@@ -112,7 +109,6 @@ export const getCatalogFiltersFromQuery = (
 ): CatalogFilters => ({
   ...defaultCatalogFilters,
   name: getQueryString(query.name) || "",
-  char: getQueryString(query.char) || "",
   list: getQueryString(query.list) || "",
   hybridizer: getQueryString(query.hybridizer) || "",
   year: getQueryString(query.year) || "",
@@ -148,9 +144,6 @@ export const getCatalogFilterOptions = (
   listings: PublicListingCard[]
 ): CatalogFilterOptions => ({
   ranges: Object.fromEntries(Object.entries(catalogRangeFields).map(([key, field]) => [key, rangeBounds(listings.map(field.value))])) as Record<CatalogRangeKey, RangeBounds>,
-  chars: uniqueSorted(
-    listings.map(({ title }) => title.substring(0, 1).toUpperCase())
-  ),
   lists: uniqueSorted(
     listings.flatMap((listing) =>
       listing.lists && listing.lists.length > 0
@@ -191,15 +184,6 @@ export const filterCatalogListings = (
   if (filters.name) {
     filtered = filtered.filter((listing) =>
       listing.title.toLowerCase().includes(filters.name.toLowerCase())
-    );
-  }
-
-  if (filters.char) {
-    filtered = filtered.filter((listing) =>
-      listing.title
-        .substring(0, 1)
-        .toLowerCase()
-        .includes(filters.char.toLowerCase())
     );
   }
 

@@ -17,19 +17,15 @@ import {
 
 export type FilterValue = string | boolean;
 
-type Option = { value: string; label: string };
-
 type FieldDefinition = {
   key: CatalogFilterKey;
   id: string;
   label: string;
   placeholder?: string;
-  allLabel?: string;
 } & (
   | { kind: "range"; key: CatalogRangeKey }
   | { kind: "text" }
-  | { kind: "facet"; options: (options: CatalogFilterOptions) => Option[] }
-  | { kind: "select"; options: (options: CatalogFilterOptions) => Option[] }
+  | { kind: "facet"; options: (options: CatalogFilterOptions) => string[] }
 );
 
 type SectionDefinition = {
@@ -38,21 +34,11 @@ type SectionDefinition = {
   fields: FieldDefinition[];
 };
 
-const toOptions = (values: string[]) =>
-  values.map((value) => ({ value, label: value }));
-
 const ADVANCED_SECTIONS: SectionDefinition[] = [
   {
     id: "listing",
     title: "Listing",
     fields: [
-      {
-        key: "char",
-        id: "letters",
-        label: "First letter or number",
-        kind: "select",
-        options: (o) => toOptions(o.chars),
-      },
       {
         key: "note",
         id: "note",
@@ -77,7 +63,7 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
         id: "hybridizer",
         label: "Hybridizer",
         kind: "facet",
-        options: (o) => toOptions(o.hybridizers),
+        options: (o) => o.hybridizers,
       },
       {
         key: "year",
@@ -96,14 +82,14 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
         id: "bloomHabit",
         label: "Bloom habit",
         kind: "facet",
-        options: (o) => toOptions(o.bloomHabits),
+        options: (o) => o.bloomHabits,
       },
       {
         key: "bloomSeason",
         id: "bloomSeason",
         label: "Bloom season",
         kind: "facet",
-        options: (o) => toOptions(o.bloomSeasons),
+        options: (o) => o.bloomSeasons,
       },
       {
         key: "scapeHeight",
@@ -140,28 +126,28 @@ const ADVANCED_SECTIONS: SectionDefinition[] = [
         id: "form",
         label: "Form",
         kind: "facet",
-        options: (o) => toOptions(o.forms),
+        options: (o) => o.forms,
       },
       {
         key: "ploidy",
         id: "ploidy",
         label: "Ploidy",
         kind: "facet",
-        options: (o) => toOptions(o.ploidies),
+        options: (o) => o.ploidies,
       },
       {
         key: "foliageType",
         id: "foliageType",
         label: "Foliage type",
         kind: "facet",
-        options: (o) => toOptions(o.foliageTypes),
+        options: (o) => o.foliageTypes,
       },
       {
         key: "fragrance",
         id: "fragrance",
         label: "Fragrance",
         kind: "facet",
-        options: (o) => toOptions(o.fragrances),
+        options: (o) => o.fragrances,
       },
       {
         key: "color",
@@ -185,7 +171,7 @@ const countActive = (section: SectionDefinition, filters: CatalogFilters) =>
   section.fields.filter((field) => Boolean(filters[field.key])).length;
 
 const fieldClassName =
-  "flex min-w-0 flex-col gap-1.5 [&>label]:text-meta [&>label]:text-muted-foreground [&>input]:min-h-control-compact [&>input]:text-base sm:[&>input]:text-meta [&>select]:min-h-control-compact [&>select]:text-base sm:[&>select]:text-meta";
+  "flex min-w-0 flex-col gap-1.5 [&>label]:text-meta [&>label]:text-muted-foreground [&>input]:min-h-control-compact [&>input]:text-base sm:[&>input]:text-meta";
 
 function FilterField({
   field,
@@ -203,12 +189,11 @@ function FilterField({
     return <CatalogRange field={field.key} value={value} bounds={filterOptions.ranges[field.key]} onChange={(next) => onChange(field.key, next)} />;
   }
   if (field.kind === "facet") {
-    return <CatalogFacet id={field.id} label={field.label} options={field.options(filterOptions).map((option) => option.value)} value={value} onChange={(next) => onChange(field.key, next)} />;
+    return <CatalogFacet id={field.id} label={field.label} options={field.options(filterOptions)} value={value} onChange={(next) => onChange(field.key, next)} />;
   }
   return (
     <div className={fieldClassName}>
       <label htmlFor={field.id}>{field.label}</label>
-      {field.kind === "text" ? (
         <input
           id={field.id}
           name={field.id}
@@ -217,22 +202,6 @@ function FilterField({
           value={value}
           onChange={(event) => onChange(field.key, event.target.value)}
         />
-      ) : (
-        <select
-          id={field.id}
-          name={field.id}
-          className="w-full"
-          value={value}
-          onChange={(event) => onChange(field.key, event.target.value)}
-        >
-          <option value="">{field.allLabel ?? "All"}</option>
-          {field.options(filterOptions).map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      )}
     </div>
   );
 }

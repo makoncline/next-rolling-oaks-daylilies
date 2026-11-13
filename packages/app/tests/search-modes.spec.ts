@@ -52,7 +52,7 @@ test("advanced search reveals grouped sections with active counts", async ({ pag
     await expect(page.getByRole("button", { name, exact: true })).toBeVisible();
   }
   // The first section starts open; the rest stay collapsed until chosen.
-  await expect(page.locator("#letters")).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Description", exact: true })).toBeVisible();
   await expect(page.locator("#ploidy")).toBeHidden();
 
   const plant = page.getByRole("button", { name: "Classification & Details", exact: true });

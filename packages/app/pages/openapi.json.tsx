@@ -49,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
             ...[
               "name",
               "list",
-              "char",
               "hybridizer",
               "year",
               "ploidy",
