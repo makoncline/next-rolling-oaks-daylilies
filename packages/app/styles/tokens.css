@@ -95,6 +95,8 @@
   --width-prose: 44rem;
   --width-form: 36rem;
   --header-height: 4.5rem;
+  --space-safe-top: env(safe-area-inset-top, 0px);
+  --space-safe-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 
   --radius: 0.5rem;
   --radius-subtle: 0.3125rem;
@@ -197,6 +199,8 @@
   --spacing-control: var(--control-height);
   --spacing-control-compact: var(--control-height-compact);
   --spacing-header: var(--header-height);
+  --spacing-safe-top: var(--space-safe-top);
+  --spacing-safe-bottom: var(--space-safe-bottom);
   --spacing-section: var(--space-section);
   --container-page: var(--width-page);
   --container-prose: var(--width-prose);

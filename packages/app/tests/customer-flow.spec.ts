@@ -10,15 +10,15 @@ test("customers can search, filter, select photos and keep cart changes after re
   // This journey must never send email, even if a selector changes.
   await page.route("**/api/forms", route => route.abort());
   await page.goto("/");
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe("hidden");
   const menu = page.getByRole("button", { name: "Toggle navigation" });
   if (isMobile) {
     await menu.click();
-    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByRole("dialog", { name: "Navigation", exact: true })).toBeVisible();
   }
-  await page.locator('header a[href="/catalog/search"]:visible').click();
+  await (isMobile ? page.getByRole("dialog", { name: "Navigation", exact: true }).getByRole("link", { name: "Search", exact: true }) : page.locator('header a[href="/catalog/search"]:visible')).click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe("hidden");
   await page.locator("#search").fill("A Few Good Men");
   await expect(page.locator("main article")).toHaveCount(1);
   await expect(page.locator("main article")).toContainText("A Few Good Men");

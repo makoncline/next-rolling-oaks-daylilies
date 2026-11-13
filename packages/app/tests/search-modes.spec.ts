@@ -248,12 +248,12 @@ test("catalog navigation clears filters and closes the mobile menu", async ({ pa
   await openFilters(page);
   await expect(advancedSwitch(page)).toHaveAttribute("aria-checked", "true");
   if (isMobile) await page.getByRole("button", { name: "Toggle navigation" }).click();
-  await page.locator('header a[href="/catalog/search"]:visible').click();
+  await (isMobile ? page.getByRole("dialog", { name: "Navigation", exact: true }).getByRole("link", { name: "Search", exact: true }) : page.locator('header a[href="/catalog/search"]:visible')).click();
   await expect(page).toHaveURL(/\/catalog\/search$/);
   if (isMobile) {
     await expect(page.getByRole("button", { name: "Toggle navigation" })).toHaveAttribute("aria-expanded", "false");
   }
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("unset");
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe("hidden");
   await expect(page.getByRole("list", { name: "Active filters" })).toHaveCount(0);
   await expect(advancedSwitch(page)).toHaveAttribute("aria-checked", "false");
   await expect(page.locator("main article").first()).toBeVisible();

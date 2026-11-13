@@ -487,7 +487,7 @@ async function capture(mode) {
         // so full-page emulation cannot enlarge the menu or filter panel.
         await page.evaluate(() => {
           document.body.style.minHeight = getComputedStyle(document.body).minHeight;
-          document.querySelectorAll(".h-screen").forEach((element) => { element.style.height = getComputedStyle(element).height; });
+          document.querySelectorAll(".h-screen, .h-dvh").forEach((element) => { element.style.height = getComputedStyle(element).height; });
           document.querySelectorAll("[data-ui=filter-panel]").forEach((element) => { element.style.maxHeight = getComputedStyle(element).maxHeight; });
         });
         await page.screenshot({ path: file, fullPage: true, animations: "disabled", caret: "hide", mask: [page.locator('iframe[src*="challenges.cloudflare.com"]')], maskColor: "#28323e", style: "nextjs-portal { visibility: hidden !important; }" });
