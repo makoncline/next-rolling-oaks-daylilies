@@ -10,8 +10,8 @@ test(
   async (t) => {
     const [major, minor, patch] = process.versions.node.split(".").map(Number);
     assert.ok(
-      major === 22 && (minor > 23 || (minor === 23 && patch >= 4)),
-      `Node ${process.versions.node} does not meet the patched 22.23.4 runtime floor`,
+      major === 22 && (minor > 23 || (minor === 23 && patch >= 5)),
+      `Node ${process.versions.node} does not meet the patched 22.23.5 runtime floor`,
     );
 
     const text = "Brotli response decoding works.";
